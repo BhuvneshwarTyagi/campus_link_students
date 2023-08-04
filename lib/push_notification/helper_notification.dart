@@ -24,6 +24,7 @@ class NotificationServices{
     AndroidNotificationChannel("campuslink", "campuslink channel",
         importance: Importance.max, playSound: true);
 
+
     await _notificationsPlugin
         .resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>()
@@ -31,7 +32,7 @@ class NotificationServices{
 
     const InitializationSettings initializationSettings =
     InitializationSettings(
-        android: AndroidInitializationSettings("@mipmap/ic_launcher"),
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
         iOS: IOSInitializationSettings());
 
     await FirebaseMessaging.instance
@@ -50,7 +51,7 @@ class NotificationServices{
     try {
       final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
-      const NotificationDetails notificationDetails = NotificationDetails(
+      NotificationDetails notificationDetails = const NotificationDetails(
           android: AndroidNotificationDetails(
             "campuslink",
             "campuslink channel",
@@ -61,8 +62,8 @@ class NotificationServices{
 
       await _notificationsPlugin.show(
         id,
-        message.notification?.title,
-        message.notification?.body,
+        message.notification!.title,
+        message.notification!.body,
         notificationDetails,
         payload: message.data["route"],
       );
@@ -78,14 +79,15 @@ class NotificationServices{
           "campuslink channel",
           importance: Importance.max,
           priority: Priority.high,
+          icon: '@mipmap/ic_launcher'
         ),
         iOS: IOSNotificationDetails());
   }
 
   static void onMessage(RemoteMessage message) {
     RemoteNotification? notification = message.notification;
-    AndroidNotification? androidNotification = message.notification?.android;
-    AppleNotification? appleNotification = message.notification?.apple;
+    AndroidNotification? androidNotification = message.notification!.android;
+    AppleNotification? appleNotification = message.notification!.apple;
     if (notification == null) return;
     if (androidNotification != null || appleNotification != null) {
       _notificationsPlugin.show(notification.hashCode, notification.title,

@@ -12,5 +12,4 @@ String branch_filter="";
 String year_filter="";
 String section_filter="";
 String subject_filter = '';
-int all_students_count=0;
-int appeared_students_count=0;
+Map<dynamic,dynamic> usermodel={};

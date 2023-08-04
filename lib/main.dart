@@ -1,14 +1,15 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:campus_link_student/push_notification/helper_notification.dart';
 import 'package:campus_link_student/push_notification/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'Connection.dart';
+import 'Registration/database.dart';
 
 // void callbackDispatcher(){
 //   Workmanager().executeTask((taskName, inputData) async {
@@ -23,14 +24,20 @@ import 'Connection.dart';
 //   });
 // }
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a background message");
+  if (kDebugMode) {
+    print("Handling a background message");
+  }
   NotificationServices.display(message);
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp().whenComplete(() async {
-    await FirebaseFirestore.instance.collection("Students").doc('bhanu68tyagi@gmail.com').update({
-      "Name":"${TimeOfDay.now().minute}"
+
+  if(message.notification!.body=="Attendance Initialized"){
+    await Firebase.initializeApp().whenComplete(() async {
+      await FirebaseFirestore.instance
+          .collection("Students")
+          .doc(FirebaseAuth.instance.currentUser!.email)
+          .update({"Location": database().getloc()});
     });
-  });
+  }
 }
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -109,8 +116,12 @@ class _MyAppState extends State<MyApp> {
 
     FirebaseMessaging.onMessage.listen((message) async {
       if (message.notification != null) {
-        print(message.notification!.body);
-        print(message.notification!.title);
+        if (kDebugMode) {
+          print(message.notification!.body);
+        }
+        if (kDebugMode) {
+          print(message.notification!.title);
+        }
       }
 
       NotificationServices.display(message);
@@ -165,7 +176,9 @@ class _MyAppState extends State<MyApp> {
           break;
       }
     } catch (e) {
-      print('inside catch statement');
+      if (kDebugMode) {
+        print('inside catch statement');
+      }
       debugPrint(e.toString());
     }
   }
