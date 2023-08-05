@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'package:campus_link_student/Registration/database.dart';
 import 'package:campus_link_student/push_notification/helper_notification.dart';
+import 'package:campus_link_student/push_notification/temp.dart';
 import 'package:campus_link_student/push_notification/utils.dart';
+import 'package:carp_background_location/carp_background_location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,78 +11,87 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
+import 'package:workmanager/workmanager.dart';
 import 'Connection.dart';
-import 'Registration/database.dart';
 
-// void callbackDispatcher(){
-//   Workmanager().executeTask((taskName, inputData) async {
-//     print("\n\n\n working");
-//     WidgetsFlutterBinding.ensureInitialized();
-//     await Firebase.initializeApp();
-//    await FirebaseFirestore.instance.collection("testing").doc("${DateTime.now().minute}").set({
-//      "Success":true
-//    });
-//
-//     return Future.value(true);
-//   });
-// }
+const fetchBackground = "fetchBackground";
+callbackDispatcher() async {
+
+  try{
+    GeoPoint current_location=const GeoPoint(0, 0);
+    print(".......Starting workmanager executeTask.....");
+    Workmanager().executeTask((taskName, inputData) async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp();
+
+      print(".......Starting asking For Location Always Permission .....");
+     // await CurrentLocationManager().askForLocationAlwaysPermission();
+      print(".......complete asking For Location Always Permission .....");
+      print(".......Starting Location  .....");
+      CurrentLocationManager().start();
+      print("....... Location started .....");
+      print("....... fetching current Location  .....");
+      current_location=await database().getloc();
+      // current_location=await CurrentLocationManager().getCurrentLocation();
+      print(".......  current Location  fetched $current_location .....");
+      print("....... Uploading location to firebase  .....");
+      await FirebaseFirestore.instance
+          .collection("Students")
+          .doc(FirebaseAuth.instance.currentUser!.email)
+          .update({"Location": current_location}).whenComplete(() {
+        print("Start()");
+        CurrentLocationManager().stop();}
+      );
+      print("....... location uploaded to firebase  .....");
+      return Future.value(true);
+    });
+
+  }catch (e){
+    print("..........error.........\n.........$e........");
+  }
+}
+
+
+
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (kDebugMode) {
     print("Handling a background message");
   }
-  NotificationServices.display(message);
-  WidgetsFlutterBinding.ensureInitialized();
 
-  if(message.notification!.body=="Attendance Initialized"){
-    await Firebase.initializeApp().whenComplete(() async {
-      await FirebaseFirestore.instance
-          .collection("Students")
-          .doc(FirebaseAuth.instance.currentUser!.email)
-          .update({"Location": database().getloc()});
-    });
+  print(".............Start().............");
+  NotificationServices.display(message);
+  if(message.data["body"]=="Attendance Initialized"){
+    print("error before enter");
+    print(".................here");
+    await Workmanager().registerOneOffTask("attendance", "Attendance");
   }
 }
+
+Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
+  if (message.notification != null) {
+    if (kDebugMode) {
+      print(message.notification!.body);
+    }
+    if (kDebugMode) {
+      print(message.notification!.title);
+    }
+  }
+
+  NotificationServices.display(message);
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp().whenComplete(() async {
+    await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
+      "Name":"${TimeOfDay.now().minute}"
+    });
+  });
+}
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  //FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  // var cron = Cron();
-  // try{
-  //   cron.schedule(Schedule.parse("* * * * *"),() async {
-  //   print("\n\n\n working");
-  //   WidgetsFlutterBinding.ensureInitialized();
-  //   await Firebase.initializeApp();
-  //  await FirebaseFirestore.instance.collection("testing").doc("${DateTime.now().minute}").set({
-  //    "Success":true
-  //  });
-  // });
-  // }catch(e){
-  //   print(e);
-  // }
-  //Workmanager().initialize(callbackDispatcher);
-  // await FirebaseMessaging.instance.getInitialMessage();
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
 }
-// @pragma('vm:entry-point')
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async{
-//   print(message.data);
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp();
-//   if(message.data['body']=='attendance'){
-//     await FirebaseFirestore.instance
-//         .collection("testing")
-//         .doc(message.data['body'])
-//         .update({"worked": FieldValue.arrayUnion([true])});
-//   }
-//   else{
-//     await FirebaseFirestore.instance
-//         .collection("testing")
-//         .doc(message.data['body'])
-//         .set({"worked": FieldValue.arrayUnion([true])});
-//   }
-//   print(".............");
-// }
+
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -88,74 +100,22 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
+enum LocationStatus { UNKNOWN, INITIALIZED, RUNNING, STOPPED }
+
+
+
 class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
+
   @override
   void initState() {
     super.initState();
-
-
-
-    //WidgetsBinding.instance.addObserver(WidgetsBindingObserver);
-
-    // if (Platform.isIOS) {
-    //   print('platform is IOS');
-    //   FirebaseMessaging.instance
-    //       .requestPermission(sound: true, badge: true, alert: true);
-    // }
-
     NotificationServices.initialize(context);
 
-    // FirebaseMessaging.instance.getInitialMessage().then((message) {
-    //   // if (message != null) {
-    //   //   final routeFromMessage = message.data["route"];
-    //
-    //   //   Navigator.of(context).pushNamed(routeFromMessage);
-    //   // }
-    // });
+    FirebaseMessaging.onMessage.listen(firebaseMessagingonmessageHandler);
 
-    FirebaseMessaging.onMessage.listen((message) async {
-      if (message.notification != null) {
-        if (kDebugMode) {
-          print(message.notification!.body);
-        }
-        if (kDebugMode) {
-          print(message.notification!.title);
-        }
-      }
+    FirebaseMessaging.onBackgroundMessage.call(firebaseMessagingBackgroundHandler);
 
-      NotificationServices.display(message);
-      WidgetsFlutterBinding.ensureInitialized();
-      await Firebase.initializeApp().whenComplete(() async {
-        await FirebaseFirestore.instance.collection("Students").doc('bhanu68tyagi@gmail.com').update({
-          "Name":"${TimeOfDay.now().minute}"
-        });
-      });
-
-    });
-
-    FirebaseMessaging.onBackgroundMessage((message) async {
-      NotificationServices.display(message);
-      WidgetsFlutterBinding.ensureInitialized();
-      await Firebase.initializeApp().whenComplete(() async {
-        await FirebaseFirestore.instance.collection("Students").doc('bhanu68tyagi@gmail.com').update({
-          "Name":"${TimeOfDay.now().minute}"
-        });
-      });
-    });
-    // FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    //   //final routeFromMessage = message.data["route"];
-    //
-    //   //Navigator.of(context).pushNamed(routeFromMessage);
-    // });
   }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   //WidgetsBinding.instance.removeObserver();
-  // }
-
 
   void didChangeAppLifecycleState(AppLifecycleState state) {
     try {

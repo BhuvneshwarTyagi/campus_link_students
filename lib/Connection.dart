@@ -41,32 +41,16 @@ class Internetcheck extends StatefulWidget {
 class _InternetcheckState extends State<Internetcheck> {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   //flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>().requestPermission();
-  var mtoken;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    //Workmanager().registerPeriodicTask("Test on background", "background",frequency: const Duration(minutes: 16));
 
    NotificationServices().RequestPermission();
-   getToken();
-    // initInfo();
   }
 
-  void getToken() async {
-    await FirebaseMessaging.instance.getToken().then((token) {
-      setState(() {
-        mtoken=token;
-        print("My token is $mtoken");
-      });
-      saveToken(token!);
-    });
-  }
-  void saveToken(String token) async{
-    await FirebaseFirestore.instance.collection("User Tokens").doc("1").set({
-      'token' : token,
-    });
-  }
+
   void sendPushMessage(String token, String body,String title) async{
     try{
       await http.post(

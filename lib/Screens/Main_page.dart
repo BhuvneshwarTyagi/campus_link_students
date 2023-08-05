@@ -2,6 +2,7 @@
 import 'package:campus_link_student/Registration/Login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import '../Constraints.dart';
 import '../Registration/Verify Email.dart';
@@ -20,6 +21,7 @@ class MainPage extends StatefulWidget {
 
 
 class _MainPageState extends State<MainPage> {
+  var mtoken;
   @override
   Widget build(BuildContext context) {
     return  StreamBuilder<User?>(
@@ -32,7 +34,7 @@ class _MainPageState extends State<MainPage> {
         } else if (snapshot.connectionState == ConnectionState.active && snapshot.hasData)
         {
           if(FirebaseAuth.instance.currentUser!.emailVerified){
-            fetchuser();
+            getToken();
             return const Dashboard();
 
           }
@@ -49,8 +51,16 @@ class _MainPageState extends State<MainPage> {
   }
   Future<void> fetchuser() async {
     await FirebaseFirestore.instance.collection("Teachers").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
-      usermodel=value.data()!;
+
     }).whenComplete(() => print(usermodel));
 
   }
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then((token) async {
+      await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
+        'token' : token,
+      });
+    });
+  }
+
 }

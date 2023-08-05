@@ -53,6 +53,9 @@ dependencies:
   http: ^1.1.0
   workmanager: ^0.5.1
   cron: ^0.5.1
+  file_manager: ^1.0.2
+  flutter_isolate: ^2.0.4
+  carp_background_location: ^4.0.0
 
 dev_dependencies:
   flutter_test:

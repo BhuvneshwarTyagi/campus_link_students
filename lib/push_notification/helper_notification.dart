@@ -35,8 +35,7 @@ class NotificationServices{
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
         iOS: IOSInitializationSettings());
 
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
         alert: true, badge: true, sound: true);
 
     _notificationsPlugin.initialize(initializationSettings,
@@ -62,8 +61,8 @@ class NotificationServices{
 
       await _notificationsPlugin.show(
         id,
-        message.notification!.title,
-        message.notification!.body,
+        message.data["title"],
+        message.data["body"],
         notificationDetails,
         payload: message.data["route"],
       );

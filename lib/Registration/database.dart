@@ -1,9 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class database
 {
-  Future<Position> getloc() async {
+  Future<GeoPoint> getloc() async {
     if (await Permission.location.serviceStatus.isEnabled) {
       print("enabled permission");
     } else {
@@ -22,12 +23,14 @@ class database
       openAppSettings();
     }
 
+
+
     Position x = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
     print("location is:$x");
 
-    return x;
+    return GeoPoint(x.latitude, x.longitude);
   }
 }
