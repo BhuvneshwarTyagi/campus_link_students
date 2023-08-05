@@ -707,9 +707,9 @@ class _StudentDetailsState extends State<StudentDetails> {
                   child: ElevatedButton(
                     onPressed: ()
                     async {
-                    for(int i=0;i< subjects.length;i++){
+                    for(int i=0;i< subjectlist.length;i++){
 
-                      subject.add(subjects[i].toString());
+                      subject.add(subjectlist[i].text.trim());
                 }
                        if(
                            rollno.text.toString().isNotEmpty &&

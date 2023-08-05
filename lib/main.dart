@@ -3,7 +3,6 @@ import 'package:campus_link_student/Registration/database.dart';
 import 'package:campus_link_student/push_notification/helper_notification.dart';
 import 'package:campus_link_student/push_notification/temp.dart';
 import 'package:campus_link_student/push_notification/utils.dart';
-import 'package:carp_background_location/carp_background_location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,7 +24,7 @@ callbackDispatcher() async {
       await Firebase.initializeApp();
 
       print(".......Starting asking For Location Always Permission .....");
-     // await CurrentLocationManager().askForLocationAlwaysPermission();
+      await CurrentLocationManager().askForLocationAlwaysPermission();
       print(".......complete asking For Location Always Permission .....");
       print(".......Starting Location  .....");
       CurrentLocationManager().start();
@@ -60,25 +59,29 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   print(".............Start().............");
   NotificationServices.display(message);
+  Workmanager().initialize(
+    callbackDispatcher,
+  );
   if(message.data["body"]=="Attendance Initialized"){
     print("error before enter");
-    print(".................here");
     await Workmanager().registerOneOffTask("attendance", "Attendance");
   }
 }
 
 Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
-  if (message.notification != null) {
+  print("Entered onmeassege");
+  if (message.data["body"] != null) {
     if (kDebugMode) {
-      print(message.notification!.body);
+      print(message.data["title"]);
     }
     if (kDebugMode) {
-      print(message.notification!.title);
+      print(message.data["body"]);
     }
   }
 
   NotificationServices.display(message);
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp().whenComplete(() async {
     await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
       "Name":"${TimeOfDay.now().minute}"
@@ -89,6 +92,9 @@ Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  Workmanager().initialize(
+        callbackDispatcher,
+      );
   runApp(const MyApp());
 }
 
