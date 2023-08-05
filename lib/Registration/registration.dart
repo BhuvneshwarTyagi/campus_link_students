@@ -731,6 +731,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                                "Branch": branchController.text.trim().toString(),
                                "Section": sectionController.text.trim().toString(),
                                "Subject": subject,
+                               "Active":false
                              }
                          ).then((value) {
                            Navigator.pop(context);
