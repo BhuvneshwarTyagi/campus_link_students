@@ -1,5 +1,6 @@
 
 import 'package:campus_link_student/Registration/Login.dart';
+import 'package:campus_link_student/Registration/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -27,6 +28,7 @@ class _MainPageState extends State<MainPage> {
     return  StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (_, snapshot)  {
+
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const SignInScreen();
         } else if (snapshot.connectionState == ConnectionState.active && !snapshot.hasData) {
@@ -35,7 +37,8 @@ class _MainPageState extends State<MainPage> {
         {
           if(FirebaseAuth.instance.currentUser!.emailVerified){
             getToken();
-            return const Dashboard();
+
+             return const StudentDashBoard();
 
           }
           else{
@@ -63,4 +66,7 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+
+
 }
+

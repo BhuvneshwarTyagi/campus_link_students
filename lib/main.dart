@@ -59,7 +59,11 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 
   print(".............Start().............");
+
   NotificationServices.display(message);
+  Workmanager().initialize(
+    callbackDispatcher,
+  );
   if(message.data["body"]=="Attendance Initialized"){
     print("error before enter");
     print(".................here");
@@ -77,7 +81,8 @@ Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
     }
   }
 
-  NotificationServices.display(message);
+
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp().whenComplete(() async {
     await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
@@ -89,6 +94,9 @@ Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  Workmanager().initialize(
+    callbackDispatcher,
+  );
   runApp(const MyApp());
 }
 

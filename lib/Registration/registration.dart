@@ -720,13 +720,13 @@ class _StudentDetailsState extends State<StudentDetails> {
                            branchController.text.toString().isNotEmpty &&
                            sectionController.text.toString().isNotEmpty
                        ){
-                         await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).set(
+                         await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).update(
 
                              {
                                "Rollnumber": rollno.text.trim().toString(),
                                "University": universityController.text.trim().toString(),
-                               "College": courseController.text.trim().toString(),
-                               "Course": collegeController.text.trim().toString(),
+                               "College": collegeController.text.trim().toString(),
+                               "Course": courseController.text.trim().toString(),
                                "Year": yearController.text.trim().toString(),
                                "Branch": branchController.text.trim().toString(),
                                "Section": sectionController.text.trim().toString(),

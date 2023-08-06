@@ -313,10 +313,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       size: 55,
                                     )
                                 );
-                                await FirebaseFirestore.instance.collection("Students").doc(email.text.trim()).set({
-                                  "Email" : email.text.trim(),
-                                  "Name" : nameController.text.trim()
+                                await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).set({
+                                  "Email" : email.text.trim().toString(),
+                                  "Name" : nameController.text.trim().toString()
                                 });
+                                await FirebaseFirestore.instance.collection("Student_record").doc("Email").update({
+                                  "Email" : FieldValue.arrayUnion([nameController.text.trim().toString()]),
+                                });
+
                                  Navigator.push(
                                   context,
                                   PageTransition(

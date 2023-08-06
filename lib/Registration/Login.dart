@@ -1,5 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:campus_link_student/Registration/signUp.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
@@ -18,6 +19,9 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+
+
+
   bool hide =true;
   //final _key = GlobalKey<FormState>();
   final TextEditingController _email = TextEditingController();
@@ -236,30 +240,35 @@ class _SignInScreenState extends State<SignInScreen> {
                     borderRadius: BorderRadius.circular(90),),
                   child: ElevatedButton(
                       onPressed: () async{
-                          String test=await signin(_email.text.trim(), _password.text.trim());
-                          if(!mounted) return;
-                          if(test=="1"){
-
+                        final ref=await FirebaseFirestore.instance.collection("Student_record").doc("Email").get();
+                        final student_record=ref.data()!["Email"];
+                        if( student_record!=null && student_record.contains(_email.text.trim())) {
+                          String test = await signin(
+                              _email.text.trim(), _password.text.trim());
+                          if (!mounted) return;
+                          if (test == "1") {
                             Navigator.pushReplacement(
-                                context,
-                                PageTransition(
-                                    child: const MainPage(),
-                                    type: PageTransitionType.rightToLeftJoined,
-                                    duration: const Duration(milliseconds: 400),
-                                    alignment: Alignment.bottomCenter,
-                                  childCurrent: const SignInScreen(),
-                                ),
+                              context,
+                              PageTransition(
+                                child: const MainPage(),
+                                type: PageTransitionType.rightToLeftJoined,
+                                duration: const Duration(milliseconds: 400),
+                                alignment: Alignment.bottomCenter,
+                                childCurrent: const SignInScreen(),
+                              ),
                             );
                           }
-                          else{
+                          else {
                             print("I am in");
                             InAppNotifications.instance
                               ..titleFontSize = 14.0
                               ..descriptionFontSize = 14.0
                               ..textColor = Colors.black
-                              ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
+                              ..backgroundColor = const Color.fromRGBO(
+                                  150, 150, 150, 1)
                               ..shadow = true
-                              ..animationStyle = InAppNotificationsAnimationStyle.scale;
+                              ..animationStyle = InAppNotificationsAnimationStyle
+                                  .scale;
                             InAppNotifications.show(
                                 title: 'Failed',
                                 duration: const Duration(seconds: 2),
@@ -271,6 +280,23 @@ class _SignInScreenState extends State<SignInScreen> {
                                 )
                             );
                           }
+                        }
+                        else{
+                          InAppNotifications.instance
+                            ..titleFontSize = 14.0
+                            ..descriptionFontSize = 14.0
+                            ..textColor = Colors.black
+                            ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
+                            ..shadow = true
+                            ..animationStyle = InAppNotificationsAnimationStyle.scale;
+                          InAppNotifications.show(
+                              title: 'Failed',
+                              duration: const Duration(seconds: 2),
+                              description: "No such account found",
+                              leading: const Image(image: AssetImage('assets/icon/icon.png'))
+                          );
+
+                        }
 
                       },
 
