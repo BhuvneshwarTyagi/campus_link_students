@@ -35,7 +35,7 @@ class _MainPageState extends State<MainPage> {
         {
           if(FirebaseAuth.instance.currentUser!.emailVerified){
             getToken();
-            return const Dashboard();
+            return const StudentDashBoard();
 
           }
           else{
