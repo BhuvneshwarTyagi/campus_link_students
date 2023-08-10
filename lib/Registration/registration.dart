@@ -19,7 +19,7 @@ class StudentDetails extends StatefulWidget {
 }
 
 class _StudentDetailsState extends State<StudentDetails> {
-   final TextEditingController rollno=TextEditingController();
+  final TextEditingController rollno=TextEditingController();
 
   final TextEditingController universityController = TextEditingController();
   final FocusNode univf = FocusNode();
@@ -47,17 +47,17 @@ class _StudentDetailsState extends State<StudentDetails> {
   final FocusNode sectionf = FocusNode();
   List<String> section = ['A', 'B', 'C', 'D','E'];
 
- List <TextEditingController> subjectlist=[TextEditingController()] ;
-   List <FocusNode> subjectf = [FocusNode()];
-   List<dynamic> subjects = [];
+  List <TextEditingController> subjectlist=[TextEditingController()] ;
+  List <FocusNode> subjectf = [FocusNode()];
+  List<dynamic> subjects = [];
 
-   List<String> subject=[];
+  List<String> subject=[];
 
 
-@override
+  @override
   void initState() {
     // TODO: implement initState
-  fetchuniversity();
+    fetchuniversity();
     super.initState();
   }
 //ar firebaseDB= FirebaseFirstore.instance.collection("").doc("").Snapshots();
@@ -69,10 +69,18 @@ class _StudentDetailsState extends State<StudentDetails> {
       body: Container(
         height: size.height * 1,
         width: size.width*1,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/background.jpg"),
-            fit: BoxFit.fill,
+        decoration:  BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+
+              const Color.fromRGBO(86, 149, 178, 1),
+              // Color.fromRGBO(86, 149, 178, 1),
+              const Color.fromRGBO(68, 174, 218, 1),
+              //Color.fromRGBO(118, 78, 232, 1),
+              Colors.deepPurple.shade300
+            ],
           ),
         ),
         child: SingleChildScrollView(
@@ -88,7 +96,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                       "Student Details",
 
                       textStyle:GoogleFonts.openSans(
-                        color: Colors.amber,
+                        color: Colors.white54,
                         fontSize: 25,
                         fontWeight: FontWeight.w900,
                         shadows: [
@@ -114,87 +122,98 @@ class _StudentDetailsState extends State<StudentDetails> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
                     controller: rollno,
-                    decoration: const InputDecoration(
-                        fillColor: Colors.black,
+                    decoration: InputDecoration(
+                        fillColor: Colors.black26.withOpacity(0.6),
                         filled: true,
                         hintText: "Enter Roll No.",
-                        hintStyle: TextStyle(color: Colors.grey),
-                        enabledBorder: OutlineInputBorder(
+                        contentPadding: EdgeInsets.only(left:size.height*0.041 ,top: size.height*0.055),
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        enabledBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(
                             Radius.circular(30),
                           ),
-                          borderSide: BorderSide(color: Colors.amber, width: 3),
+                          borderSide: BorderSide(color: Colors.black12, width: 3),
                         ),
-                        disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(30),
-                            ),
-                            borderSide:
-                                BorderSide(width: 2, color: Colors.amber)),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.amber, width: 3),
+
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black, width: 3),
                           borderRadius: BorderRadius.all(
                             Radius.circular(30),
                           ),
                         )),
-                    style: const TextStyle(color: Colors.amber),
+                    style:  TextStyle(   color: Colors.white.withOpacity(0.9)),
                   ),
                 ),
                 SizedBox(height: size.height * 0.01),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SearchField(
+
                     controller: universityController,
+
                     focusNode: univf,
-                    suggestionItemDecoration: SuggestionDecoration(),
+                    suggestionItemDecoration: SuggestionDecoration(
+                     padding: EdgeInsets.all(25.0)
+                    ),
                     key: const Key("Search key"),
                     suggestions:
-                        university.map((e) => SearchFieldListItem(e)).toList(),
+                    university.map((e) => SearchFieldListItem(e)).toList(),
                     searchStyle: GoogleFonts.openSans(
-                        color: Colors.amber,
+                        color: Colors.white.withOpacity(0.9),
+
+
                         fontSize: 15,
                         fontWeight: FontWeight.w800),
                     suggestionStyle: GoogleFonts.openSans(
-                      color: Colors.amber,
+                      color: Colors.black,
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
+
+
                     ),
-                    marginColor: Colors.amber,
+                    marginColor: Colors.black,
                     suggestionsDecoration: SuggestionDecoration(
-                        color: const Color.fromRGBO(3, 74, 140, 1),
+                      
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          
+                          colors: [
+
+                            const Color.fromRGBO(86, 149, 178, 1),
+
+                            const Color.fromRGBO(68, 174, 218, 1),
+
+                            Colors.deepPurple.shade300
+                          ],
+                        ),
+                        // color: const Color.fromRGBO(3, 74, 140, 1),
                         //shape: BoxShape.rectangle,
                         padding: const EdgeInsets.all(10),
-                        border: Border.all(width: 2, color: Colors.amber),
+                        border: Border.all(width: 2, color: Colors.black),
                         borderRadius: BorderRadius.circular(0)),
                     searchInputDecoration: InputDecoration(
+                      contentPadding: EdgeInsets.only(left:size.height*0.041 ,top: size.height*0.055),
                         hintText: "University",
-                        fillColor: Colors.black,
+                       // contentPadding: EdgeInsets.only(left: 30.0),
+                        fillColor: Colors.black26.withOpacity(0.6),
                         filled: true,
                         hintStyle: GoogleFonts.openSans(
                             color: Colors.grey,
                             fontSize: 15,
                             fontWeight: FontWeight.w500),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
                           ),
-                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(color: Colors.black12, width: 3),
                         ),
-                        focusColor: Colors.amber,
-                        disabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
+
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black, width: 3),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
                           ),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
-                          ),
-                          borderRadius: BorderRadius.circular(30),
                         )),
                     onSuggestionTap: (value) {
                       print(value.searchKey);
@@ -206,6 +225,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                       FocusScope.of(context).requestFocus(colf);
 
                     },
+
                     enabled: true,
                     hint: "University",
                     itemHeight: 50,
@@ -221,9 +241,9 @@ class _StudentDetailsState extends State<StudentDetails> {
                     suggestionItemDecoration: SuggestionDecoration(),
                     key: const Key("Search key"),
                     suggestions:
-                        college.map((e) => SearchFieldListItem(e)).toList(),
+                    college.map((e) => SearchFieldListItem(e)).toList(),
                     searchStyle: GoogleFonts.openSans(
-                        color: Colors.amber,
+                        color: Colors.white.withOpacity(0.9),
                         fontSize: 15,
                         fontWeight: FontWeight.w800),
                     suggestionStyle: GoogleFonts.openSans(
@@ -233,40 +253,44 @@ class _StudentDetailsState extends State<StudentDetails> {
                     ),
                     marginColor: Colors.amber,
                     suggestionsDecoration: SuggestionDecoration(
-                        color: const Color.fromRGBO(3, 74, 140, 1),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+
+                          colors: [
+
+                            const Color.fromRGBO(86, 149, 178, 1),
+
+                            const Color.fromRGBO(68, 174, 218, 1),
+
+                            Colors.deepPurple.shade300
+                          ],
+                        ),
                         //shape: BoxShape.rectangle,
                         padding: const EdgeInsets.all(10),
                         border: Border.all(width: 2, color: Colors.amber),
                         borderRadius: BorderRadius.circular(0)),
                     searchInputDecoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(left:size.height*0.041 ,top: size.height*0.055),
                         hintText: "College",
-                        fillColor: Colors.black,
+                        fillColor: Colors.black26.withOpacity(0.6),
                         filled: true,
                         hintStyle: GoogleFonts.openSans(
                             color: Colors.grey,
                             fontSize: 15,
                             fontWeight: FontWeight.w500),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
                           ),
-                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(color: Colors.black12, width: 3),
                         ),
-                        focusColor: Colors.amber,
-                        disabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
+
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black, width: 3),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
                           ),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
-                          ),
-                          borderRadius: BorderRadius.circular(30),
                         )),
                     onSuggestionTap: (value) {
 
@@ -294,9 +318,9 @@ class _StudentDetailsState extends State<StudentDetails> {
                     suggestionItemDecoration: SuggestionDecoration(),
                     key: const Key("Search key"),
                     suggestions:
-                        course.map((e) => SearchFieldListItem(e)).toList(),
+                    course.map((e) => SearchFieldListItem(e)).toList(),
                     searchStyle: GoogleFonts.openSans(
-                        color: Colors.amber,
+                        color: Colors.white.withOpacity(0.9),
                         fontSize: 15,
                         fontWeight: FontWeight.w800),
                     suggestionStyle: GoogleFonts.openSans(
@@ -306,41 +330,46 @@ class _StudentDetailsState extends State<StudentDetails> {
                     ),
                     marginColor: Colors.amber,
                     suggestionsDecoration: SuggestionDecoration(
-                        color: const Color.fromRGBO(3, 74, 140, 1),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+
+                          colors: [
+
+                            const Color.fromRGBO(86, 149, 178, 1),
+
+                            const Color.fromRGBO(68, 174, 218, 1),
+
+                            Colors.deepPurple.shade300
+                          ],
+                        ),
                         //shape: BoxShape.rectangle,
                         padding: const EdgeInsets.all(10),
                         border: Border.all(width: 2, color: Colors.amber),
                         borderRadius: BorderRadius.circular(0)),
                     searchInputDecoration: InputDecoration(
                         hintText: "Course",
-                        fillColor: Colors.black,
+                        contentPadding: EdgeInsets.only(left:size.height*0.041 ,top: size.height*0.055),
+                        fillColor: Colors.black26.withOpacity(0.6),
                         filled: true,
                         hintStyle: GoogleFonts.openSans(
                             color: Colors.grey,
                             fontSize: 15,
                             fontWeight: FontWeight.w500),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
                           ),
-                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(color: Colors.black12, width: 3),
                         ),
-                        focusColor: Colors.amber,
-                        disabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
+
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black, width: 3),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
                           ),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
-                          ),
-                          borderRadius: BorderRadius.circular(30),
-                        )),
+                        )
+                    ),
                     onSuggestionTap: (value) {
 
                       print(value.searchKey);
@@ -367,9 +396,9 @@ class _StudentDetailsState extends State<StudentDetails> {
                     suggestionItemDecoration: SuggestionDecoration(),
                     key: const Key("Search key"),
                     suggestions:
-                        year.map((e) => SearchFieldListItem(e)).toList(),
+                    year.map((e) => SearchFieldListItem(e)).toList(),
                     searchStyle: GoogleFonts.openSans(
-                        color: Colors.amber,
+                        color: Colors.white.withOpacity(0.9),
                         fontSize: 15,
                         fontWeight: FontWeight.w800),
                     suggestionStyle: GoogleFonts.openSans(
@@ -379,40 +408,44 @@ class _StudentDetailsState extends State<StudentDetails> {
                     ),
                     marginColor: Colors.amber,
                     suggestionsDecoration: SuggestionDecoration(
-                        color: const Color.fromRGBO(3, 74, 140, 1),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+
+                          colors: [
+
+                            const Color.fromRGBO(86, 149, 178, 1),
+
+                            const Color.fromRGBO(68, 174, 218, 1),
+
+                            Colors.deepPurple.shade300
+                          ],
+                        ),
                         //shape: BoxShape.rectangle,
                         padding: const EdgeInsets.all(10),
                         border: Border.all(width: 2, color: Colors.amber),
                         borderRadius: BorderRadius.circular(0)),
                     searchInputDecoration: InputDecoration(
                         hintText: "Year",
-                        fillColor: Colors.black,
+                        contentPadding: EdgeInsets.only(left:size.height*0.041 ,top: size.height*0.055),
+                        fillColor: Colors.black26.withOpacity(0.6),
                         filled: true,
                         hintStyle: GoogleFonts.openSans(
                             color: Colors.grey,
                             fontSize: 15,
                             fontWeight: FontWeight.w500),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
                           ),
-                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(color: Colors.black12, width: 3),
                         ),
-                        focusColor: Colors.amber,
-                        disabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
+
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black, width: 3),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
                           ),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
-                          ),
-                          borderRadius: BorderRadius.circular(30),
                         )),
                     onSuggestionTap: (value) {
                       print(value.searchKey);
@@ -437,9 +470,9 @@ class _StudentDetailsState extends State<StudentDetails> {
                     suggestionItemDecoration: SuggestionDecoration(),
                     key: const Key("Search key"),
                     suggestions:
-                        branch.map((e) => SearchFieldListItem(e)).toList(),
+                    branch.map((e) => SearchFieldListItem(e)).toList(),
                     searchStyle: GoogleFonts.openSans(
-                        color: Colors.amber,
+                        color: Colors.white.withOpacity(0.9),
                         fontSize: 15,
                         fontWeight: FontWeight.w800),
                     suggestionStyle: GoogleFonts.openSans(
@@ -449,41 +482,46 @@ class _StudentDetailsState extends State<StudentDetails> {
                     ),
                     marginColor: Colors.amber,
                     suggestionsDecoration: SuggestionDecoration(
-                        color: const Color.fromRGBO(3, 74, 140, 1),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+
+                          colors: [
+
+                            const Color.fromRGBO(86, 149, 178, 1),
+
+                            const Color.fromRGBO(68, 174, 218, 1),
+
+                            Colors.deepPurple.shade300
+                          ],
+                        ),
                         //shape: BoxShape.rectangle,
                         padding: const EdgeInsets.all(10),
                         border: Border.all(width: 2, color: Colors.amber),
                         borderRadius: BorderRadius.circular(0)),
                     searchInputDecoration: InputDecoration(
                         hintText: "Branch",
-                        fillColor: Colors.black,
+                        contentPadding: EdgeInsets.only(left:size.height*0.041 ,top: size.height*0.055),
+                        fillColor: Colors.black26.withOpacity(0.6),
                         filled: true,
                         hintStyle: GoogleFonts.openSans(
                             color: Colors.grey,
                             fontSize: 15,
                             fontWeight: FontWeight.w500),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
                           ),
-                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(color: Colors.black12, width: 3),
                         ),
-                        focusColor: Colors.amber,
-                        disabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
+
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black, width: 3),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
                           ),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
-                          ),
-                          borderRadius: BorderRadius.circular(30),
-                        )),
+                        )
+                    ),
                     onSuggestionTap: (value) {
                       print(value.searchKey);
 
@@ -507,9 +545,9 @@ class _StudentDetailsState extends State<StudentDetails> {
                     suggestionItemDecoration: SuggestionDecoration(),
                     key: const Key("Search key"),
                     suggestions:
-                        section.map((e) => SearchFieldListItem(e)).toList(),
+                    section.map((e) => SearchFieldListItem(e)).toList(),
                     searchStyle: GoogleFonts.openSans(
-                        color: Colors.amber,
+                        color: Colors.white.withOpacity(0.9),
                         fontSize: 15,
                         fontWeight: FontWeight.w800),
                     suggestionStyle: GoogleFonts.openSans(
@@ -519,40 +557,44 @@ class _StudentDetailsState extends State<StudentDetails> {
                     ),
                     marginColor: Colors.amber,
                     suggestionsDecoration: SuggestionDecoration(
-                        color: const Color.fromRGBO(3, 74, 140, 1),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+
+                          colors: [
+
+                            const Color.fromRGBO(86, 149, 178, 1),
+
+                            const Color.fromRGBO(68, 174, 218, 1),
+
+                            Colors.deepPurple.shade300
+                          ],
+                        ),
                         //shape: BoxShape.rectangle,
                         padding: const EdgeInsets.all(10),
                         border: Border.all(width: 2, color: Colors.amber),
                         borderRadius: BorderRadius.circular(0)),
                     searchInputDecoration: InputDecoration(
                         hintText: "Section",
-                        fillColor: Colors.black,
+                        contentPadding: EdgeInsets.only(left:size.height*0.041 ,top: size.height*0.055),
+                        fillColor: Colors.black26.withOpacity(0.6),
                         filled: true,
                         hintStyle: GoogleFonts.openSans(
                             color: Colors.grey,
                             fontSize: 15,
                             fontWeight: FontWeight.w500),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
                           ),
-                          borderRadius: BorderRadius.circular(30),
+                          borderSide: BorderSide(color: Colors.black12, width: 3),
                         ),
-                        focusColor: Colors.amber,
-                        disabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
+
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black, width: 3),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30),
                           ),
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 3,
-                            color: Colors.amber,
-                          ),
-                          borderRadius: BorderRadius.circular(30),
                         )),
                     onSuggestionTap: (value) {
                       print(value.searchKey);
@@ -572,250 +614,273 @@ class _StudentDetailsState extends State<StudentDetails> {
                 Padding(
                   padding: const EdgeInsets.all(1.0),
                   child: Container(
+
                     height: size.height*0.14*subjectlist.length,
                     width: size.width*1,
                     color: Colors.transparent,
                     child: ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: subjectlist.length,
-                            shrinkWrap: true,
-                        itemBuilder:(context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
+                      shrinkWrap: true,
+                      itemBuilder:(context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
 
-                                Expanded(
-                                  child:  SearchField(
-                                   //focusNode:subjectf[index],
-                                    controller: subjectlist[index],
+                              Expanded(
+                                child:  SearchField(
+                                  //focusNode:subjectf[index],
+                                  controller: subjectlist[index],
 
 
-                                    suggestionItemDecoration: SuggestionDecoration(),
-                                    key: const Key("Search key"),
-                                    suggestions:
-                                    subjects.map((e) => SearchFieldListItem(e)).toList(),
-                                    searchStyle: GoogleFonts.openSans(
+                                  suggestionItemDecoration: SuggestionDecoration(),
+                                  key: const Key("Search key"),
+                                  suggestions:
+                                  subjects.map((e) => SearchFieldListItem(e)).toList(),
+                                  searchStyle: GoogleFonts.openSans(
 
-                                        color: Colors.amber,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w800),
-                                    suggestionStyle: GoogleFonts.openSans(
-                                      color: Colors.amber,
+                                      color: Colors.white.withOpacity(0.9),
                                       fontSize: 15,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                    marginColor: Colors.amber,
-                                    suggestionsDecoration: SuggestionDecoration(
-                                        color: const Color.fromRGBO(3, 74, 140, 1),
-                                        //shape: BoxShape.rectangle,
-                                        padding: const EdgeInsets.all(10),
-                                        border: Border.all(width: 2, color: Colors.amber),
-                                        borderRadius: BorderRadius.circular(0)),
-                                    searchInputDecoration: InputDecoration(
-                                        suffixIcon: SizedBox(
-                                          width: size.width*0.28,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.end,
-                                            children: [
-                                              IconButton(onPressed: (){
-                                                setState(() {
-                                                  //print(subjectlist[index].text.toString());
-                                                  subjectlist.add(TextEditingController());
-
-                                                });
-                                                FocusScope.of(context).requestFocus(subjectf[index]);
-                                              },
-                                                icon: const Icon(Icons.add),
-                                                color: Colors.amber,
-                                                iconSize: size.height*0.04,
-                                              ),
-                                              IconButton(onPressed: (){
-                                                setState(() {
-                                                  if(index!=0){
-                                                    subjectlist.removeAt(index);
-                                                  }
-                                                }
-                                                );
-                                              },
-                                                icon: const Icon(Icons.delete),
-                                                color: Colors.amber,
-                                                iconSize: size.height*0.04,
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        hintText: "Enter Subject Name",
-                                        fillColor: Colors.black,
-                                        filled: true,
-                                        hintStyle: GoogleFonts.openSans(
-                                            color: Colors.grey,
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w500),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderSide: const BorderSide(
-                                            width: 3,
-                                            color: Colors.amber,
-                                          ),
-                                          borderRadius: BorderRadius.circular(30),
-                                        ),
-                                        focusColor: Colors.amber,
-                                        disabledBorder: OutlineInputBorder(
-                                          borderSide: const BorderSide(
-                                            width: 3,
-                                            color: Colors.amber,
-                                          ),
-                                          borderRadius: BorderRadius.circular(30),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderSide: const BorderSide(
-                                            width: 3,
-                                            color: Colors.amber,
-                                          ),
-                                          borderRadius: BorderRadius.circular(30),
-                                        )),
-                                    onSuggestionTap: (value) {
-                                      print(value.searchKey);
-                                  FocusScope.of(context).removeListener;
-
-
-                                    },
-                                    enabled: true,
-                                    hint: "Enter subject Name",
-                                    itemHeight: 50,
-                                    maxSuggestionsInViewPort: 3,
-
-
+                                      fontWeight: FontWeight.w800),
+                                  suggestionStyle: GoogleFonts.openSans(
+                                    color: Colors.amber,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w800,
                                   ),
+                                  marginColor: Colors.amber,
+                                  suggestionsDecoration: SuggestionDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+
+                                        colors: [
+
+                                          const Color.fromRGBO(86, 149, 178, 1),
+
+                                          const Color.fromRGBO(68, 174, 218, 1),
+
+                                          Colors.deepPurple.shade300
+                                        ],
+                                      ),
+                                      //shape: BoxShape.rectangle,
+                                      padding: const EdgeInsets.all(10),
+                                      border: Border.all(width: 2, color: Colors.amber),
+                                      borderRadius: BorderRadius.circular(0)),
+                                  searchInputDecoration: InputDecoration(
+                                      suffixIcon: SizedBox(
+                                        width: size.width*0.28,
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            IconButton(onPressed: (){
+                                              setState(() {
+                                                //print(subjectlist[index].text.toString());
+                                                subjectlist.add(TextEditingController());
+
+                                              });
+                                              FocusScope.of(context).requestFocus(subjectf[index]);
+                                            },
+                                              icon: const Icon(Icons.add),
+                                              color: Colors.white,
+                                              iconSize: size.height*0.04,
+                                            ),
+                                            IconButton(onPressed: (){
+                                              setState(() {
+                                                if(index!=0){
+                                                  subjectlist.removeAt(index);
+                                                }
+                                              }
+                                              );
+                                            },
+                                              icon: const Icon(Icons.delete),
+                                              color: Colors.white,
+                                              iconSize: size.height*0.04,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      hintText: "Enter Subject Name",
+                                      contentPadding: EdgeInsets.only(left:size.height*0.041 ,top: size.height*0.055),
+                                      fillColor: Colors.black26.withOpacity(0.6),
+                                      filled: true,
+                                      hintStyle: GoogleFonts.openSans(
+                                          color: Colors.grey,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500),
+                                      enabledBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(30),
+                                        ),
+                                        borderSide: BorderSide(color: Colors.black12, width: 3),
+                                      ),
+
+                                      focusedBorder: const OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.black, width: 3),
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(30),
+                                        ),
+                                      )
+                                  ),
+                                  onSuggestionTap: (value) {
+                                    print(value.searchKey);
+                                    FocusScope.of(context).removeListener;
+
+
+                                  },
+                                  enabled: true,
+                                  hint: "Enter subject Name",
+                                  itemHeight: 50,
+                                  maxSuggestionsInViewPort: 3,
+
 
                                 ),
 
+                              ),
 
-                              ],
-                            ),
-                          );
-                        },
+
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
                 SizedBox(height: size.height * 0.03),
-                SizedBox(
+                Container(
                   width: size.width*0.9,
                   height: size.height*0.065,
+                  decoration: BoxDecoration(
+                      boxShadow: const [
+                        BoxShadow(
+                            blurRadius: 60,
+                            blurStyle: BlurStyle.outer,
+                            color: Colors.black54,
+                            offset: Offset(1, 1)
+                        )
+                      ],
+                      gradient:const LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.blue, Colors.purpleAccent],
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: Colors.black,width: 2)
+                  ),
 
                   child: ElevatedButton(
                     onPressed: ()
                     async {
-                    for(int i=0;i< subjects.length;i++){
+                      for(int i=0;i< subjectlist.length;i++){
 
-                      subject.add(subjects[i].toString());
-                }
-                       if(
-                           rollno.text.toString().isNotEmpty &&
-                           universityController.text.toString().isNotEmpty &&
-                           courseController.text.toString().isNotEmpty &&
-                           collegeController.text.toString().isNotEmpty &&
-                           yearController.text.toString().isNotEmpty &&
-                           branchController.text.toString().isNotEmpty &&
-                           sectionController.text.toString().isNotEmpty
-                       ){
-                         await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).set(
+                        subject.add(subjectlist[i].text.trim());
+                      }
+                      if(
+                      rollno.text.toString().isNotEmpty &&
+                          universityController.text.toString().isNotEmpty &&
+                          courseController.text.toString().isNotEmpty &&
+                          collegeController.text.toString().isNotEmpty &&
+                          yearController.text.toString().isNotEmpty &&
+                          branchController.text.toString().isNotEmpty &&
+                          sectionController.text.toString().isNotEmpty
+                      ){
+                        await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).update(
 
-                             {
-                               "Rollnumber": rollno.text.trim().toString(),
-                               "University": universityController.text.trim().toString(),
-                               "College": courseController.text.trim().toString(),
-                               "Course": collegeController.text.trim().toString(),
-                               "Year": yearController.text.trim().toString(),
-                               "Branch": branchController.text.trim().toString(),
-                               "Section": sectionController.text.trim().toString(),
-                               "Subject": subject,
-                               "Active":false
-                             }
-                         ).then((value) {
-                           Navigator.pop(context);
-                           Navigator.push(
-                             context,
-                             PageTransition(
-                               child: const SignInScreen(),
-                               type: PageTransitionType.rightToLeftJoined,
-                               duration: const Duration(milliseconds: 400),
-                               alignment: Alignment.bottomCenter,
-                               childCurrent: const StudentDetails(),
-                             ),
-                           );
+                            {
+                              "Rollnumber": rollno.text.trim().toString(),
+                              "University": universityController.text.trim().toString(),
+                              "College": collegeController.text.trim().toString(),
+                              "Course": courseController.text.trim().toString(),
+                              "Year": yearController.text.trim().toString(),
+                              "Branch": branchController.text.trim().toString(),
+                              "Section": sectionController.text.trim().toString(),
+                              "Subject": subject,
+                              "Active":false
+                            }
+                        ).then((value) {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: const SignInScreen(),
+                              type: PageTransitionType.rightToLeftJoined,
+                              duration: const Duration(milliseconds: 400),
+                              alignment: Alignment.bottomCenter,
+                              childCurrent: const StudentDetails(),
+                            ),
+                          );
 
-                           print("Sucessfully uploaded");
-                         }).onError((error, stackTrace) {
-                           print("Error is: $error");
-                           InAppNotifications.instance
-                             ..titleFontSize = 35.0
-                             ..descriptionFontSize = 20.0
-                             ..textColor = Colors.black
-                             ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
-                             ..shadow = true
-                             ..animationStyle = InAppNotificationsAnimationStyle.scale;
-                           InAppNotifications.show(
-                               title: 'Failed',
-                               duration: const Duration(seconds: 2),
-                           description: error.toString().split(']')[1].trim(),
-                           leading: const Icon(
-                           Icons.error_outline_outlined,
-                           color: Colors.red,
-                           size: 55,
-                           ));
-                         });
+                          print("Sucessfully uploaded");
+                        }).onError((error, stackTrace) {
+                          print("Error is: $error");
+                          InAppNotifications.instance
+                            ..titleFontSize = 35.0
+                            ..descriptionFontSize = 20.0
+                            ..textColor = Colors.black
+                            ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
+                            ..shadow = true
+                            ..animationStyle = InAppNotificationsAnimationStyle.scale;
+                          InAppNotifications.show(
+                              title: 'Failed',
+                              duration: const Duration(seconds: 2),
+                              description: error.toString().split(']')[1].trim(),
+                              leading: const Icon(
+                                Icons.error_outline_outlined,
+                                color: Colors.red,
+                                size: 55,
+                              ));
+                        });
 
-                         }
-                       else {
-                         InAppNotifications.instance
-                           ..titleFontSize = 14.0
-                           ..descriptionFontSize = 14.0
-                           ..textColor = Colors.black
-                           ..backgroundColor =
-                           const Color.fromRGBO(150, 150, 150, 1)
-                           ..shadow = true
-                           ..animationStyle =
-                               InAppNotificationsAnimationStyle.scale;
-                         InAppNotifications.show(
-                             title: 'Failed',
-                             duration: const Duration(seconds: 2),
-                             description: "Please fill all the details",
-                             leading: const Icon(
-                               Icons.error_outline_outlined,
-                               color: Colors.red,
-                               size: 20,
-                             ));
-                       }
+                      }
+                      else {
+                        InAppNotifications.instance
+                          ..titleFontSize = 14.0
+                          ..descriptionFontSize = 14.0
+                          ..textColor = Colors.black
+                          ..backgroundColor =
+                          const Color.fromRGBO(150, 150, 150, 1)
+                          ..shadow = true
+                          ..animationStyle =
+                              InAppNotificationsAnimationStyle.scale;
+                        InAppNotifications.show(
+                            title: 'Failed',
+                            duration: const Duration(seconds: 2),
+                            description: "Please fill all the details",
+                            leading: const Icon(
+                              Icons.error_outline_outlined,
+                              color: Colors.red,
+                              size: 20,
+                            ));
+                      }
 
 
 
-                  },
+                    },
 
 
                     style: ElevatedButton.styleFrom(
-                        shape:const StadiumBorder(),
-                      backgroundColor: Colors.amber,
+                      shape:const StadiumBorder(),
+                      backgroundColor: Colors.transparent,
 
                     ),
-                      child: AutoSizeText("Submit",
-                        style: GoogleFonts.openSans(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 23,
-                            color: Colors.black,
-                            shadows:[
-                              const Shadow(color: Colors.red,
-                                  blurRadius: 5,
-                                  offset: Offset(1,1),
-                              ),
-                            ] ,
+                    child: AutoSizeText("Submit",
+                      style: GoogleFonts.openSans(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 23,
+                        color: Colors.black,
+                        shadows:[
+                          const Shadow(color: Colors.black,
 
-
-                        ),
+                            offset: Offset(1,1),
+                          ),
+                        ] ,
 
 
                       ),
+
+
+                    ),
 
                   ),
                 ),
@@ -828,24 +893,24 @@ class _StudentDetailsState extends State<StudentDetails> {
     );
   }
 
-fetchuniversity() async {
-  final ref= await  FirebaseFirestore.instance.collection("University").doc("University").get();
-  university=ref.data()!["University"];
-}
+  fetchuniversity() async {
+    final ref= await  FirebaseFirestore.instance.collection("University").doc("University").get();
+    university=ref.data()!["University"];
+  }
 
 
-fetchcollege(String uni) async {
-  final ref= await  FirebaseFirestore.instance.collection("Colleges").doc(uni).get();
-  setState(() {
-    college= ref.data()!["Colleges"];
-    print(college);
-  });
-}
+  fetchcollege(String uni) async {
+    final ref= await  FirebaseFirestore.instance.collection("Colleges").doc(uni).get();
+    setState(() {
+      college= ref.data()!["Colleges"];
+      print(college);
+    });
+  }
   fetchcourse(String coll) async {
     final ref= await  FirebaseFirestore.instance.collection("Course").doc(coll).get();
-   setState(() {
-     course= ref.data()!["Course"];
-   });
+    setState(() {
+      course= ref.data()!["Course"];
+    });
   }
 
   fetchbranch(String cou) async {

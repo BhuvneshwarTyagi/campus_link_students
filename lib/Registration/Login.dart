@@ -1,11 +1,12 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Registration/signUp.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
-import '../dashboard.dart';
 import '/Constraints.dart';
 import '../Screens/Main_page.dart';
 import 'forgot_password.dart';
@@ -18,11 +19,14 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+
+
+
   bool hide =true;
   //final _key = GlobalKey<FormState>();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  final _textStyle = GoogleFonts.alegreya(fontSize: 28, fontWeight: FontWeight.w900,color: Colors.amber,
+  final _textStyle = GoogleFonts.alegreya(fontSize: 28, fontWeight: FontWeight.w900,color: Colors.white54,
     shadows: <Shadow>[
       const Shadow(
         offset: Offset(1, 1),
@@ -30,19 +34,41 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     ],
   );
+
   String errorString="";
 
   @override
   Widget build(BuildContext context) {
+    Size size=MediaQuery.of(context).size;
     return Scaffold(
         body: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage("assets/images/bg-image.png"),
-                fit: BoxFit.cover
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color.fromRGBO(86, 149, 178, 1),
+                // Color.fromRGBO(86, 149, 178, 1),
+                const Color.fromRGBO(68, 174, 218, 1),
+                //Color.fromRGBO(118, 78, 232, 1),
+                Colors.deepPurple.shade300
+              ],
             ),
+            // gradient: LinearGradient(
+            //   begin: Alignment.topLeft,
+            //   end: Alignment.bottomRight,
+            //   colors: [
+            //
+            //     Color.fromRGBO(45, 87, 118, 1),
+            //
+            //     Color.fromRGBO(45, 87, 118, 1),
+            //     // Color.fromRGBO(68, 174, 218, 1),
+            //     // Color.fromRGBO(149, 117, 205, 1),
+            //
+            //   ],
+            // ),
           ),
           child: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
@@ -65,12 +91,12 @@ class _SignInScreenState extends State<SignInScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Regcon,
-                    border: Border.all(color: Colors.amber),
+                    border: Border.all(color: Colors.black12),
                     boxShadow: const [
                       BoxShadow(
                           blurRadius: 60,
                           blurStyle: BlurStyle.outer,
-                          color: Colors.amberAccent,
+                          color: Colors.black54,
                           offset: Offset(1, 1)
                       )
                     ],
@@ -108,12 +134,12 @@ class _SignInScreenState extends State<SignInScreen> {
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.all(Radius.circular(30)),
-                    border: Border.all(color: Colors.amber,),
+                    border: Border.all(color: Colors.black,),
                     boxShadow: const [
                       BoxShadow(
                           blurRadius: 20,
                           blurStyle: BlurStyle.outer,
-                          color: Colors.amberAccent,
+                          color: Colors.black54,
                           offset: Offset(1, 1)
                       )
                     ],
@@ -124,30 +150,30 @@ class _SignInScreenState extends State<SignInScreen> {
                       obscureText: false,
                       enableSuggestions: true,
                       autocorrect: true,
-                      cursorColor: Colors.amber,
+                      cursorColor: Colors.grey,
                       style: TextStyle(color: Colors.white.withOpacity(0.9)),
                       decoration: InputDecoration(
-                        suffixIcon: IconButton(
+                          suffixIcon: IconButton(
                             onPressed: (){
                               setState(() {
                                 _email.clear();
                               });
-                              },
+                            },
                             icon: const Icon(
-                          Icons.clear_outlined,
-                          color: Colors.amber,
-                        ),
-                        ),
+                              Icons.clear_outlined,
+                              color: Colors.white,
+                            ),
+                          ),
                           prefixIcon: const Icon(
                             Icons.person_outline,
-                            color: Colors.amber,
+                            color: Colors.white,
                           ),
                           label: const Text("Enter Email"),
                           labelStyle: TextStyle(
                               color: Colors.white.withOpacity(0.9)),
                           filled: true,
                           floatingLabelBehavior: FloatingLabelBehavior.never,
-                          fillColor: Colors.black26.withOpacity(0.9),
+                          fillColor: Colors.black26.withOpacity(0.6),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30.0),
                               borderSide: const BorderSide(
@@ -166,12 +192,12 @@ class _SignInScreenState extends State<SignInScreen> {
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.all(Radius.circular(30)),
-                    border: Border.all(color: Colors.amber,),
+                    border: Border.all(color: Colors.black,),
                     boxShadow: const [
                       BoxShadow(
                           blurRadius: 20,
                           blurStyle: BlurStyle.outer,
-                          color: Colors.amberAccent,
+                          color: Colors.black54,
                           offset: Offset(1, 1)
                       )
                     ],
@@ -182,7 +208,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       obscureText: hide,
                       enableSuggestions: false,
                       autocorrect: false,
-                      cursorColor: Colors.amber,
+                      cursorColor: Colors.grey,
                       style: TextStyle(color: Colors.white.withOpacity(0.9)),
                       decoration: InputDecoration(
                         suffixIcon: hide
@@ -193,7 +219,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           });
                         }, icon: const Icon(
                           Icons.visibility_off_outlined,
-                          color: Colors.amber,
+                          color: Colors.white,
                         ))
                             :
                         IconButton(onPressed: (){
@@ -202,24 +228,27 @@ class _SignInScreenState extends State<SignInScreen> {
                           });
                         }, icon: const Icon(
                           Icons.visibility_outlined,
-                          color: Colors.amber,
+                          color: Colors.white,
                         )),
 
-                          prefixIcon: const Icon(
-                            Icons.lock_outline,
-                            color: Colors.amber,
-                          ),
-                          label: const Text("Enter Password"),
-                          labelStyle: TextStyle(
-                              color: Colors.white.withOpacity(0.9)),
-                          filled: true,
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-                          fillColor: Colors.black26.withOpacity(0.9),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                              borderSide: const BorderSide(
-                                  width: 0, style: BorderStyle.none)
-                          )
+                        prefixIcon: const Icon(
+                          Icons.lock_outline,
+                          color: Colors.white,
+                        ),
+                        label: const Text("Enter Password"),
+                        labelStyle: TextStyle(
+                            color: Colors.white.withOpacity(0.9)),
+                        filled: true,
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        fillColor: Colors.black26.withOpacity(0.6),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                          borderSide: const BorderSide(
+                              width: 0, style: BorderStyle.none),
+
+                        ),
+
+
                       ),
                       keyboardType: TextInputType.visiblePassword),
                 ),
@@ -231,63 +260,94 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height*0.06,
+                  height: MediaQuery.of(context).size.height*0.08,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(90),),
+                      gradient:const LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.blue, Colors.purpleAccent],
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: Colors.black54,width: 2)
+                  ),
                   child: ElevatedButton(
-                      onPressed: () async{
-                          String test=await signin(_email.text.trim(), _password.text.trim());
-                          if(!mounted) return;
-                          if(test=="1"){
-
-                            Navigator.pushReplacement(
-                                context,
-                                PageTransition(
-                                    child: const MainPage(),
-                                    type: PageTransitionType.rightToLeftJoined,
-                                    duration: const Duration(milliseconds: 400),
-                                    alignment: Alignment.bottomCenter,
-                                  childCurrent: const SignInScreen(),
-                                ),
-                            );
-                          }
-                          else{
-                            print("I am in");
-                            InAppNotifications.instance
-                              ..titleFontSize = 14.0
-                              ..descriptionFontSize = 14.0
-                              ..textColor = Colors.black
-                              ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
-                              ..shadow = true
-                              ..animationStyle = InAppNotificationsAnimationStyle.scale;
-                            InAppNotifications.show(
-                                title: 'Failed',
-                                duration: const Duration(seconds: 2),
-                                description: test,
-                                leading: const Icon(
-                                  Icons.error_outline_outlined,
+                    onPressed: () async{
+                      final ref=await FirebaseFirestore.instance.collection("Student_record").doc("Email").get();
+                      final student_record=ref.data()!["Email"];
+                      if( student_record!=null && student_record.contains(_email.text.trim())) {
+                        String test = await signin(
+                            _email.text.trim(), _password.text.trim());
+                        if (!mounted) return;
+                        if (test == "1") {
+                          Navigator.pushReplacement(
+                            context,
+                            PageTransition(
+                              child: const MainPage(),
+                              type: PageTransitionType.rightToLeftJoined,
+                              duration: const Duration(milliseconds: 400),
+                              alignment: Alignment.bottomCenter,
+                              childCurrent: const SignInScreen(),
+                            ),
+                          );
+                        }
+                        else {
+                          InAppNotifications.instance
+                            ..titleFontSize = 14.0
+                            ..descriptionFontSize = 14.0
+                            ..textColor = Colors.black
+                            ..backgroundColor = const Color.fromRGBO(190, 190, 190, 1)
+                            ..shadow = true
+                            ..animationStyle = InAppNotificationsAnimationStyle
+                                .scale;
+                          InAppNotifications.show(
+                              title: 'Failed',
+                              duration: const Duration(seconds: 5),
+                              description: test,
+                              leading: AutoSizeText("!",style: GoogleFonts.gfsDidot(
                                   color: Colors.red,
-                                  size: 55,
-                                )
-                            );
-                          }
+                                  fontSize: size.height*0.06,
+                                  fontWeight: FontWeight.w900
+                              ),)
+                          );
+                        }
+                      }
+                      else{
+                        InAppNotifications.instance
+                          ..titleFontSize = 22.0
+                          ..descriptionFontSize = 16.0
+                          ..textColor = Colors.black
+                          ..backgroundColor = const Color.fromRGBO(190, 190, 190, 1)
+                          ..shadow = true
+                          ..animationStyle = InAppNotificationsAnimationStyle.scale;
+                        InAppNotifications.show(
+                            title: 'Failed',
+                            duration: const Duration(seconds: 5),
+                            description: "No such account found",
+                            leading: AutoSizeText("!",style: GoogleFonts.gfsDidot(
+                                color: Colors.red,
+                                fontSize: size.height*0.06,
+                                fontWeight: FontWeight.w900
+                            ),)
+                        );
 
-                      },
+                      }
+
+                    },
 
 
 
                     style: ElevatedButton.styleFrom(
                         shape: const StadiumBorder(),
-                        backgroundColor: Colors.amber,
-                        shadowColor: Colors.amberAccent,
-                        elevation: 30
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.black45,
+                        elevation: 20
 
                     ),
-                      child: const Text("LOG IN", style: TextStyle(
-                            color: Colors.black87,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16
-                        ),),
+                    child: const Text("LOG IN", style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16
+                    ),),
                   ),
                 ),
                 SizedBox(
@@ -297,29 +357,29 @@ class _SignInScreenState extends State<SignInScreen> {
                         .height * 0.03
                 ),
                 Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(context,PageTransition(child: const ForgotPassword(), type: PageTransitionType.rightToLeft,duration:const Duration(milliseconds: 350)));
-                        },
-                        child: const Text("Forgot Password ?", style: TextStyle(
-                            color: Colors.amber,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            shadows: [
-                              Shadow(
-                                  blurRadius: 30,
-                                  offset: Offset(3, 3),
-                                  color: Colors.amberAccent
-                              )
-                            ]
-                        )
-
-                        ),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(context,PageTransition(child: const ForgotPassword(), type: PageTransitionType.rightToLeft,duration:const Duration(milliseconds: 350)));
+                      },
+                      child: const Text("Forgot Password ?", style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          shadows: [
+                            Shadow(
+                                blurRadius: 30,
+                                offset: Offset(3, 3),
+                                color: Colors.black45
+                            )
+                          ]
                       )
-                    ],
-                    ),
+
+                      ),
+                    )
+                  ],
+                ),
 
                 signUpOption(),
 
@@ -335,7 +395,7 @@ class _SignInScreenState extends State<SignInScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text("Don't have account?", style: TextStyle(fontWeight: FontWeight.w400,
-          color: Colors.amberAccent,)
+          color: Colors.black,)
           ,),
         TextButton(
           onPressed: () {
@@ -350,15 +410,15 @@ class _SignInScreenState extends State<SignInScreen> {
             );
           },
           child: const Text("Sign Up", style: TextStyle(
-              color: Colors.amber,
-            fontWeight: FontWeight.bold,
-            shadows: [
-            Shadow(
-    blurRadius: 30,
-    offset: Offset(3, 3),
-    color: Colors.amberAccent
-    )
-    ]
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              shadows: [
+                Shadow(
+                  blurRadius: 30,
+                  offset: Offset(3, 3),
+                  color: Colors.black,
+                )
+              ]
           )
 
           ),

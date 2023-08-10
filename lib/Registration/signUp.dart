@@ -7,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Constraints.dart';
 import 'registration.dart';
-import 'Login.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -22,13 +21,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   final TextEditingController nameController = TextEditingController();
-  final textStyle = GoogleFonts.alegreya(fontSize: 28, fontWeight: FontWeight.w900,color: Colors.amber,
-      shadows: <Shadow>[
-        const Shadow(
-          offset: Offset(1, 1),
-          color: Colors.black,
-        ),
-      ],
+  final textStyle = GoogleFonts.alegreya(fontSize: 28, fontWeight: FontWeight.w900,color: Colors.white54,
+    shadows: <Shadow>[
+      const Shadow(
+        offset: Offset(1, 1),
+        color: Colors.black,
+      ),
+    ],
   );
 
   @override
@@ -38,10 +37,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage("assets/images/bg-image.png"),
-                fit: BoxFit.cover
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color.fromRGBO(86, 149, 178, 1),
+                // Color.fromRGBO(86, 149, 178, 1),
+                Color.fromRGBO(68, 174, 218, 1),
+                //Color.fromRGBO(118, 78, 232, 1),
+                Colors.deepPurple.shade300
+              ],
             ),
           ),
           child: SingleChildScrollView(
@@ -65,15 +71,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Regcon,
-                      border: Border.all(color: Colors.amber),
-                      boxShadow: const [
-                        BoxShadow(
-                            blurRadius: 60,
-                            blurStyle: BlurStyle.outer,
-                            color: Colors.amberAccent,
-                            offset: Offset(1, 1)
-                        )
-                      ],
+                    border: Border.all(color: Colors.black),
+                    boxShadow: const [
+                      BoxShadow(
+                          blurRadius: 60,
+                          blurStyle: BlurStyle.outer,
+                          color: Colors.black54,
+                          offset: Offset(1, 1)
+                      )
+                    ],
                     image: const DecorationImage(
                         image: AssetImage("assets/icon/icon.png")),
                   ),
@@ -111,12 +117,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.all(Radius.circular(30)),
-                        border: Border.all(color: Colors.amber,),
+                        border: Border.all(color: Colors.black,),
                         boxShadow: const [
                           BoxShadow(
                               blurRadius: 20,
                               blurStyle: BlurStyle.outer,
-                              color: Colors.amberAccent,
+                              color: Colors.black54,
                               offset: Offset(1, 1)
                           )
                         ],
@@ -126,7 +132,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           obscureText: false,
                           enableSuggestions: true,
                           autocorrect: true,
-                          cursorColor: Colors.amber,
+                          cursorColor: Colors.grey,
                           style: TextStyle(color: Colors.white.withOpacity(0.9)),
                           decoration: InputDecoration(
                               suffixIcon: IconButton(
@@ -137,19 +143,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 },
                                 icon: const Icon(
                                   Icons.clear_outlined,
-                                  color: Colors.amber,
+                                  color: Colors.white,
                                 ),
                               ),
                               prefixIcon: const Icon(
                                 Icons.person_outline,
-                                color: Colors.amber,
+                                color: Colors.white,
                               ),
                               label: const Text("Your Name"),
                               labelStyle: TextStyle(
                                   color: Colors.white.withOpacity(0.9)),
                               filled: true,
                               floatingLabelBehavior: FloatingLabelBehavior.never,
-                              fillColor: Colors.black26.withOpacity(0.9),
+                              fillColor: Colors.black26.withOpacity(0.6),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30.0),
                                   borderSide: const BorderSide(
@@ -167,12 +173,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.all(Radius.circular(30)),
-                        border: Border.all(color: Colors.amber,),
+                        border: Border.all(color: Colors.black,),
                         boxShadow: const [
                           BoxShadow(
                               blurRadius: 20,
                               blurStyle: BlurStyle.outer,
-                              color: Colors.amberAccent,
+                              color: Colors.black54,
                               offset: Offset(1, 1)
                           )
                         ],
@@ -182,7 +188,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           obscureText: false,
                           enableSuggestions: true,
                           autocorrect: true,
-                          cursorColor: Colors.amber,
+                          cursorColor: Colors.grey,
                           style: TextStyle(color: Colors.white.withOpacity(0.9)),
                           decoration: InputDecoration(
                               suffixIcon: IconButton(
@@ -193,19 +199,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 },
                                 icon: const Icon(
                                   Icons.clear_outlined,
-                                  color: Colors.amber,
+                                  color: Colors.white,
                                 ),
                               ),
                               prefixIcon: const Icon(
                                 Icons.mail_outline_outlined,
-                                color: Colors.amber,
+                                color: Colors.white,
                               ),
                               label: const Text("Enter Email"),
                               labelStyle: TextStyle(
                                   color: Colors.white.withOpacity(0.9)),
                               filled: true,
                               floatingLabelBehavior: FloatingLabelBehavior.never,
-                              fillColor: Colors.black26.withOpacity(0.9),
+                              fillColor: Colors.black26.withOpacity(0.6),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30.0),
                                   borderSide: const BorderSide(
@@ -224,12 +230,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: const BorderRadius.all(Radius.circular(30)),
-                        border: Border.all(color: Colors.amber,),
+                        border: Border.all(color: Colors.black,),
                         boxShadow: const [
                           BoxShadow(
                               blurRadius: 20,
                               blurStyle: BlurStyle.outer,
-                              color: Colors.amberAccent,
+                              color: Colors.black54,
                               offset: Offset(1, 1)
                           )
                         ],
@@ -239,7 +245,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           obscureText: hide,
                           enableSuggestions: false,
                           autocorrect: false,
-                          cursorColor: Colors.amber,
+                          cursorColor: Colors.grey,
                           style: TextStyle(color: Colors.white.withOpacity(0.9)),
                           decoration: InputDecoration(
                               suffixIcon: hide
@@ -248,9 +254,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 setState(() {
                                   hide=!hide;
                                 });
-                              }, icon: const Icon(
-                                Icons.visibility_off_outlined,
-                                color: Colors.amber,
+                              }, icon:  const Icon(
+                                  Icons.visibility_off_outlined,
+                                  color:Colors.white
                               ))
                                   :
                               IconButton(onPressed: (){
@@ -259,19 +265,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 });
                               }, icon: const Icon(
                                 Icons.visibility_outlined,
-                                color: Colors.amber,
+                                color: Colors.white,
                               )),
 
                               prefixIcon: const Icon(
-                                Icons.lock_outline,
-                                color: Colors.amber,
+                                  Icons.lock_outline,
+                                  color: Colors.white
                               ),
                               label: const Text("Enter Password"),
                               labelStyle: TextStyle(
                                   color: Colors.white.withOpacity(0.9)),
                               filled: true,
                               floatingLabelBehavior: FloatingLabelBehavior.never,
-                              fillColor: Colors.black26.withOpacity(0.9),
+                              fillColor: Colors.black26.withOpacity(0.6),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(30.0),
                                   borderSide: const BorderSide(
@@ -288,36 +294,45 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height*0.06,
+                      height: MediaQuery.of(context).size.height*0.08,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(90),),
+                          gradient:const LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Colors.blue, Colors.purpleAccent],
+                          ),
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(color: Colors.black54,width: 2)
+                      ),
                       child: ElevatedButton(
                         onPressed: () async{
-                            if(nameController.text.trim().isNotEmpty){
-                              String temp = await signin(email.text.trim(), password.text.trim());
-                              if(temp=='1'){
-                                InAppNotifications.instance
-                                  ..titleFontSize = 14.0
-                                  ..descriptionFontSize = 14.0
-                                  ..textColor = Colors.black
-                                  ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
-                                  ..shadow = true
-                                  ..animationStyle = InAppNotificationsAnimationStyle.scale;
-                                InAppNotifications.show(
-                                    title: 'Successfull',
-                                    duration: const Duration(seconds: 2),
-                                    description: 'Your account is created successfuly',
-                                    leading: const Icon(
-                                      Icons.error_outline_outlined,
-                                      color: Colors.red,
-                                      size: 55,
-                                    )
-                                );
-                                await FirebaseFirestore.instance.collection("Students").doc(email.text.trim()).set({
-                                  "Email" : email.text.trim(),
-                                  "Name" : nameController.text.trim()
-                                });
-                                 Navigator.push(
+                          if(nameController.text.trim().isNotEmpty){
+                            String temp = await signin(email.text.trim(), password.text.trim());
+                            if(temp=='1'){
+                              InAppNotifications.instance
+                                ..titleFontSize = 22.0
+                                ..descriptionFontSize = 16.0
+                                ..textColor = Colors.black
+                                ..backgroundColor = const Color.fromRGBO(190, 190, 190, 1)
+                                ..shadow = true
+                                ..animationStyle = InAppNotificationsAnimationStyle.scale;
+                              InAppNotifications.show(
+                                  title: 'Successfull',
+                                  duration: const Duration(seconds: 5),
+                                  description: 'Your account is created successfuly',
+                                  leading: const Icon(
+                                    Icons.check_circle_outline,
+                                    color: Colors.green,
+                                    size: 48,
+                                  )
+                              );
+                              await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).set({
+                                "Email" : email.text.trim().toString(),
+                                "Name" : nameController.text.trim().toString()
+                              });
+                              await FirebaseFirestore.instance.collection("Student_record").doc("Email").update({
+                                "Email" : FieldValue.arrayUnion([email.text.trim().toString()]),
+                              }).whenComplete(() => Navigator.push(
                                   context,
                                   PageTransition(
                                     child: const StudentDetails(),
@@ -326,61 +341,63 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     childCurrent: const SignUpScreen(),
                                   )
 
-                                 );
-                              }
+                              ));
 
 
-                              else{
-                                InAppNotifications.instance
-                                  ..titleFontSize = 14.0
-                                  ..descriptionFontSize = 14.0
-                                  ..textColor = Colors.black
-                                  ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
-                                  ..shadow = true
-                                  ..animationStyle = InAppNotificationsAnimationStyle.scale;
-                                InAppNotifications.show(
-                                    title: 'Failed',
-                                    duration: const Duration(seconds: 2),
-                                    description: temp,
-                                    leading: const Icon(
-                                      Icons.error_outline_outlined,
-                                      color: Colors.red,
-                                      size: 55,
-                                    )
-                                );
-                              }
                             }
+
+
                             else{
                               InAppNotifications.instance
                                 ..titleFontSize = 14.0
                                 ..descriptionFontSize = 14.0
                                 ..textColor = Colors.black
-                                ..backgroundColor =
-                                const Color.fromRGBO(150, 150, 150, 1)
+                                ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
                                 ..shadow = true
-                                ..animationStyle =
-                                    InAppNotificationsAnimationStyle.scale;
+                                ..animationStyle = InAppNotificationsAnimationStyle.scale;
                               InAppNotifications.show(
                                   title: 'Failed',
                                   duration: const Duration(seconds: 2),
-                                  description: "Name can not be empty",
+                                  description: temp,
                                   leading: const Icon(
                                     Icons.error_outline_outlined,
                                     color: Colors.red,
                                     size: 55,
-                                  ));
+                                  )
+                              );
                             }
+                          }
+                          else{
+                            InAppNotifications.instance
+                              ..titleFontSize = 14.0
+                              ..descriptionFontSize = 14.0
+                              ..textColor = Colors.black
+                              ..backgroundColor =
+                              const Color.fromRGBO(150, 150, 150, 1)
+                              ..shadow = true
+                              ..animationStyle =
+                                  InAppNotificationsAnimationStyle.scale;
+                            InAppNotifications.show(
+                                title: 'Failed',
+                                duration: const Duration(seconds: 2),
+                                description: "Name can not be empty",
+                                leading: const Icon(
+                                  Icons.error_outline_outlined,
+                                  color: Colors.red,
+                                  size: 55,
+                                ));
+                          }
 
                         },
                         style: ElevatedButton.styleFrom(
-                          shape: const StadiumBorder(),
-                          backgroundColor: Colors.amber,
-                          shadowColor: Colors.amberAccent,
-                          elevation: 30
+                            shape: const StadiumBorder(),
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.black45,
+                            elevation: 50
 
                         ),
                         child: const Text("Sign Up", style: TextStyle(
-                            color: Colors.black87,
+                            color: Colors.black,
                             fontWeight: FontWeight.bold,
                             fontSize: 16
                         ),),
@@ -408,7 +425,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       children: [
         const Text("Already have an account?", style: TextStyle(
           fontWeight: FontWeight.w400,
-          color: Colors.amberAccent,)
+          color: Colors.black,)
           ,),
         TextButton(
 
@@ -416,15 +433,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Navigator.pop(context);
           },
           child: const Text("Sign In", style: TextStyle(
-              color: Colors.amber,
+              color: Colors.black,
               fontWeight: FontWeight.bold,
-            shadows: [
-              Shadow(
-                blurRadius: 30,
-                offset: Offset(3, 3),
-                color: Colors.amberAccent
-              )
-            ]
+              shadows: [
+                Shadow(
+                    blurRadius: 30,
+                    offset: Offset(3, 3),
+                    color: Colors.black12
+                )
+              ]
           )
 
           ),

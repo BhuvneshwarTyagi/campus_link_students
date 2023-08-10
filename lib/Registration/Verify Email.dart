@@ -14,70 +14,90 @@ class _VerifyState extends State<Verify> {
   final textStyle = GoogleFonts.alegreya(fontSize: 17, fontWeight: FontWeight.w900,color: Colors.black);
   @override
   Widget build(BuildContext context) {
+    Size size=MediaQuery.of(context).size;
     return Scaffold(
         body: Container(
-          padding: EdgeInsets.all(MediaQuery.of(context).size.width*0.01),
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage("assets/images/bg-image.png"),
-                fit: BoxFit.cover
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              
-              AnimatedTextKit(
-                isRepeatingAnimation: true,
-                animatedTexts: [
-                  WavyAnimatedText('Verification Link is sent to your email. Please verify',
-                      textStyle: textStyle,
-                      textAlign: TextAlign.center
-                  ),
+            padding: EdgeInsets.all(MediaQuery.of(context).size.width*0.01),
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            decoration:  BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color.fromRGBO(86, 149, 178, 1),
 
+                  const Color.fromRGBO(68, 174, 218, 1),
+
+                  Colors.deepPurple.shade300
                 ],
-                repeatForever: true,
               ),
-              SizedBox(
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height * 0.4,
-              ),
-              const CircularProgressIndicator(color: Colors.green),
-              SizedBox(
-                height: MediaQuery
-                    .of(context)
-                    .size
-                    .height * 0.1,
-              ),
-              ElevatedButton(
-                  onPressed: () async{
-                    await FirebaseAuth.instance.signOut();
-                    },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(100, 100, 100, 1)
-                ),
-                  child: Text('Verified',style: textStyle,),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height*0.05,
-                child: AnimatedTextKit(
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+
+                AnimatedTextKit(
                   isRepeatingAnimation: true,
                   animatedTexts: [
-                    RotateAnimatedText("Synchronizing with the server. Please wait",
-                      textAlign: TextAlign.center,
-                      textStyle: textStyle
-                    )
+                    WavyAnimatedText('Verification Link is sent to your email. Please verify',
+                        textStyle: textStyle,
+                        textAlign: TextAlign.center
+                    ),
 
                   ],
                   repeatForever: true,
                 ),
-              ),
-            ],
-          )
+                SizedBox(
+                  height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * 0.4,
+                ),
+                const CircularProgressIndicator(color: Colors.black),
+                SizedBox(
+                  height: MediaQuery
+                      .of(context)
+                      .size
+                      .height * 0.1,
+                ),
+                Container(
+                  height: size.height*0.05,
+                  decoration: BoxDecoration(
+                      gradient:const LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.blue, Colors.purpleAccent],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.black54,width: 2)
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () async{
+                      await FirebaseAuth.instance.signOut();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                    ),
+                    child: Text('Verified',style: textStyle,),
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height*0.05,
+                  child: AnimatedTextKit(
+                    isRepeatingAnimation: true,
+                    animatedTexts: [
+                      RotateAnimatedText("Synchronizing with the server. Please wait",
+                          textAlign: TextAlign.center,
+                          textStyle: textStyle
+                      )
+
+                    ],
+                    repeatForever: true,
+                  ),
+                ),
+              ],
+            )
         )
     );
   }
