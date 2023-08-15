@@ -29,10 +29,11 @@ class database
 
 
     Position x = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
+        desiredAccuracy: LocationAccuracy.high);
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
-    print("location is:$x");
+    print("location is:${x.latitude}");
+    print("location is:${x.longitude}");
 
     return GeoPoint(x.latitude, x.longitude);
   }
