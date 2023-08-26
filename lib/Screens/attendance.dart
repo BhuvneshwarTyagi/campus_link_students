@@ -1,3 +1,5 @@
+
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -45,255 +47,292 @@ class _AttendanceState extends State<Attendance> {
 
   List<dynamic>subjects = [];
   List<dynamic>attendance_count=[];
+ List<dynamic>absent_count=[];
+ List<dynamic>percent_of_attendance=[];
+
   Widget build(BuildContext context) {
     Size size = MediaQuery
         .of(context)
         .size;
-    return Scaffold(
-      backgroundColor: Colors.black,
+    return Container(
+      decoration: BoxDecoration(
+        // image: DecorationImage(image: AssetImage("assets/images/bg-image.png"),fit: BoxFit.fill
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            // Colors.black,
+            // Colors.deepPurple,
+            // Colors.purpleAccent
+            const Color.fromRGBO(86, 149, 178, 1),
 
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 10,
-        //shadowColor: Colors.amberAccent,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(
-            bottomRight: Radius.circular(20.0),
-            bottomLeft: Radius.circular(20.0))),
-        title: Center(
-          child: AutoSizeText(
-            "My Attendance",
-            style: GoogleFonts.bungeeSpice(
-                color: Colors.amber,
-                fontSize: 26,
-                fontWeight: FontWeight.w500
-            ),
-          ),
+            const Color.fromRGBO(68, 174, 218, 1),
+            //Color.fromRGBO(118, 78, 232, 1),
+            Colors.deepPurple.shade300
+          ],
         ),
-
       ),
-      body: Container(
-        width: size.width * 1,
-        height: size.height * 1,
-        decoration: const BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage("assets/images/bg-image.png"),
-                fit: BoxFit.cover
-            )
-        ),
-        child:SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: SearchField(
-                  controller: monthcontroller,
-                  suggestionItemDecoration: SuggestionDecoration(),
-                  key: const Key("Search key"),
-                  suggestions:
-                  months.map((e) => SearchFieldListItem(e)).toList(),
-                  searchStyle: GoogleFonts.exo(
-                      color: Colors.amber,
+      child: Scaffold(
+        extendBody: true,
+        backgroundColor: Colors.transparent,
+        body: Container(
+          width: size.width * 1,
+          height: size.height * 1,
+          child:SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SearchField(
+
+                    controller: monthcontroller,
+                    suggestionItemDecoration: SuggestionDecoration(),
+                    key: const Key("Search key"),
+                    suggestions:
+                    months.map((e) => SearchFieldListItem(e)).toList(),
+                    searchStyle: GoogleFonts.exo(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800),
+                    suggestionStyle: GoogleFonts.exo(
+                      color: Colors.white,
                       fontSize: 15,
-                      fontWeight: FontWeight.w800),
-                  suggestionStyle: GoogleFonts.exo(
-                    color: Colors.amber,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w800,
+                    ),
+                    marginColor: Colors.blue,
+                    suggestionsDecoration: SuggestionDecoration(
+                        color:  Colors.blue,
+                        //shape: BoxShape.rectangle,
+                        padding: const EdgeInsets.all(10),
+                        border: Border.all(width: 2, color: Colors.white),
+                        borderRadius: BorderRadius.circular(0)),
+                    searchInputDecoration: InputDecoration(
+
+                        fillColor: Colors.blueAccent,
+                        filled: true,
+                        hintStyle: GoogleFonts.exo(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            width: 3,
+                            color: Colors.white,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusColor: Colors.white,
+                        disabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            width: 3,
+                            color: Colors.white,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                            width: 3,
+                            color: Colors.white,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        )),
+                    onSuggestionTap: (value) {
+                      print(value.searchKey);
+
+                      print(monthcontroller.text.toString());
+                      setState(() {
+                        selected_month=monthcontroller.text.toString();
+                        month_number=months.indexOf(selected_month)+1;
+                        count_attendance();
+                      });
+                      print(month_number);
+                      //FocusScope.of(context).requestFocus();
+                    },
+                    enabled: true,
+                    hint: "${months[DateTime.now().month-1]}",
+                    itemHeight: 50,
+                    maxSuggestionsInViewPort: 3,
                   ),
-                  marginColor: Colors.amber,
-                  suggestionsDecoration: SuggestionDecoration(
-                      color:  Colors.black,
-                      //shape: BoxShape.rectangle,
-                      padding: const EdgeInsets.all(10),
-                      border: Border.all(width: 2, color: Colors.amber),
-                      borderRadius: BorderRadius.circular(0)),
-                  searchInputDecoration: InputDecoration(
-                      hintText: "Select Month",
-                      fillColor: Colors.black,
-                      filled: true,
-                      hintStyle: GoogleFonts.exo(
-                          color: Colors.grey,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          width: 3,
-                          color: Colors.amber,
-                        ),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      focusColor: Colors.amber,
-                      disabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          width: 3,
-                          color: Colors.amber,
-                        ),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          width: 3,
-                          color: Colors.amber,
-                        ),
-                        borderRadius: BorderRadius.circular(30),
-                      )),
-                  onSuggestionTap: (value) {
-                    print(value.searchKey);
-
-                    print(monthcontroller.text.toString());
-                    setState(() {
-                      selected_month=monthcontroller.text.toString();
-                      month_number=months.indexOf(selected_month)+1;
-                      count_attendance();
-                    });
-
-                    print(month_number);
-
-
-
-
-                  },
-                  enabled: true,
-                  hint: "Select Months",
-                  itemHeight: 50,
-                  maxSuggestionsInViewPort: 3,
                 ),
-              ),
-              SizedBox(
-                height: size.height*0.22*attendance_count.length,
-                child: ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  itemCount: attendance_count.length,
-                  itemBuilder: (context, index) {
+                attendance_count.isNotEmpty && absent_count.isNotEmpty
+                    ?
+                SizedBox(
+                  height: size.height,
+                  child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: attendance_count.length,
+                    itemBuilder: (context, index) {
 
-                    return Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Container(
-                        height: size.height * 0.18,
-                        width: size.width * 0.8,
-                        decoration: BoxDecoration(
-                            color: Colors.black87,
-                            boxShadow: const [
-                              BoxShadow(
-                                  blurRadius: 5, spreadRadius: 2,
-                                  color: Colors.amberAccent,
-                                  offset: Offset(1, 1)
-                              )
-                            ],
-                            border: Border.all(color: Colors.amberAccent, width: 2),
-                            borderRadius: BorderRadius.circular(15.0)
+                      return Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Container(
+                          height: size.height * 0.24,
+                          width: size.width * 0.8,
+                          decoration: BoxDecoration(
+                              color: Colors.blueAccent,
+                              border: Border.all(color: Colors.amberAccent, width: 2),
+                              borderRadius: BorderRadius.circular(15.0)
+                          ),
+                          child: Card(
+                            elevation: 40,
+                            color: Colors.transparent,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  height: size.height * 0.02,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: size.width * 0.05,
+                                    ),
+                                    AutoSizeText(
+                                      "Subject  :",
+                                      style: GoogleFonts.exo(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: size.width * 0.05,
+
+                                    ),
+                                    AutoSizeText(
+                                      subjects[index],
+                                      style: GoogleFonts.exo(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.014,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: size.width * 0.05,
+                                    ),
+                                    AutoSizeText(
+                                      "Present  :",
+                                      style: GoogleFonts.exo(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: size.width * 0.05,
+
+                                    ),
+                                    AutoSizeText(
+                                      attendance_count[index],
+                                      style: GoogleFonts.exo(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white
+                                      ),
+
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.014,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: size.width * 0.05,
+                                    ),
+                                    AutoSizeText(
+                                      "Absent  :",
+                                      style: GoogleFonts.exo(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: size.width * 0.05,
+
+                                    ),
+                                    AutoSizeText(
+                                      "${absent_count[index]}",
+                                      style: GoogleFonts.exo(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white
+                                      ),
+
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.014,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: size.width * 0.05,
+                                    ),
+                                    AutoSizeText(
+                                      "Attendance :",
+                                      style: GoogleFonts.exo(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: size.width * 0.05,
+
+                                    ),
+                                    AutoSizeText(
+                                      "${percent_of_attendance[index]} %",
+                                      style: GoogleFonts.exo(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white
+                                      ),
+
+                                    ),
+                                  ],
+                                ),
+
+                              ],
+                            ),
+                          ),
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: size.height * 0.02,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width: size.width * 0.05,
-                                ),
-                                AutoSizeText(
-                                  "Subject  :",
-                                  style: GoogleFonts.exo(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.amber
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: size.width * 0.05,
+                      );
+                    },)
 
-                                ),
-                                AutoSizeText(
-                                  subjects[index],
-                                  style: GoogleFonts.exo(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.amber
-                                  ),
+                )
+                    :
+                Align(
+                  alignment: Alignment.center,
+                  child: AutoSizeText(
+                    "No Data found Corresponding this month",
+                    style: GoogleFonts.exo(
+                        fontSize: 18,
+                        color: Colors.black87
+                    ),
 
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: size.height * 0.014,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width: size.width * 0.05,
-                                ),
-                                AutoSizeText(
-                                  "Present  :",
-                                  style: GoogleFonts.exo(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.amber
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: size.width * 0.05,
-
-                                ),
-                                AutoSizeText(
-                                  attendance_count[index],
-                                  style: GoogleFonts.exo(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.amber
-                                  ),
-
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: size.height * 0.014,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width: size.width * 0.05,
-                                ),
-                                AutoSizeText(
-                                  "Absent  :",
-                                  style: GoogleFonts.exo(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.amber
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: size.width * 0.05,
-
-                                ),
-                                AutoSizeText(
-                                  "",
-                                  style: GoogleFonts.exo(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.amber
-                                  ),
-
-                                ),
-                              ],
-                            ),
-
-                          ],
-                        ),
-                      ),
-                    );
-                  },),
-              )
-            ],
-          ),
-        )
+                  ),
+                )
+              ],
+            ),
+          )
+        ),
       ),
     );
   }
@@ -308,31 +347,38 @@ Future count_attendance() async {
 
     }
   print(currentMon);
-    attendance_count.clear();
-    final ref = await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).get();
+    final ref_1 = await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).get();
     setState(() {
-      subjects=ref.data()?["Subject"];
+      subjects=ref_1.data()?["Subject"];
       attendance_count.clear();
+      absent_count.clear();
     });
 
-    //print(subjects);
-    //print("I am in");
+  print(subjects);
     for (var i in subjects) {
       final ref=await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).collection("Attendance").doc("$i-$month_number").get();
-       //print("$i-$month_number");
-
+       if(ref.data()?.length==null)
+         {
+           print("....${ref.data()?.length}");
+         }
         setState(() {
-          attendance_count.add(ref.data()?["count_attendance"].toString());
-          print(attendance_count);
+          if(ref.data()?.length !=null)
+            {
+              attendance_count.add(ref.data()?["count_attendance"].toString());
+              absent_count.add(ref_1.data()?["$i-total-lectures"] -
+                  ref.data()?["count_attendance"]);
+              double percent=(ref.data()?["count_attendance"]/ref_1.data()?["$i-total-lectures"])*100;
+              percent_of_attendance.add(percent.toStringAsPrecision(4));
+            }
+
+
 
         });
-        if(ref.data()?["count_attendance"].toString()==null)
-          {
-            attendance_count.clear();
-          }
+        print("..........${attendance_count.length}");
+        print(percent_of_attendance);
 
     }
-      //print("\n\n\n\n$attendance_count");
+
 }
 
 }

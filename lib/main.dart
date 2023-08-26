@@ -12,6 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:workmanager/workmanager.dart';
 import 'Connection.dart';
+import 'Registration/navigation.dart';
+import 'Registration/no_internet.dart';
+import 'Screens/looding_screen.dart';
 
 const fetchBackground = "fetchBackground";
 @pragma('vm:entry-point')

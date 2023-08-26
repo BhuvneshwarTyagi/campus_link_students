@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:chat_bubbles/bubbles/bubble_special_three.dart';
 import 'package:chat_bubbles/date_chips/date_chip.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +17,16 @@ class chat_page extends StatefulWidget {
 class _chat_pageState extends State<chat_page> {
   TextEditingController messageController = TextEditingController();
   final ScrollController scrollController= ScrollController();
+  late final groupimage;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    groupImageFetch();
+  }
   @override
   Widget build(BuildContext context) {
     Size size=MediaQuery.of(context).size;
-    print(widget.channel);
     return Scaffold(
       backgroundColor: Colors.black26,
       appBar: AppBar(
@@ -47,7 +52,7 @@ class _chat_pageState extends State<chat_page> {
               // backgroundColor: Colors.teal.shade300,
               child: usermodel["Profile_URL"]==null?
               AutoSizeText(
-                usermodel["Name"].toString().substring(0, 1),
+                widget.channel.split(" ")[6].substring(0, 1),
                 style: GoogleFonts.exo(
                   color: Colors.black54,
                     fontSize: size.height * 0.03,
@@ -60,7 +65,7 @@ class _chat_pageState extends State<chat_page> {
               width: size.width*0.03,
             ),
             AutoSizeText(
-              usermodel["Name"],
+              widget.channel.split(" ")[6],
               style: GoogleFonts.exo(
                 color: Colors.white
               ),
@@ -72,56 +77,51 @@ class _chat_pageState extends State<chat_page> {
               icon: Icon(Icons.more_vert,size: size.height*0.04,))
         ],
       ),
-      body: Container(
-        height: size.height,
-        //color: Colors.black26,
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection("Messages").doc(widget.channel).snapshots(),
-          builder: (context, snapshot) {
-            List<dynamic> message = snapshot.data?.data()!["Messages"]==null ? [] : snapshot.data?.data()!["Messages"].reversed.toList();
-           return
-             snapshot.hasData
-                 ?
-             message.isNotEmpty
-                 ?
-             ListView.builder(
-               reverse: true,
-               scrollDirection: Axis.vertical,
-               itemCount: message.length,
-               controller: scrollController,
-               itemBuilder: (context, index) {
-                 return
-                   Column(
-                     mainAxisAlignment: MainAxisAlignment.end,
-                     children: [
-                       index!=message.length-1
-                           ?
-                       message[index+1]["Stamp"].toDate().day==message[index]["Stamp"].toDate().day
-                           ?
-                       const SizedBox()
-                           :
-                       date(message[index]["Stamp"].toDate())
-                           :
-                       date(message[index]["Stamp"].toDate())
-                       ,
-                       message[index]["UID"]==usermodel["Email"]
-                           ?
-                       bubble("${message[index]["text"]}","${message[index]["Name"]}",  message[index]["Stamp"].toDate(), true,size)
-                           :
-                       bubble("${message[index]["text"]}", "${message[index]["Name"]}",  message[index]["Stamp"].toDate(), false,size)
-                     ],
-                   );
-               },
-             )
-                 :
-             const SizedBox()
-                 :
-             const Center(
-                   child: CircularProgressIndicator(),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection("Messages").doc(widget.channel).snapshots(),
+        builder: (context, snapshot) {
+          List<dynamic> message = snapshot.data?.data()!["Messages"]==null ? [] : snapshot.data?.data()!["Messages"].reversed.toList();
+         return
+           snapshot.hasData
+               ?
+           message.isNotEmpty
+               ?
+           ListView.builder(
+             reverse: true,
+             scrollDirection: Axis.vertical,
+             itemCount: message.length,
+             controller: scrollController,
+             itemBuilder: (context, index) {
+               return
+                 Column(
+                   mainAxisAlignment: MainAxisAlignment.end,
+                   children: [
+                     index!=message.length-1
+                         ?
+                     message[index+1]["Stamp"].toDate().day==message[index]["Stamp"].toDate().day
+                         ?
+                     const SizedBox()
+                         :
+                     date(message[index]["Stamp"].toDate())
+                         :
+                     date(message[index]["Stamp"].toDate())
+                     ,
+                     message[index]["UID"]==usermodel["Email"]
+                         ?
+                     bubble("${message[index]["text"]}","${message[index]["Name"]}","${message[index]["Image"]}",  message[index]["Stamp"].toDate(), true,size)
+                         :
+                     bubble("${message[index]["text"]}", "${message[index]["Name"]}","${message[index]["Image"]}",  message[index]["Stamp"].toDate(), false,size)
+                   ],
                  );
-        },
-        ),
-
+             },
+           )
+               :
+           const SizedBox()
+               :
+           const Center(
+                 child: CircularProgressIndicator(),
+               );
+      },
       ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -178,6 +178,7 @@ class _chat_pageState extends State<chat_page> {
                         "UID": usermodel["Email"].toString(),
                         "text": messageController.text.trim().toString(),
                         "Stamp": DateTime.now(),
+                        "Image": usermodel["Profile_URL"]
                       }])
                     },
                     ).whenComplete(() async {
@@ -247,7 +248,7 @@ class _chat_pageState extends State<chat_page> {
     ),
     );
   }  */
-  Widget bubble(String text,String name, DateTime stamp,bool sender,Size size) {
+  Widget bubble(String text,String name,String image, DateTime stamp,bool sender,Size size) {
     return Align(
       alignment: sender ?
       Alignment.centerRight
@@ -271,15 +272,15 @@ class _chat_pageState extends State<chat_page> {
               SizedBox(width: size.width * 0.02),
               CircleAvatar(
                 radius: size.width * 0.045,
-                backgroundImage:usermodel["Profile_URL"]!=null?
+                backgroundImage: image.isNotEmpty ?
 
-                NetworkImage(usermodel["Profile_URL"])
+                NetworkImage(image)
                     :
                 null,
                 // backgroundColor: Colors.teal.shade300,
-                child: usermodel["Profile_URL"]==null?
+                child: image.isEmpty?
                 AutoSizeText(
-                  usermodel["Name"].toString().substring(0, 1),
+                  name.substring(0, 1),
                   style: GoogleFonts.exo(
                       fontSize: size.height * 0.01,
                       fontWeight: FontWeight.w600),
@@ -375,5 +376,13 @@ class _chat_pageState extends State<chat_page> {
       color: Colors.white,
 
     );
+  }
+  
+  void groupImageFetch() async{
+    await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).get().then((value){
+      setState(() {
+        groupimage=value.data()!["GroupImage"];
+      });
+    });
   }
 }

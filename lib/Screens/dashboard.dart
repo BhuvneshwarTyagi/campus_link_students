@@ -1,8 +1,3 @@
-
-
-
-
-
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
@@ -40,7 +35,7 @@ class _StudentDashBoardState extends State<StudentDashBoard> {
     setState(() {
       fect_name_email();
       getToken();
-      print(usermodel);
+
     });
     super.initState();
   }
@@ -151,15 +146,8 @@ class _StudentDashBoardState extends State<StudentDashBoard> {
 
                               Reference image_directory=reference.child("User_profile");
 
-                              String channel_perfix = "${usermodel["University"].toString().trim().split(" ")[0]} "
-                                  "${usermodel["College"].toString().trim().split(" ")[0]} "
-                                  "${usermodel["Course"].toString().trim().split(" ")[0]} "
-                                  "${usermodel["Branch"].toString().trim().split(" ")[0]} "
-                                  "${usermodel["Year"].toString().trim().split(" ")[0]} "
-                                  "${usermodel["Section"].toString().trim().split(" ")[0]} ";
 
-
-                              Reference image_folder=image_directory.child(channel_perfix);
+                              Reference image_folder=image_directory.child("${usermodel["Email"]}");
 
                               await image_folder.putFile(File(file!.path)).whenComplete(() async {
                                 String download_url=await image_folder.getDownloadURL();
@@ -204,7 +192,7 @@ class _StudentDashBoardState extends State<StudentDashBoard> {
               ),
             ),
             body: SingleChildScrollView(
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               child: Container(
                 height: size.height * 1,
                 width: size.width * 1,
@@ -261,7 +249,7 @@ class _StudentDashBoardState extends State<StudentDashBoard> {
                                       ),
                                     ),
                                     AutoSizeText(
-                                      name_email![0],
+                                      name_email[0],
                                       style: GoogleFonts.exo(
                                           fontSize: size.height * 0.03,
                                           fontWeight: FontWeight.w500,
@@ -690,9 +678,11 @@ class _StudentDashBoardState extends State<StudentDashBoard> {
                 .collection("Messages")
                 .doc(channel_perfix+s.toString().trim().split(" ")[0])
                 .update({
-                "Token" : FieldValue.arrayUnion([token])
-              });
+              "Token" : FieldValue.arrayUnion([token])
+            });
           });}
+      if(mounted){
+        setState(() {});      }
     },
     );
 
