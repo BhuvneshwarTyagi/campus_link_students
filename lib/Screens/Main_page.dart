@@ -24,15 +24,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   var mtoken;
-  @override
-  void initState() {
-    // TODO: implement initState
-    setState(() {
-      getToken();
-
-    });
-    super.initState();
-  }
+  bool loaded=false;
   @override
   Widget build(BuildContext context) {
     return  StreamBuilder<User?>(
@@ -47,7 +39,17 @@ class _MainPageState extends State<MainPage> {
         {
 
           if(FirebaseAuth.instance.currentUser!.emailVerified){
-             return const navigation();
+            !loaded?
+                getToken()
+                  :
+                null;
+
+             return  loaded?
+               const navigation()
+                 :
+                const Center(child: CircularProgressIndicator(
+                  backgroundColor: Colors.transparent,
+                  color: Colors.red,));
           }
           else{
             FirebaseAuth.instance.currentUser!.sendEmailVerification();
@@ -63,7 +65,9 @@ class _MainPageState extends State<MainPage> {
   }
 
   void getToken() async {
-    await FirebaseMessaging.instance.getToken().then((token) async {
+    String token;
+    /*await FirebaseMessaging.instance.getToken().then((token) async {
+      token =token;
       await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
         'Token' : token,
       });
@@ -81,12 +85,17 @@ class _MainPageState extends State<MainPage> {
         await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
           usermodel=value.data()!;
         }).whenComplete(() async {
+          setState(() {
+            loaded=true;
+          });
+          print(usermodel);
           String channel_perfix = "${usermodel["University"].toString().trim().split(" ")[0]} "
               "${usermodel["College"].toString().trim().split(" ")[0]} "
               "${usermodel["Course"].toString().trim().split(" ")[0]} "
               "${usermodel["Branch"].toString().trim().split(" ")[0]} "
               "${usermodel["Year"].toString().trim().split(" ")[0]} "
               "${usermodel["Section"].toString().trim().split(" ")[0]} ";
+          print("................$channel_perfix");
           await FirebaseFirestore
               .instance
               .collection("Messages")
@@ -98,7 +107,15 @@ class _MainPageState extends State<MainPage> {
       if(mounted){
         setState(() {});      }
     },
-    );
+    );*/
+    await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
+      usermodel=value.data()!;
+    }).whenComplete(() {
+      setState(() {
+
+        loaded=true;
+      });
+    });
 
   }
 

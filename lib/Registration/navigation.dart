@@ -284,7 +284,9 @@ class _navigationState extends State<navigation> {
 
       )
           :
-          Center(child: const CircularProgressIndicator())
+          Center(child: const CircularProgressIndicator(
+            color: Colors.blue,
+          ))
       );
   }
 
