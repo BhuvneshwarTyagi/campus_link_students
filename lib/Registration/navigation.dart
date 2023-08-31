@@ -21,7 +21,7 @@ class navigation extends StatefulWidget {
 }
 
 class _navigationState extends State<navigation> {
-  List<Widget>All_Pages=[const Assignment(),const Notes(),const Attendance(),const Marks(),performance(child: null,)];
+  List<Widget>All_Pages=[const Assignment(),const Notes(),const Attendance(),const Marks(),performance()];
   List<String>cuu_title=["Assingments","Notes","Attendeance","Marks","Performance"];
   var curr_index=3;
 

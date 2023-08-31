@@ -3,11 +3,10 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class performance extends StatefulWidget {
-  final Widget child;
 
   var key;
 
-  performance({this.key, required this.child}) : super(key: key);
+  performance({this.key,}) : super(key: key);
 
   _performanceState createState() => _performanceState();
 }
@@ -165,7 +164,7 @@ class _performanceState extends State<performance> {
           appBar: AppBar(
             backgroundColor: Color(0xff1976d2),
             //backgroundColor: Color(0xff308e1c),
-            bottom: TabBar(
+            bottom: const TabBar(
               indicatorColor: Color(0xff9962D0),
               tabs: [
                 Tab(
@@ -181,23 +180,21 @@ class _performanceState extends State<performance> {
             children: [
               Padding(
                 padding: EdgeInsets.all(8.0),
-                child: Container(
-                  child: Center(
-                    child: Column(
-                      children: <Widget>[
-                        Text(
-                          'SO₂ emissions, by world region (in million tonnes)',style: TextStyle(fontSize: 24.0,fontWeight: FontWeight.bold),),
-                        Expanded(
-                          child: charts.BarChart(
-                            _seriesData,
-                            animate: true,
-                            barGroupingType: charts.BarGroupingType.grouped,
-                            //behaviors: [new charts.SeriesLegend()],
-                            animationDuration: Duration(seconds: 5),
-                          ),
+                child: Center(
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        'SO₂ emissions, by world region (in million tonnes)',style: TextStyle(fontSize: 24.0,fontWeight: FontWeight.bold),),
+                      Expanded(
+                        child: charts.BarChart(
+                          _seriesData,
+                          animate: true,
+                          barGroupingType: charts.BarGroupingType.grouped,
+                          //behaviors: [new charts.SeriesLegend()],
+                          animationDuration: const Duration(seconds: 5),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -216,11 +213,11 @@ class _performanceState extends State<performance> {
                               animate: true,
                               animationDuration: Duration(seconds: 5),
                               behaviors: [
-                                new charts.DatumLegend(
+                                charts.DatumLegend(
                                   outsideJustification: charts.OutsideJustification.endDrawArea,
                                   horizontalFirst: false,
                                   desiredMaxRows: 2,
-                                  cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                                  cellPadding: const EdgeInsets.only(right: 4.0, bottom: 4.0),
                                   entryTextStyle: charts.TextStyleSpec(
                                       color: charts.MaterialPalette.purple.shadeDefault,
                                       fontFamily: 'Georgia',

@@ -20,7 +20,7 @@ callbackDispatcher() async {
 
   try{
     GeoPoint current_location=const GeoPoint(0, 0);
-    print(".......Starting workmanager executeTask.....");
+    print(".......Starting workmanager executeTask  1.....");
     Workmanager().executeTask((taskName, inputData) async {
       WidgetsFlutterBinding.ensureInitialized();
       await Firebase.initializeApp();
@@ -54,6 +54,38 @@ callbackDispatcher() async {
     print("..........error.........\n.........$e........");
   }
 }
+@pragma('vm:entry-point')
+callbackDispatcherfordelevery() async {
+
+  try{
+    print(".......Starting workmanager executeTask   2.....");
+    Workmanager().executeTask((taskName, inputData) async {
+      try{
+        WidgetsFlutterBinding.ensureInitialized();
+        await Firebase.initializeApp();
+        print(".............doc ${inputData?["channel"]}");
+        print(".............stamp ${inputData?["stamp"]}");
+        await FirebaseFirestore.instance.collection("Messages").doc(inputData?["channel"]).update(
+            {
+              "${inputData?["stamp"]}_delevered" : FieldValue.arrayUnion([
+                {
+                  "Email" : FirebaseAuth.instance.currentUser?.email,
+                  "Stamp" : DateTime.now()
+                }
+              ])
+            }
+        );
+      }
+      catch (e){
+        print("fucking error............................. $e ");
+      }
+      return Future.value(true);
+    });
+
+  }catch (e){
+    print("..........error.........\n.........$e........");
+  }
+}
 
 
 @pragma('vm:entry-point')
@@ -73,6 +105,21 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         callbackDispatcher,
       );
       await Workmanager().registerOneOffTask("attendance", "Attendance");
+    }catch(e){
+      print("........Error from background handler.........");
+    }
+  }
+  print(message.data["msg"]);
+  if(message.data["msg"]=="true"){
+    try{
+      Workmanager().initialize(
+        callbackDispatcherfordelevery,
+      );
+      print(".......workmanager");
+      await Workmanager().registerOneOffTask("Develered", "Delevery",inputData: {
+        "channel" :message.data["channel"],
+        "stamp" : message.data["stamp"].toString().split(".")[0]
+      });
     }catch(e){
       print("........Error from background handler.........");
     }
@@ -156,7 +203,6 @@ class _MyAppState extends State<MyApp> {
         case AppLifecycleState.detached:
           NotificationServices().setUserState(userState: UserState.Offline);
           break;
-        case AppLifecycleState.hidden:
           // TODO: Handle this case.
       }
     } catch (e) {
