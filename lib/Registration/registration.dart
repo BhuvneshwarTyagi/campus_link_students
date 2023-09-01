@@ -720,7 +720,9 @@ class _StudentDetailsState extends State<StudentDetails> {
                             subjectlist[i].text.trim().isNotEmpty) {
                           Map<String, dynamic> map = {
                             "Read_Count": 0,
-                            "Last_Active": DateTime.now()
+                            "Last_Active": DateTime.now(),
+                            "Active" : false,
+                            "Token" : FieldValue.arrayUnion([usermodel["Token"]])
                           };
                           await FirebaseFirestore.instance
                               .collection("Messages")
@@ -742,8 +744,6 @@ class _StudentDetailsState extends State<StudentDetails> {
                                 "Image": usermodel["Profile_URL"]
                               }
                             ]),
-                            "Token": FieldValue.arrayUnion(
-                                [usermodel["Token"]]),
                             "Members": FieldValue.arrayUnion([
                               {
                                 "Email ": "${usermodel["Email"]}",

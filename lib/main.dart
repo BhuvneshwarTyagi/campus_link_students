@@ -70,7 +70,7 @@ callbackDispatcherfordelevery() async {
         await Firebase.initializeApp();
         print(".............doc ${inputData?["channel"]}");
         print(".............stamp ${inputData?["stamp"]}");
-        await FirebaseFirestore.instance.collection("Messages").doc(inputData?["channel"]).update(
+        await FirebaseFirestore.instance.collection("Messages").doc(inputData?["channel"]).collection("Messages_Detail").doc("Messages_Detail").update(
             {
               "${inputData?["stamp"]}_delevered" : FieldValue.arrayUnion([
                 {

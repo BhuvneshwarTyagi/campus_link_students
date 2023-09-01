@@ -83,19 +83,19 @@ class _MainPageState extends State<MainPage> {
         await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
           usermodel=value.data()!;
         }).whenComplete(() async {
-          String channel_perfix = "${usermodel["University"].toString().trim().split(" ")[0]} "
-              "${usermodel["College"].toString().trim().split(" ")[0]} "
-              "${usermodel["Course"].toString().trim().split(" ")[0]} "
-              "${usermodel["Branch"].toString().trim().split(" ")[0]} "
-              "${usermodel["Year"].toString().trim().split(" ")[0]} "
-              "${usermodel["Section"].toString().trim().split(" ")[0]} ";
-          await FirebaseFirestore
-              .instance
-              .collection("Messages")
-              .doc(channel_perfix+s.toString().trim().split(" ")[0])
-              .update({
-            "Token" : FieldValue.arrayUnion([token])
-          });
+          // String channel_perfix = "${usermodel["University"].toString().trim().split(" ")[0]} "
+          //     "${usermodel["College"].toString().trim().split(" ")[0]} "
+          //     "${usermodel["Course"].toString().trim().split(" ")[0]} "
+          //     "${usermodel["Branch"].toString().trim().split(" ")[0]} "
+          //     "${usermodel["Year"].toString().trim().split(" ")[0]} "
+          //     "${usermodel["Section"].toString().trim().split(" ")[0]}";
+          // await FirebaseFirestore
+          //     .instance
+          //     .collection("Messages")
+          //     .doc(channel_perfix+s.toString().trim().split(" ")[0])
+          //     .update({
+          //   "Token" : FieldValue.arrayUnion([token])
+          // });
         });}
       if(mounted){
         setState(() {
