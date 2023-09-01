@@ -88,29 +88,16 @@ class _Profile_pageState extends State<Profile_page> {
                   child: Column(
                       children: [
                         SizedBox(
-                          height: size.height * 0.04,
-                        ),
-
-
-
-
-                        AutoSizeText(
-                          "Profile photo",
-                          style: GoogleFonts.exo(
-                              fontSize: size.height * 0.023,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.015,
+                          height: size.height * 0.02,
                         ),
                         Center(
                           child: CircleAvatar(
-                            radius: size.height * 0.08,
+                            radius: size.height * 0.09,
 
                             backgroundImage: usermodel["Profile_URL"] != null
                                 ? NetworkImage(usermodel["Profile_URL"])
                                 : null,
-                            // backgroundColor: Colors.teal.shade300,
+                             backgroundColor: Colors.grey,
                             child: usermodel["Profile_URL"] == null
                                 ? AutoSizeText(
                               usermodel["Name"].toString().substring(0, 1),
@@ -121,6 +108,26 @@ class _Profile_pageState extends State<Profile_page> {
                                 : null,
                           ),
                         ),
+                        Padding(
+                          padding: EdgeInsets.all(size.height * 0.022),
+                          child: AutoSizeText(
+                            usermodel["Name"],
+                            style: GoogleFonts.exo(
+                                fontSize: size.height * 0.023,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(size.height * 0.001),
+                          child: AutoSizeText(
+                            usermodel["Email"],
+                            style: GoogleFonts.exo(
+                                fontSize: size.height * 0.023,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        SizedBox(
+                      height: size.height * 0.022),
                       ]),
                 ),
                 Container(
@@ -138,72 +145,7 @@ class _Profile_pageState extends State<Profile_page> {
                       //     controller: _Controller
                       // ),
                       SizedBox(
-                        height: size.height*0.06,
-                      ),
-                      SizedBox(
-                        height: size.height * 0.15,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-
-                            Padding(
-
-                              padding: EdgeInsets.all(size.height * 0.01),
-                              child: AutoSizeText("Name :",
-                                  style: GoogleFonts.exo(
-                                    fontSize: size.height * 0.02,
-                                    fontWeight: FontWeight.w400,
-                                  )),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(size.height * 0.01),
-                              child: AutoSizeText(
-                                usermodel["Name"],
-                                style: GoogleFonts.exo(
-                                    fontSize: size.height * 0.023,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                            Divider(
-                              color: Colors.black,
-                              thickness: size.height * 0.0014,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: size.height * 0.15,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(size.height * 0.01),
-                              child: AutoSizeText("Email:",
-                                  style: GoogleFonts.exo(
-                                    fontSize: size.height * 0.02,
-                                    fontWeight: FontWeight.w400,
-                                  )),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(size.height * 0.01),
-                              child: AutoSizeText(
-                                usermodel["Email"],
-                                style: GoogleFonts.exo(
-                                    fontSize: size.height * 0.023,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                            Divider(
-                              color: Colors.black,
-                              thickness: size.height * 0.0014,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: size.height * 0.15,
+                        height: size.height * 0.13,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,7 +175,7 @@ class _Profile_pageState extends State<Profile_page> {
                         ),
                       ),
                       SizedBox(
-                        height: size.height * 0.15,
+                        height: size.height * 0.13,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,7 +205,7 @@ class _Profile_pageState extends State<Profile_page> {
                         ),
                       ),
                       SizedBox(
-                        height: size.height * 0.15,
+                        height: size.height * 0.13,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,7 +235,7 @@ class _Profile_pageState extends State<Profile_page> {
                         ),
                       ),
                       SizedBox(
-                        height: size.height * 0.15,
+                        height: size.height * 0.13,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -323,7 +265,7 @@ class _Profile_pageState extends State<Profile_page> {
                         ),
                       ),
                       SizedBox(
-                        height: size.height * 0.15,
+                        height: size.height * 0.13,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,

@@ -9,6 +9,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'loadingscreen.dart';
+
 class Marks extends StatefulWidget {
   const Marks({Key? key}) : super(key: key);
 
@@ -320,7 +322,7 @@ class _MarksState extends State<Marks> {
                    );
                  },)
               :
-              const CircularProgressIndicator();
+              const loading( text: "Data is Retrieving from server please wait");
             },
           ),
         ),

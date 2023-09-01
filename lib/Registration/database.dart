@@ -28,7 +28,8 @@ class database
 
     Position x = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
-      forceAndroidLocationManager: true,
+      //forceAndroidLocationManager: false,
+      timeLimit: const Duration(seconds: 5),
     );
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
@@ -65,5 +66,27 @@ class database
     }catch(e){
 
     }
+  }
+  int getDaysInMonth(int year, int month) {
+    if (month == DateTime.february) {
+      final bool isLeapYear =
+          (year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0);
+      return isLeapYear ? 29 : 28;
+    }
+    const List<int> daysInMonth = <int>[
+      31,
+      -1,
+      31,
+      30,
+      31,
+      30,
+      31,
+      31,
+      30,
+      31,
+      30,
+      31
+    ];
+    return daysInMonth[month - 1];
   }
 }

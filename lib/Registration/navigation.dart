@@ -8,6 +8,7 @@ import 'package:page_transition/page_transition.dart';
 import '../Screens/assignment.dart';
 import '../Screens/attendance.dart';
 import '../Screens/chat_list.dart';
+import '../Screens/loadingscreen.dart';
 import '../Screens/marks.dart';
 import '../Screens/notes.dart';
 import '../Screens/performance.dart';
@@ -22,6 +23,7 @@ class navigation extends StatefulWidget {
 
 class _navigationState extends State<navigation> {
   List<Widget>All_Pages=[const Assignment(),const Notes(),const Attendance(),const Marks(),performance()];
+  PageController page_controller=PageController();
   List<String>cuu_title=["Assingments","Notes","Attendeance","Marks","Performance"];
   var curr_index=3;
 
@@ -49,6 +51,7 @@ class _navigationState extends State<navigation> {
       ),
       child: usermodel.isNotEmpty?
       Scaffold(
+
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           elevation: 0,
@@ -218,6 +221,7 @@ class _navigationState extends State<navigation> {
         bottomNavigationBar: CurvedNavigationBar(
           backgroundColor: Colors.transparent,
           color:Colors.black38,
+
           animationCurve: Curves.easeInOut,
           items:  <Widget>[
             Container(
@@ -274,15 +278,28 @@ class _navigationState extends State<navigation> {
             //Handle button tap
             setState(() {
               curr_index=index;
-            });
+              page_controller.animateToPage(curr_index,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.linear);
+                    },
+            );
             print(curr_index);
           },
         ),
-        body: All_Pages[curr_index],
+        body: PageView(
+          controller: page_controller,
+          children: [
+            const Assignment(),
+            const Notes(),
+            const Attendance(),
+            const Marks(),
+            performance()
+          ],
+        ),
 
       )
           :
-          Center(child: const CircularProgressIndicator())
+      const loading( text: "Data is Retrieving from server please wait")
       );
   }
 

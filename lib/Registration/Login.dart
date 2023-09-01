@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
+import '../Screens/loadingscreen.dart';
 import '/Constraints.dart';
 import '../Screens/Main_page.dart';
 import 'forgot_password.dart';
@@ -258,8 +259,11 @@ class _SignInScreenState extends State<SignInScreen> {
                       final ref=await FirebaseFirestore.instance.collection("Student_record").doc("Email").get();
                       final student_record=ref.data()!["Email"];
                       if( student_record!=null && student_record.contains(_email.text.trim())) {
+
                         String test = await signin(
-                            _email.text.trim(), _password.text.trim());
+                            _email.text.trim(), _password.text.trim()).whenComplete(() {
+                              Navigator.pop(context);
+                        });
                         if (!mounted) return;
                         if (test == "1") {
                           Navigator.pushReplacement(

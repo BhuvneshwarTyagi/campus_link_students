@@ -9,6 +9,7 @@ import '../Constraints.dart';
 import '../Registration/Verify Email.dart';
 import '../Registration/navigation.dart';
 import 'dashboard.dart';
+import 'loadingscreen.dart';
 
 
 
@@ -24,15 +25,8 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   var mtoken;
-  @override
-  void initState() {
-    // TODO: implement initState
-    setState(() {
-      getToken();
+  bool loaded =false;
 
-    });
-    super.initState();
-  }
   @override
   Widget build(BuildContext context) {
     return  StreamBuilder<User?>(
@@ -47,7 +41,15 @@ class _MainPageState extends State<MainPage> {
         {
 
           if(FirebaseAuth.instance.currentUser!.emailVerified){
-             return const navigation();
+            !loaded?
+            getToken()
+            :
+                null;
+
+             return  loaded?
+             const navigation()
+             :
+              const loading( text: "Data is Retrieving from server please wait");
           }
           else{
             FirebaseAuth.instance.currentUser!.sendEmailVerification();
@@ -96,11 +98,24 @@ class _MainPageState extends State<MainPage> {
           });
         });}
       if(mounted){
-        setState(() {});      }
+        setState(() {
+          loaded=true;
+        });      }
     },
     );
 
   }
+
+Future<void> fetch_userdata()
+async {
+  await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
+    usermodel=value.data()!;
+  }).whenComplete(() {
+    setState(() {
+      loaded=true;
+    });
+  });
+}
 
 
 

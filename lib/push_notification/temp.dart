@@ -24,11 +24,12 @@ class CurrentLocationManager{
 
   Future<bool> askForLocationAlwaysPermission() async {
     bool granted = await Permission.locationAlways.isGranted;
+    print("...........$granted");
   if (!granted) {
     granted =
         await Permission.locationAlways.request() == PermissionStatus.granted;
   }
-
+    print("...........back from permission");
   return granted;
   }
 
@@ -37,7 +38,7 @@ class CurrentLocationManager{
     if (!await isLocationAlwaysGranted()) {
       await askForLocationAlwaysPermission();
     }
-
+    await LocationManager().start();
     locationSubscription?.cancel();
     locationSubscription = LocationManager().locationStream.listen(onData);
     await LocationManager().start();

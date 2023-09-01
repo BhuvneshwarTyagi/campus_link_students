@@ -30,9 +30,11 @@ callbackDispatcher() async {
       print(".......complete asking For Location Always Permission .....");
       print(".......Starting Location  .....");
       CurrentLocationManager().start();
+
       print("....... Location started .....");
       print("....... fetching current Location  .....");
       current_location=await database().getloc();
+      CurrentLocationManager().stop();
       // current_location=await CurrentLocationManager().getCurrentLocation();
       print(".......  current Location  fetched ${current_location.longitude} .....");
       print("....... Uploading location to firebase  .....");
@@ -41,12 +43,15 @@ callbackDispatcher() async {
           .doc(FirebaseAuth.instance.currentUser!.email)
           .update({
         "Location": GeoPoint(double.parse(current_location.latitude.toStringAsPrecision(21)), double.parse(current_location.longitude.toStringAsPrecision(21))),
-        "Active":true
+        "Active": true
           }).whenComplete(() {
         print("Start()");
-        CurrentLocationManager().stop();}
+        CurrentLocationManager().stop();
+
+          }
       );
       print("....... location uploaded to firebase  .....");
+      Workmanager().cancelByUniqueName("${inputData?["Stamp"]}");
       return Future.value(true);
     });
 
@@ -104,7 +109,9 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       Workmanager().initialize(
         callbackDispatcher,
       );
-      await Workmanager().registerOneOffTask("attendance", "Attendance");
+      String stamp=DateTime.now().toString();
+      await Workmanager().registerOneOffTask(stamp, "Attendance",inputData: {"Stamp":stamp});
+
     }catch(e){
       print("........Error from background handler.........");
     }
