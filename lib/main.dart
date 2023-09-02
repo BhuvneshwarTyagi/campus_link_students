@@ -157,6 +157,56 @@ Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
       print("........Error from onmessage handler.........");
     }
   }
+  if(message.data["msg"]=="true"){
+    await FirebaseFirestore.instance.collection("Messages").doc(message.data["channel"]).collection("Messages_Detail").doc("Messages_Detail").update(
+        {
+          "${message.data["stamp"].toString().split(".")[0]}_delevered" : FieldValue.arrayUnion([
+            {
+              "Email" : FirebaseAuth.instance.currentUser?.email,
+              "Stamp" : DateTime.now()
+            }
+          ])
+        }
+    );
+  }
+}
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingonmessageOpenedAppHandler(RemoteMessage message) async {
+  if (kDebugMode) {
+    print("Handling a onmessage message");
+  }
+
+  print(".............From onmessage.............");
+
+  NotificationServices.display(message);
+
+  if(message.data["body"]=="Attendance Initialized"){
+    print("error before enter");
+    try{
+      GeoPoint current_location=await database().getloc();
+      await FirebaseFirestore.instance
+          .collection("Students")
+          .doc(FirebaseAuth.instance.currentUser!.email)
+          .update({
+        "Location": current_location,
+        "Active":true
+      });
+    }catch(e){
+      print("........Error from onmessage handler.........");
+    }
+  }
+  if(message.data["msg"]=="true"){
+    await FirebaseFirestore.instance.collection("Messages").doc(message.data["channel"]).collection("Messages_Detail").doc("Messages_Detail").update(
+        {
+          "${message.data["stamp"].toString().split(".")[0]}_delevered" : FieldValue.arrayUnion([
+            {
+              "Email" : FirebaseAuth.instance.currentUser?.email,
+              "Stamp" : DateTime.now()
+            }
+          ])
+        }
+    );
+  }
 }
 
 void main() async{
@@ -190,6 +240,7 @@ class _MyAppState extends State<MyApp> {
     FirebaseMessaging.onMessage.listen(firebaseMessagingonmessageHandler);
 
     FirebaseMessaging.onBackgroundMessage.call(firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onMessageOpenedApp.listen(firebaseMessagingonmessageOpenedAppHandler);
 
   }
 

@@ -746,7 +746,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                             ]),
                             "Members": FieldValue.arrayUnion([
                               {
-                                "Email ": "${usermodel["Email"]}",
+                                "Email": "${usermodel["Email"]}",
                                 "Post": "Students"
                               }
                             ]),
