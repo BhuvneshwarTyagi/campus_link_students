@@ -1179,7 +1179,7 @@ class _chat_pageState extends State<chat_page> {
       }
     }
     else{
-      print("..................if");
+      print("..................else");
       await FirebaseFirestore.instance
           .collection("Messages")
           .doc(widget.channel)
