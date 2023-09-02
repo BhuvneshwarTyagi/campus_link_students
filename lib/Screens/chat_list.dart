@@ -35,7 +35,10 @@ class _chatsystemState extends State<chatsystem> {
         ),
         title: const Text("Campus Link"),
       ),
-      body: StreamBuilder(
+      body:
+         ! no_subjects
+        ?
+      StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection("Students")
             .doc(usermodel["Email"])
@@ -159,7 +162,13 @@ class _chatsystemState extends State<chatsystem> {
                   child: CircularProgressIndicator(),
                 );
         },
-      ),
+      )
+             :
+         SizedBox(
+           width: size.width*1,
+           height: size.height*1,
+           child: Text("No Group created.... "),
+         )
     );
   }
 }

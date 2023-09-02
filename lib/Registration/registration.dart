@@ -1,6 +1,8 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:campus_link_student/Screens/loadingscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -50,6 +52,7 @@ class _StudentDetailsState extends State<StudentDetails> {
 
   List<String> subject = [];
 
+
   @override
   void initState() {
     // TODO: implement initState
@@ -87,7 +90,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                 AnimatedTextKit(
                   animatedTexts: [
                     WavyAnimatedText(
-                      "Student Details",
+                      "Please Fill Your Details",
                       textStyle: GoogleFonts.openSans(
                         color: Colors.white54,
                         fontSize: 25,
@@ -708,6 +711,16 @@ class _StudentDetailsState extends State<StudentDetails> {
                   ),
                   child: ElevatedButton(
                     onPressed: () async {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          child: const loading(text: 'Data is Proceed Please Wait'),
+                          type: PageTransitionType.bottomToTop,
+                          duration: const Duration(milliseconds: 400),
+                          alignment: Alignment.bottomCenter,
+                          childCurrent: const StudentDetails(),
+                        ),
+                      );
                       for (int i = 0; i < subjectlist.length; i++) {
                         subject.add(subjectlist[i].text.trim());
 
@@ -746,6 +759,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                         }
                       }
 
+
                       if (rollno.text.toString().isNotEmpty &&
                           universityController.text.toString().isNotEmpty &&
                           courseController.text.toString().isNotEmpty &&
@@ -769,18 +783,29 @@ class _StudentDetailsState extends State<StudentDetails> {
                           "Active": false
                         }).then((value) {
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                              child: const SignInScreen(),
-                              type: PageTransitionType.rightToLeftJoined,
-                              duration: const Duration(milliseconds: 400),
-                              alignment: Alignment.bottomCenter,
-                              childCurrent: const StudentDetails(),
-                            ),
-                          );
 
-                          print("Sucessfully uploaded");
+                          // Creating Channel for students group
+                          Navigator.pop(context);
+                          InAppNotifications.instance
+                            ..titleFontSize = 20.0
+                            ..descriptionFontSize = 16.0
+                            ..textColor = Colors.black
+                            ..backgroundColor =
+                            const Color.fromRGBO(150, 150, 150, 1)
+                            ..shadow = true
+                            ..animationStyle =
+                                InAppNotificationsAnimationStyle.scale;
+                          InAppNotifications.show(
+                              title: 'Details',
+                              duration: const Duration(seconds: 2),
+                              description: "Successfully added",
+                              leading: const Icon(
+                                Icons.error_outline_outlined,
+                                color: Colors.red,
+                                size: 25,
+                              ));
+
+                          print("Successfully uploaded");
                         }).onError((error, stackTrace) {
                           print("Error is: $error");
                           InAppNotifications.instance
@@ -804,6 +829,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                               ));
                         });
                       } else {
+                        Navigator.pop(context);
                         InAppNotifications.instance
                           ..titleFontSize = 14.0
                           ..descriptionFontSize = 14.0

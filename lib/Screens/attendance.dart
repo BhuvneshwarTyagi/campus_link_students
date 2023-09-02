@@ -1,15 +1,20 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Constraints.dart';
+import 'package:campus_link_student/Screens/loadingscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:searchfield/searchfield.dart';
 
 
 import '../Registration/database.dart';
+
+var absent_count = 0;
+var total_lecture = 0;
+double percentage=0;
+var attendance_count = 0;
 
 class Attendance extends StatefulWidget {
   const Attendance({Key? key}) : super(key: key);
@@ -46,6 +51,7 @@ class _AttendanceState extends State<Attendance> {
     "November",
     "December"
   ];
+
   TextEditingController Subject_Controller = TextEditingController();
 
   List<dynamic> _subjects = usermodel["Subject"];
@@ -53,16 +59,29 @@ class _AttendanceState extends State<Attendance> {
 
   String selected_month = "";
   var month_number = -1;
-  var attendance_count = 0;
-  var absent_count = 0;
-  var total_lecture = 0;
-  double percentage=0;
+
 
   List<bool> selected =List.filled(6, false);
   bool attendance_data = false;
   var previous_index = -1;
 
+
+  // Chart Data
+
+  //pai chart data
+  Map<String, double> dataMap = {
+    "Present": 5,
+    "Absent": 3,
+
+  };
+  final colorList = <Color>[
+    Colors.indigo,
+    Colors.purpleAccent
+  ];
+
+
   Widget build(BuildContext context) {
+    int touchedIndex=-1;
     Size size = MediaQuery.of(context).size;
     return Container(
         decoration: BoxDecoration(
@@ -108,7 +127,7 @@ class _AttendanceState extends State<Attendance> {
                                   children: [
                                     InkWell(
                                       onTap: () {
-                                        var pre_index = index;
+                                        var preIndex = index;
                                         setState(() {
                                           if(previous_index!=-1)
                                           {
@@ -158,13 +177,13 @@ class _AttendanceState extends State<Attendance> {
                                       height: size.height * 0.008,
                                     ),
                                     AutoSizeText("${_subjects[index]}",
-                                    style: GoogleFonts.openSans(
-                                      color:selected[index]
-                                          ?
-                                      Colors.white
-                                          :
+                                      style: GoogleFonts.openSans(
+                                          color:selected[index]
+                                              ?
+                                          Colors.white
+                                              :
                                           Colors.black87
-                                    ),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -316,10 +335,10 @@ class _AttendanceState extends State<Attendance> {
                             child: TextField(
                               controller: start_date_controller,
                               onTap: () async {
-                                final start_date = await _selectDate(context)
+                                final startdate = await _selectDate(context)
                                     .whenComplete(() {});
                                 setState(() {
-                                  startDate = start_date;
+                                  startDate = startdate;
                                   print("......................$startDate");
                                   start_date_controller.text =
                                       startDate.toString().substring(0, 10);
@@ -451,128 +470,281 @@ class _AttendanceState extends State<Attendance> {
                         ],
                       ),
                     ),
+                    Divider(
+                      color: Colors.black,
+                      height: MediaQuery.of(context).size.height*0.06,
+                      thickness: MediaQuery.of(context).size.height*0.001,
+                    ),
                     attendance_data
                         ?
-                    SizedBox(
-                      height: size.height,
-                      width: size.width,
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: size.height * 0.03,
-                          ),
-                          Container(
-                              width: size.width * 0.9,
-                              height: size.height * 0.31,
-                              decoration: BoxDecoration(
-                                  color: Colors.blueAccent,
-                                  border: Border.all(
-                                      color: Colors.amberAccent,
-                                      width: 2),
-                                  borderRadius:
-                                  BorderRadius.circular(15.0)),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.center,
+                    Column(
+                      children: [
+                        SizedBox(
+                          height: size.height * 0.03,
+                        ),
+                        Container(
+                            width: size.width * 0.9,
+                            height: size.height * 0.31,
+                            decoration: BoxDecoration(
+                                color: Colors.blueAccent,
+                                border: Border.all(
+                                    color: Colors.amberAccent,
+                                    width: 2),
+                                borderRadius:
+                                BorderRadius.circular(15.0)),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment:
+                                MainAxisAlignment.center,
+                                crossAxisAlignment:
+                                CrossAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: size.width * 0.055,
+                                      ),
+                                      AutoSizeText("Subject : ",
+                                          style: GoogleFonts.openSans(
+                                              color: Colors.white,
+                                              fontSize:
+                                              size.height * 0.026)),
+                                      SizedBox(
+                                        width: size.width * 0.02,
+                                      ),
+                                      AutoSizeText(
+                                          " ${selected_subject}",
+                                          style: GoogleFonts.openSans(
+                                              color: Colors.white,
+                                              fontSize:
+                                              size.height * 0.026)),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.02,
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: size.width * 0.055,
+                                      ),
+                                      AutoSizeText("Present : ",
+                                          style: GoogleFonts.openSans(
+                                              color: Colors.white,
+                                              fontSize:
+                                              size.height * 0.026)),
+                                      SizedBox(
+                                        height: size.height * 0.02,
+                                      ),
+                                      AutoSizeText(" $attendance_count",
+                                          style: GoogleFonts.openSans(
+                                              color: Colors.white,
+                                              fontSize:
+                                              size.height * 0.026)),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.02,
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: size.width * 0.055,
+                                      ),
+                                      AutoSizeText("Absent : ",
+                                          style: GoogleFonts.openSans(
+                                              color: Colors.white,
+                                              fontSize:
+                                              size.height * 0.026)),
+                                      SizedBox(
+                                        height: size.height * 0.02,
+                                      ),
+                                      AutoSizeText(" $absent_count",
+                                          style: GoogleFonts.openSans(
+                                              color: Colors.white,
+                                              fontSize:
+                                              size.height * 0.026)),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.02,
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: size.width * 0.055,
+                                      ),
+                                      AutoSizeText("Total Lecture : ",
+                                          style: GoogleFonts.openSans(
+                                              color: Colors.white,
+                                              fontSize:
+                                              size.height * 0.026)),
+                                      SizedBox(
+                                        height: size.height * 0.02,
+                                      ),
+                                      AutoSizeText(" $total_lecture",
+                                          style: GoogleFonts.openSans(
+                                              color: Colors.white,
+                                              fontSize:
+                                              size.height * 0.026)),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            )),
+                        SizedBox(
+                          height: size.height * 0.042,
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Container(
+                              height: size.height*0.48,
+                              width: size.width*0.45,
+                              child: PieChart(
+                                PieChartData(
+                                  /*pieTouchData: PieTouchData(
+                                      touchCallback: (_, pieTouchResponse ) {
+                                        var pieTouchResponse;
+                                        setState(() {
+                                          if (pieTouchResponse.touchInput is FlLongPressEnd ||
+                                              pieTouchResponse.touchInput is FlPanEndEvent) {
+                                            touchedIndex = -1;
+                                          } else {
+                                            touchedIndex = pieTouchResponse.touchedSectionIndex;
+                                          }
+                                        });
+                                      },)*/
+                                    borderData: FlBorderData(
+                                      show: false,
+                                    ),
+                                    sectionsSpace: 10,
+                                    centerSpaceRadius: 65,
+                                    sections: SectionData(context)
+                                ),
+                              ),
+                            ),
+                            Column(
+                              children: [
+                                Row(
                                   children: [
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width: size.width * 0.055,
-                                        ),
-                                        AutoSizeText("Subject : ",
-                                            style: GoogleFonts.openSans(
-                                                color: Colors.white,
-                                                fontSize:
-                                                size.height * 0.026)),
-                                        SizedBox(
-                                          width: size.width * 0.02,
-                                        ),
-                                        AutoSizeText(
-                                            " ${selected_subject}",
-                                            style: GoogleFonts.openSans(
-                                                color: Colors.white,
-                                                fontSize:
-                                                size.height * 0.026)),
-                                      ],
+                                    Container(
+                                      height:size.height*0.02 ,
+                                      width:size.width*0.04,
+                                      decoration: const BoxDecoration(
+                                          color: Colors.greenAccent,
+                                          shape: BoxShape.circle
+                                      ),
                                     ),
-                                    SizedBox(
-                                      height: size.height * 0.02,
+                                    AutoSizeText(
+                                      "\t\t\t Present",
+                                      style: GoogleFonts.openSans(
+                                          color: Colors.greenAccent,
+                                          fontSize: size.height*0.025,
+                                          fontWeight: FontWeight.w600
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: size.height*0.01,
+                                ),
+                                Row(
+                                  children: [
+                                    Container(
+                                      height:size.height*0.02 ,
+                                      width:size.width*0.04,
+                                      decoration: const BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle
+                                      ),
                                     ),
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width: size.width * 0.055,
-                                        ),
-                                        AutoSizeText("Present : ",
-                                            style: GoogleFonts.openSans(
-                                                color: Colors.white,
-                                                fontSize:
-                                                size.height * 0.026)),
-                                        SizedBox(
-                                          height: size.height * 0.02,
-                                        ),
-                                        AutoSizeText(" $attendance_count",
-                                            style: GoogleFonts.openSans(
-                                                color: Colors.white,
-                                                fontSize:
-                                                size.height * 0.026)),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: size.height * 0.02,
-                                    ),
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width: size.width * 0.055,
-                                        ),
-                                        AutoSizeText("Absent : ",
-                                            style: GoogleFonts.openSans(
-                                                color: Colors.white,
-                                                fontSize:
-                                                size.height * 0.026)),
-                                        SizedBox(
-                                          height: size.height * 0.02,
-                                        ),
-                                        AutoSizeText(" $absent_count",
-                                            style: GoogleFonts.openSans(
-                                                color: Colors.white,
-                                                fontSize:
-                                                size.height * 0.026)),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: size.height * 0.02,
-                                    ),
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width: size.width * 0.055,
-                                        ),
-                                        AutoSizeText("Total Lecture : ",
-                                            style: GoogleFonts.openSans(
-                                                color: Colors.white,
-                                                fontSize:
-                                                size.height * 0.026)),
-                                        SizedBox(
-                                          height: size.height * 0.02,
-                                        ),
-                                        AutoSizeText(" $total_lecture",
-                                            style: GoogleFonts.openSans(
-                                                color: Colors.white,
-                                                fontSize:
-                                                size.height * 0.026)),
-                                      ],
+                                    AutoSizeText(
+                                      "\t\t\t Present",
+                                      style: GoogleFonts.openSans(
+                                          color: Colors.red,
+                                          fontSize: size.height*0.025,
+                                          fontWeight: FontWeight.w600
+                                      ),
+                                    )
+                                  ],
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            height: size.height*0.05,
+                            child: AutoSizeText(
+                              "Bar Chart",
+                              style: GoogleFonts.openSans(
+                                fontSize: size.height*0.04,
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w700
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: size.height * 0.0,
+                        ),
+                        Container(
+                          height: size.height*0.42,
+                          width: size.width*0.88,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 2,
+                              ),
+                              color: Colors.black26.withOpacity(0.7)
+                          ),
+                          child: BarChart(
+                            BarChartData(
+                              barTouchData:BarTouchData(
+                                touchTooltipData: BarTouchTooltipData(
+                                  tooltipBgColor: Colors.white,
+                                  getTooltipItem: (a, b, c, d) => null,
+                                ),
+                              ) ,
+
+                              alignment: BarChartAlignment.center,
+                              barGroups: List.generate(
+                                dataMap.length,
+                                    (i) => BarChartGroupData(
+                                  x: i,
+                                  barRods: [
+                                    BarChartRodData(
+                                      toY: 10,
+                                      color: Colors.green,
+                                      width: 15.0,
+                                      borderRadius: BorderRadius.circular(10),
+                                      backDrawRodData: BackgroundBarChartRodData(
+                                        show: true,
+                                        color: Colors.green,
+                                      ),
                                     ),
                                   ],
                                 ),
-                              )),
-                        ],
-                      ),
+                              ),
+                              titlesData:  FlTitlesData(
+                                bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 38,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                        ),
+                        SizedBox(
+                          height: size.height * 0.055,
+                        ),
+                      ],
                     )
                         :
                     const SizedBox(),
@@ -594,6 +766,8 @@ class _AttendanceState extends State<Attendance> {
       attendance_count=0;
       absent_count=0;
     });
+    print(".....startDate..${startDate.day}");
+    print(".....EndDate..${endDate.day}");
     var doc = await FirebaseFirestore.instance
         .collection("Students")
         .doc(FirebaseAuth.instance.currentUser?.email)
@@ -603,12 +777,16 @@ class _AttendanceState extends State<Attendance> {
         .then((value) {
       return value.data();
     });
+    //print("......................Doc is....$doc");
     if (startDate.month == endDate.month) {
       for (var i = startDate.day; i <= endDate.day; i++) {
-        List<dynamic> map = [];
-        if (doc?["$i"] != null) {
+        // print(".................map is.${doc?["$i"][0]}..............");
+        if (doc?["$i"]!= null) {
+          List<dynamic> map = [];
           map = doc?["$i"];
+          // print(".................map is.$map..............");
           for (var element in map) {
+            print(element);
             element["Status"] == "Present"
                 ? attendance_count++
                 : absent_count++;
@@ -620,8 +798,8 @@ class _AttendanceState extends State<Attendance> {
       var start = startDate.day;
       var end = database().getDaysInMonth(startDate.year, startDate.month);
       for (var i = start; i <= end; i++) {
-        List<dynamic> map = [];
         if (doc?["$i"] != null) {
+          List<dynamic> map = [];
           map = doc?["$i"];
           for (var element in map) {
             element["Status"] == "Present"
@@ -660,6 +838,7 @@ class _AttendanceState extends State<Attendance> {
 
     setState(() {
       total_lecture = attendance_count + absent_count;
+      percentage=(attendance_count/total_lecture)*100;
       attendance_data = true;
     });
   }
@@ -680,6 +859,57 @@ class _AttendanceState extends State<Attendance> {
     return date;
   }
 }
+
+
+// Pie Chart Data
+
+List<PieChartSectionData> SectionData(BuildContext context) => PieData.data
+    .asMap()
+    .map<int,PieChartSectionData>((index, data){
+  double fontsize=16;
+  final value=PieChartSectionData(
+      color: data.color,
+      value: data.present,
+      radius: MediaQuery.of(context).size.height*0.06,
+      title: '${data.present}%',
+      titleStyle: GoogleFonts.openSans(
+          color:Colors.amber,
+          fontSize: fontsize,
+          fontWeight: FontWeight.w600
+      )
+  );
+  return MapEntry(index, value);
+})
+    .values
+    .toList();
+
+class PieData
+{
+  static List<Data>data=[
+    Data(name: "Present",present: percentage,color:Colors.greenAccent),
+    Data(name: "Absent",present: 100.0-percentage,color: Colors.red)
+  ];
+}
+
+class Data
+{
+  late final String name;
+  late final double present;
+  late Color color;
+  Data({required this.name,required this.present,required this.color});
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 Table(

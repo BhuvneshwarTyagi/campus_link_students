@@ -6,6 +6,7 @@ import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Constraints.dart';
+import 'Login.dart';
 import 'registration.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -333,18 +334,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               });
                               await FirebaseFirestore.instance.collection("Student_record").doc("Email").update({
                                 "Email" : FieldValue.arrayUnion([email.text.trim().toString()]),
-                              }).whenComplete(() => Navigator.push(
-                                  context,
-                                  PageTransition(
-                                    child: const StudentDetails(),
-                                    type: PageTransitionType.rightToLeftJoined,
-                                    duration: const Duration(milliseconds: 350),
-                                    childCurrent: const SignUpScreen(),
-                                  )
+                              }).whenComplete(() =>
 
-                              ));
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        child: const SignInScreen(),
+                                        type: PageTransitionType.rightToLeftJoined,
+                                        duration: const Duration(milliseconds: 350),
+                                        childCurrent: const SignUpScreen(),
+                                      )
 
-
+                                  ));
                             }
 
 

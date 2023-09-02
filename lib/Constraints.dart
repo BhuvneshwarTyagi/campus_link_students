@@ -13,3 +13,4 @@ String year_filter="";
 String section_filter="";
 String subject_filter = '';
 Map<String,dynamic> usermodel={};
+bool no_subjects=false;

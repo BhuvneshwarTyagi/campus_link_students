@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Constraints.dart';
+import 'package:campus_link_student/Registration/registration.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Screens/assignment.dart';
 import '../Screens/attendance.dart';
@@ -26,6 +32,7 @@ class _navigationState extends State<navigation> {
   PageController page_controller=PageController();
   List<String>cuu_title=["Assingments","Notes","Attendeance","Marks","Performance"];
   var curr_index=3;
+  bool profile_update=false;
 
 
   @override
@@ -65,6 +72,19 @@ class _navigationState extends State<navigation> {
           actions: [
             IconButton(
               onPressed: () {
+                   List<dynamic>subject=usermodel["Subject"];
+                   if(subject.isEmpty)
+                     {
+                       setState(() {
+                         no_subjects=true;
+                       });
+                     }
+                   else{
+                     setState(() {
+                       no_subjects=false;
+                     });
+                   }
+
                 Navigator.push(
                   context,
                   PageTransition(
@@ -127,7 +147,7 @@ class _navigationState extends State<navigation> {
                             :
                         null,
                         // backgroundColor: Colors.teal.shade300,
-                        child: usermodel["Profile_URL"]==null?
+                        child:usermodel["Profile_URL"]==null?
                         AutoSizeText(
                           usermodel["Name"].toString().substring(0, 1),
                           style: GoogleFonts.exo(
@@ -135,7 +155,14 @@ class _navigationState extends State<navigation> {
                               fontWeight: FontWeight.w600),
                         )
                             :
-                        null,
+                       profile_update?
+                        const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.green,
+                          ),
+                        )
+                            :
+                            null
                       ),
                       Positioned(
                         bottom: -5,
@@ -144,11 +171,14 @@ class _navigationState extends State<navigation> {
                           icon: Icon(Icons.camera_enhance,size:size.height*0.03 ,color: Colors.black,),
                           onPressed: () async {
 
-                            /*ImagePicker imagePicker=ImagePicker();
+                            ImagePicker imagePicker=ImagePicker();
                             print(imagePicker);
                             XFile? file=await imagePicker.pickImage(source: ImageSource.gallery);
                             print(file?.path);
 
+                            setState(() {
+                              profile_update=true;
+                            });
                             // Create reference of Firebase Storage
 
                             Reference reference=FirebaseStorage.instance.ref();
@@ -161,26 +191,40 @@ class _navigationState extends State<navigation> {
                             Reference image_folder=image_directory.child("${usermodel["Email"]}");
 
                             await image_folder.putFile(File(file!.path)).whenComplete(() async {
+
+
                               String download_url=await image_folder.getDownloadURL();
                               print("uploaded");
                               print(download_url);
                               await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).update({
                                 "Profile_URL":download_url,
+                              }).whenComplete(() async {
+                              await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
+
+                                setState(() {
+                                   usermodel=value.data()!;
+                                });
+                              }).whenComplete(() {
+                                setState(() {
+                                  profile_update=false;
+                                });
                               });
+
+                            });
                               setState(() {
-                                fect_name_email();
+                                profile_update=false;
                               });
-                            });*/
                           },
-                        ),
-                      )
+                            );}))
                     ],
                   )
               ),
               ListTile(
                 leading: const Icon(Icons.home,color: Colors.black,),
                 title: const Text("Home"),
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context);
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.account_box_outlined,color: Colors.black,),
@@ -190,6 +234,22 @@ class _navigationState extends State<navigation> {
                     context,
                     PageTransition(
                       child: const Profile_page(),
+                      type: PageTransitionType.rightToLeftJoined,
+                      duration: const Duration(milliseconds: 350),
+                      childCurrent: const navigation(),
+                    ),
+                  );
+
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.add,color: Colors.black,),
+                title: const Text("Add Subjects"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      child: const StudentDetails(),
                       type: PageTransitionType.rightToLeftJoined,
                       duration: const Duration(milliseconds: 350),
                       childCurrent: const navigation(),
@@ -221,7 +281,7 @@ class _navigationState extends State<navigation> {
         bottomNavigationBar: CurvedNavigationBar(
           backgroundColor: Colors.transparent,
           color:Colors.black38,
-
+          animationDuration: const Duration(milliseconds: 200),
           animationCurve: Curves.easeInOut,
           items:  <Widget>[
             Container(

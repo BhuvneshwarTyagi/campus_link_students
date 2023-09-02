@@ -25,51 +25,51 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   var mtoken;
-  bool loaded =false;
+  bool loaded = false;
 
   @override
   Widget build(BuildContext context) {
-    return  StreamBuilder<User?>(
+    return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (_, snapshot)  {
-
+      builder: (_, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const SignInScreen();
-        } else if (snapshot.connectionState == ConnectionState.active && !snapshot.hasData) {
+        } else if (snapshot.connectionState == ConnectionState.active &&
+            !snapshot.hasData) {
           return const SignInScreen();
-        } else if (snapshot.connectionState == ConnectionState.active && snapshot.hasData)
-        {
+        } else if (snapshot.connectionState == ConnectionState.active &&
+            snapshot.hasData) {
+          if (FirebaseAuth.instance.currentUser!.emailVerified) {
+            !loaded ?
+            fetch_userdata
+                :
+            null;
 
-          if(FirebaseAuth.instance.currentUser!.emailVerified){
-            !loaded?
-            getToken()
-            :
-                null;
-
-             return  loaded?
-             const navigation()
-             :
-              const loading( text: "Data is Retrieving from server please wait");
+            return loaded ?
+            const navigation()
+                :
+            const loading(text: "Data is Retrieving from server please wait");
           }
-          else{
+          else {
             FirebaseAuth.instance.currentUser!.sendEmailVerification();
             return const Verify();
           }
         }
-        else{
-          return const SignInScreen();}
+        else {
+          return const SignInScreen();
+        }
       },
 
     );
-
   }
 
-  void getToken() async {
+  /*void getToken() async {
     await FirebaseMessaging.instance.getToken().then((token) async {
-      await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
-        'Token' : token,
+      await FirebaseFirestore.instance.collection("Students").doc(
+          FirebaseAuth.instance.currentUser!.email).update({
+        'Token': token,
       });
-      List<dynamic> subjects=await FirebaseFirestore
+      List<dynamic> subjects = await FirebaseFirestore
           .instance
           .collection("Students")
           .doc(FirebaseAuth.instance.currentUser?.email)
@@ -78,11 +78,15 @@ class _MainPageState extends State<MainPage> {
         return value.data()?["Subject"];
       }).whenComplete(() => print("done......"));
 
-      for(var s in subjects){
-
-        await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
-          usermodel=value.data()!;
+      for (var s in subjects) {
+        await FirebaseFirestore.instance.collection("Students").doc(
+            FirebaseAuth.instance.currentUser!.email).get().then((value) {
+          usermodel = value.data()!;
         }).whenComplete(() async {
+          print(",,,,,,,,,${usermodel.isEmpty}");
+          setState(() {
+            loaded = true;
+          });
           // String channel_perfix = "${usermodel["University"].toString().trim().split(" ")[0]} "
           //     "${usermodel["College"].toString().trim().split(" ")[0]} "
           //     "${usermodel["Course"].toString().trim().split(" ")[0]} "
@@ -96,28 +100,48 @@ class _MainPageState extends State<MainPage> {
           //     .update({
           //   "Token" : FieldValue.arrayUnion([token])
           // });
-        });}
-      if(mounted){
+        });
+      }
+      if (mounted) {
         setState(() {
-          loaded=true;
-        });      }
+          loaded = true;
+        });
+      }
     },
     );
+  }*/
+
+
+  Future<void> fetch_userdata() async {
+    print(",,,,,,Entered");
+    await FirebaseMessaging.instance.getToken().then((token) async {
+      await FirebaseFirestore.instance.collection("Students").doc(
+          FirebaseAuth.instance.currentUser!.email).update({
+        'Token': token,
+      });
+    });
+
+   print("Token Uploaded");
+    await FirebaseFirestore.instance.collection("Students").doc(
+        FirebaseAuth.instance.currentUser!.email)
+        .get().then((value) {
+      setState(() {
+        usermodel = value.data()!;
+        print("...............userdata done");
+      });
+    }).whenComplete(() {
+      print("...............true");
+      setState(() {
+        loaded=true;
+      });
+    });
+    if(mounted){
+      setState(() {
+        loaded=true;
+      });      }
 
   }
 
-Future<void> fetch_userdata()
-async {
-  await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
-    usermodel=value.data()!;
-  }).whenComplete(() {
-    setState(() {
-      loaded=true;
-    });
-  });
 }
 
-
-
-}
 
