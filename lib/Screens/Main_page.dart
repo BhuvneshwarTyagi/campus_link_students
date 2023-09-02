@@ -9,6 +9,7 @@ import '../Constraints.dart';
 import '../Registration/Verify Email.dart';
 import '../Registration/navigation.dart';
 import 'dashboard.dart';
+import 'loadingscreen.dart';
 
 
 
@@ -24,7 +25,8 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   var mtoken;
-  bool loaded=false;
+  bool loaded =false;
+
   @override
   Widget build(BuildContext context) {
     return  StreamBuilder<User?>(
@@ -40,16 +42,14 @@ class _MainPageState extends State<MainPage> {
 
           if(FirebaseAuth.instance.currentUser!.emailVerified){
             !loaded?
-                getToken()
-                  :
+            getToken()
+            :
                 null;
 
              return  loaded?
-               const navigation()
-                 :
-                const Center(child: CircularProgressIndicator(
-                  backgroundColor: Colors.transparent,
-                  color: Colors.red,));
+             const navigation()
+             :
+              const loading( text: "Data is Retrieving from server please wait");
           }
           else{
             FirebaseAuth.instance.currentUser!.sendEmailVerification();
@@ -65,9 +65,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   void getToken() async {
-    String token;
-    /*await FirebaseMessaging.instance.getToken().then((token) async {
-      token =token;
+    await FirebaseMessaging.instance.getToken().then((token) async {
       await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
         'Token' : token,
       });
@@ -85,39 +83,39 @@ class _MainPageState extends State<MainPage> {
         await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
           usermodel=value.data()!;
         }).whenComplete(() async {
-          setState(() {
-            loaded=true;
-          });
-          print(usermodel);
-          String channel_perfix = "${usermodel["University"].toString().trim().split(" ")[0]} "
-              "${usermodel["College"].toString().trim().split(" ")[0]} "
-              "${usermodel["Course"].toString().trim().split(" ")[0]} "
-              "${usermodel["Branch"].toString().trim().split(" ")[0]} "
-              "${usermodel["Year"].toString().trim().split(" ")[0]} "
-              "${usermodel["Section"].toString().trim().split(" ")[0]} ";
-          print("................$channel_perfix");
-          await FirebaseFirestore
-              .instance
-              .collection("Messages")
-              .doc(channel_perfix+s.toString().trim().split(" ")[0])
-              .update({
-            "Token" : FieldValue.arrayUnion([token])
-          });
+          // String channel_perfix = "${usermodel["University"].toString().trim().split(" ")[0]} "
+          //     "${usermodel["College"].toString().trim().split(" ")[0]} "
+          //     "${usermodel["Course"].toString().trim().split(" ")[0]} "
+          //     "${usermodel["Branch"].toString().trim().split(" ")[0]} "
+          //     "${usermodel["Year"].toString().trim().split(" ")[0]} "
+          //     "${usermodel["Section"].toString().trim().split(" ")[0]}";
+          // await FirebaseFirestore
+          //     .instance
+          //     .collection("Messages")
+          //     .doc(channel_perfix+s.toString().trim().split(" ")[0])
+          //     .update({
+          //   "Token" : FieldValue.arrayUnion([token])
+          // });
         });}
       if(mounted){
-        setState(() {});      }
+        setState(() {
+          loaded=true;
+        });      }
     },
-    );*/
-    await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
-      usermodel=value.data()!;
-    }).whenComplete(() {
-      setState(() {
-
-        loaded=true;
-      });
-    });
+    );
 
   }
+
+Future<void> fetch_userdata()
+async {
+  await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
+    usermodel=value.data()!;
+  }).whenComplete(() {
+    setState(() {
+      loaded=true;
+    });
+  });
+}
 
 
 

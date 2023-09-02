@@ -9,6 +9,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'loadingscreen.dart';
+
 class Marks extends StatefulWidget {
   const Marks({Key? key}) : super(key: key);
 
@@ -63,8 +65,10 @@ class _MarksState extends State<Marks> {
                        height: size.height * 0.31,
                        width: size.width * 0.8,
                        decoration: BoxDecoration(
-                           color: Colors.blueAccent,
-                           border: Border.all(color: Colors.amberAccent, width: 2),
+                           color:  const Color.fromRGBO(40, 86, 122, 1),
+
+
+                           border: Border.all(color: Colors.white, width: 2),
                            borderRadius: BorderRadius.circular(15.0)
                        ),
                        child: Card(
@@ -318,7 +322,7 @@ class _MarksState extends State<Marks> {
                    );
                  },)
               :
-              const CircularProgressIndicator();
+              const loading( text: "Data is Retrieving from server please wait");
             },
           ),
         ),

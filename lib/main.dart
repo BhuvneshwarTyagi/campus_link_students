@@ -12,9 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:workmanager/workmanager.dart';
 import 'Connection.dart';
-import 'Registration/navigation.dart';
-import 'Registration/no_internet.dart';
-import 'Screens/looding_screen.dart';
+
 
 const fetchBackground = "fetchBackground";
 @pragma('vm:entry-point')
@@ -22,7 +20,7 @@ callbackDispatcher() async {
 
   try{
     GeoPoint current_location=const GeoPoint(0, 0);
-    print(".......Starting workmanager executeTask.....");
+    print(".......Starting workmanager executeTask  1.....");
     Workmanager().executeTask((taskName, inputData) async {
       WidgetsFlutterBinding.ensureInitialized();
       await Firebase.initializeApp();
@@ -32,9 +30,11 @@ callbackDispatcher() async {
       print(".......complete asking For Location Always Permission .....");
       print(".......Starting Location  .....");
       CurrentLocationManager().start();
+
       print("....... Location started .....");
       print("....... fetching current Location  .....");
       current_location=await database().getloc();
+      CurrentLocationManager().stop();
       // current_location=await CurrentLocationManager().getCurrentLocation();
       print(".......  current Location  fetched ${current_location.longitude} .....");
       print("....... Uploading location to firebase  .....");
@@ -43,12 +43,47 @@ callbackDispatcher() async {
           .doc(FirebaseAuth.instance.currentUser!.email)
           .update({
         "Location": GeoPoint(double.parse(current_location.latitude.toStringAsPrecision(21)), double.parse(current_location.longitude.toStringAsPrecision(21))),
-        "Active":true
+        "Active": true
           }).whenComplete(() {
         print("Start()");
-        CurrentLocationManager().stop();}
+        CurrentLocationManager().stop();
+
+          }
       );
       print("....... location uploaded to firebase  .....");
+      Workmanager().cancelByUniqueName("${inputData?["Stamp"]}");
+      return Future.value(true);
+    });
+
+  }catch (e){
+    print("..........error.........\n.........$e........");
+  }
+}
+@pragma('vm:entry-point')
+callbackDispatcherfordelevery() async {
+
+  try{
+    print(".......Starting workmanager executeTask   2.....");
+    Workmanager().executeTask((taskName, inputData) async {
+      try{
+        WidgetsFlutterBinding.ensureInitialized();
+        await Firebase.initializeApp();
+        print(".............doc ${inputData?["channel"]}");
+        print(".............stamp ${inputData?["stamp"]}");
+        await FirebaseFirestore.instance.collection("Messages").doc(inputData?["channel"]).collection("Messages_Detail").doc("Messages_Detail").update(
+            {
+              "${inputData?["stamp"]}_delevered" : FieldValue.arrayUnion([
+                {
+                  "Email" : FirebaseAuth.instance.currentUser?.email,
+                  "Stamp" : DateTime.now()
+                }
+              ])
+            }
+        );
+      }
+      catch (e){
+        print("fucking error............................. $e ");
+      }
       return Future.value(true);
     });
 
@@ -74,7 +109,24 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       Workmanager().initialize(
         callbackDispatcher,
       );
-      await Workmanager().registerOneOffTask("attendance", "Attendance");
+      String stamp=DateTime.now().toString();
+      await Workmanager().registerOneOffTask(stamp, "Attendance",inputData: {"Stamp":stamp});
+
+    }catch(e){
+      print("........Error from background handler.........");
+    }
+  }
+  print(message.data["msg"]);
+  if(message.data["msg"]=="true"){
+    try{
+      Workmanager().initialize(
+        callbackDispatcherfordelevery,
+      );
+      print(".......workmanager");
+      await Workmanager().registerOneOffTask("Develered", "Delevery",inputData: {
+        "channel" :message.data["channel"],
+        "stamp" : message.data["stamp"].toString().split(".")[0]
+      });
     }catch(e){
       print("........Error from background handler.........");
     }
@@ -104,6 +156,56 @@ Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
     }catch(e){
       print("........Error from onmessage handler.........");
     }
+  }
+  if(message.data["msg"]=="true"){
+    await FirebaseFirestore.instance.collection("Messages").doc(message.data["channel"]).collection("Messages_Detail").doc("Messages_Detail").update(
+        {
+          "${message.data["stamp"].toString().split(".")[0]}_delevered" : FieldValue.arrayUnion([
+            {
+              "Email" : FirebaseAuth.instance.currentUser?.email,
+              "Stamp" : DateTime.now()
+            }
+          ])
+        }
+    );
+  }
+}
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingonmessageOpenedAppHandler(RemoteMessage message) async {
+  if (kDebugMode) {
+    print("Handling a onmessage message");
+  }
+
+  print(".............From onmessage.............");
+
+  NotificationServices.display(message);
+
+  if(message.data["body"]=="Attendance Initialized"){
+    print("error before enter");
+    try{
+      GeoPoint current_location=await database().getloc();
+      await FirebaseFirestore.instance
+          .collection("Students")
+          .doc(FirebaseAuth.instance.currentUser!.email)
+          .update({
+        "Location": current_location,
+        "Active":true
+      });
+    }catch(e){
+      print("........Error from onmessage handler.........");
+    }
+  }
+  if(message.data["msg"]=="true"){
+    await FirebaseFirestore.instance.collection("Messages").doc(message.data["channel"]).collection("Messages_Detail").doc("Messages_Detail").update(
+        {
+          "${message.data["stamp"].toString().split(".")[0]}_delevered" : FieldValue.arrayUnion([
+            {
+              "Email" : FirebaseAuth.instance.currentUser?.email,
+              "Stamp" : DateTime.now()
+            }
+          ])
+        }
+    );
   }
 }
 
@@ -138,6 +240,7 @@ class _MyAppState extends State<MyApp> {
     FirebaseMessaging.onMessage.listen(firebaseMessagingonmessageHandler);
 
     FirebaseMessaging.onBackgroundMessage.call(firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onMessageOpenedApp.listen(firebaseMessagingonmessageOpenedAppHandler);
 
   }
 
@@ -158,6 +261,7 @@ class _MyAppState extends State<MyApp> {
         case AppLifecycleState.detached:
           NotificationServices().setUserState(userState: UserState.Offline);
           break;
+          // TODO: Handle this case.
       }
     } catch (e) {
       if (kDebugMode) {
@@ -172,7 +276,7 @@ class _MyAppState extends State<MyApp> {
       color: const Color.fromRGBO(213, 97, 132, 1),
       theme: ThemeData(),
       debugShowCheckedModeBanner: false,
-      home: Checkconnection(),
+      home:Checkconnection(),
       builder: InAppNotifications.init(),
     );
   }
