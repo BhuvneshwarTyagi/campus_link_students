@@ -8,13 +8,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:swipe_to/swipe_to.dart';
-import '../Constraints.dart';
-import '../Registration/database.dart';
-import 'Chat_tiles/Document_Viewer.dart';
-import 'Chat_tiles/Sending_Media.dart';
-import 'Chat_tiles/chat_info.dart';
-import 'Chat_tiles/msg_tile.dart';
-import 'loadingscreen.dart';
+import '../../Constraints.dart';
+import '../../Registration/database.dart';
+import 'Document_Viewer.dart';
+import 'Sending_Media.dart';
+import 'chat_info.dart';
+import 'msg_tile.dart';
+import '../loadingscreen.dart';
 
 class chat_page extends StatefulWidget {
   const chat_page({Key? key, required this.channel}) : super(key: key);
@@ -834,22 +834,22 @@ class _chat_pageState extends State<chat_page> {
                                   !doc.exists
                                       ?
                                   await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").set({
-                                    "${stamp.toString().split(".")[0]}_delevered" : FieldValue.arrayUnion([{
+                                    "${usermodel["Email"]}_${stamp}_Delevered" : FieldValue.arrayUnion([{
                                       "Email" : usermodel["Email"],
                                       "Stamp" : stamp
                                     }]),
-                                    "${stamp.toString().split(".")[0]}_seen" : FieldValue.arrayUnion([{
+                                    "${usermodel["Email"]}_${stamp}_Seen" : FieldValue.arrayUnion([{
                                       "Email" : usermodel["Email"],
                                       "Stamp" : stamp
                                     }]),
                                   })
                                       :
                                   await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").update({
-                                    "${stamp.toString().split(".")[0]}_delevered" : FieldValue.arrayUnion([{
+                                    "${usermodel["Email"]}_${stamp}_Delevered" : FieldValue.arrayUnion([{
                                       "Email" : usermodel["Email"],
                                       "Stamp" : stamp
                                     }]),
-                                    "${stamp.toString().split(".")[0]}_seen" : FieldValue.arrayUnion([{
+                                    "${usermodel["Email"]}_${stamp}_Seen" : FieldValue.arrayUnion([{
                                       "Email" : usermodel["Email"],
                                       "Stamp" : stamp
                                     }]),
@@ -1168,12 +1168,12 @@ class _chat_pageState extends State<chat_page> {
         }
       });
       for(int i=len;i>lastcount;i--){
-        String? stamp= snapshot.data!.data()?["Messages"][i-1]["Stamp"].toDate().toString().split(".")[0];
+        String? stamp= snapshot.data!.data()?["Messages"][i-1]["Stamp"];
         String? email= snapshot.data!.data()?["Messages"][i-1]["Email"];
 
         if(email != usermodel["Email"]){
           await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").update({
-            "${stamp}_seen": FieldValue.arrayUnion([
+            "${email}_${stamp}_Seen": FieldValue.arrayUnion([
               {
                 "Email": usermodel["Email"],
                 "Stamp": DateTime.now(),

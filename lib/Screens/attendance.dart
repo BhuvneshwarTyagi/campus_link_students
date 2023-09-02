@@ -762,10 +762,8 @@ class _AttendanceState extends State<Attendance> {
         month_number = currentMon;
       });
     }
-    setState(() {
       attendance_count=0;
       absent_count=0;
-    });
     print(".....startDate..${startDate.day}");
     print(".....EndDate..${endDate.day}");
     var doc = await FirebaseFirestore.instance
@@ -885,7 +883,7 @@ List<PieChartSectionData> SectionData(BuildContext context) => PieData.data
 
 class PieData
 {
-  static List<Data>data=[
+  static List<Data>data= [
     Data(name: "Present",present: percentage,color:Colors.greenAccent),
     Data(name: "Absent",present: 100.0-percentage,color: Colors.red)
   ];

@@ -11,14 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
-import '../Screens/assignment.dart';
-import '../Screens/attendance.dart';
-import '../Screens/chat_list.dart';
-import '../Screens/loadingscreen.dart';
-import '../Screens/marks.dart';
-import '../Screens/notes.dart';
-import '../Screens/performance.dart';
-import '../Screens/profile_page.dart';
+import 'assignment.dart';
+import 'attendance.dart';
+import 'Chat_tiles/chat_list.dart';
+import 'loadingscreen.dart';
+import 'marks.dart';
+import 'notes.dart';
+import 'performance.dart';
+import 'profile_page.dart';
 
 class navigation extends StatefulWidget {
   const navigation({Key? key}) : super(key: key);
@@ -56,8 +56,7 @@ class _navigationState extends State<navigation> {
           ],
         ),
       ),
-      child: usermodel.isNotEmpty?
-      Scaffold(
+      child: Scaffold(
 
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -358,8 +357,7 @@ class _navigationState extends State<navigation> {
         ),
 
       )
-          :
-      const loading( text: "Data is Retrieving from server please wait")
+
       );
   }
 

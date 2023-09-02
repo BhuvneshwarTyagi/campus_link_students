@@ -11,7 +11,7 @@ import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../Constraints.dart';
 import '../../Registration/database.dart';
-import '../chat.dart';
+import 'chat.dart';
 import '../loadingscreen.dart';
 
 class SendMedia extends StatefulWidget {

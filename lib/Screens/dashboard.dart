@@ -12,7 +12,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Constraints.dart';
 import 'attendance.dart';
-import 'chat_list.dart';
+import 'Chat_tiles/chat_list.dart';
 
 class StudentDashBoard extends StatefulWidget {
   const StudentDashBoard({Key? key}) : super(key: key);

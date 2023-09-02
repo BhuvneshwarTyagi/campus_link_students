@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../Constraints.dart';
+import '../../Constraints.dart';
 import 'chat.dart';
 
 class chatsystem extends StatefulWidget {
@@ -71,12 +71,8 @@ class _chatsystemState extends State<chatsystem> {
                             count1 = int.parse("${snapshot2.data?.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]}");
                             for (int i = readCount1; i > count1; i--) {
                               String? stamp = snapshot2.data!
-                                  .data()?["Messages"][i-1]["Stamp"]
-                                  .toDate()
-                                  .toString()
-                                  .split(".")[0];
-                              String? email = snapshot2.data!.data()?["Messages"]
-                                  [i-1]["Email"];
+                                  .data()?["Messages"][i-1]["Stamp"];
+                              String? email = snapshot2.data!.data()?["Messages"][i-1]["Email"];
 
                               if (email != usermodel["Email"]) {
                                 await FirebaseFirestore.instance
@@ -85,7 +81,7 @@ class _chatsystemState extends State<chatsystem> {
                                     .collection("Messages_Detail")
                                     .doc("Messages_Detail")
                                     .update({
-                                  "${stamp}_seen": FieldValue.arrayUnion([
+                                  "${email}_${stamp}_Seen" : FieldValue.arrayUnion([
                                     {
                                       "Email": usermodel["Email"],
                                       "Stamp": DateTime.now()

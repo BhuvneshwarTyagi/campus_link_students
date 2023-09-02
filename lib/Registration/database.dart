@@ -64,8 +64,9 @@ class database
             'status': "done",
             'body': body,
             'title': title,
-            "msg" : msg ? "true" : false,
+            "msg" : msg ? "true" : "false",
             'channel' : channel,
+            'Email' : usermodel["Email"].toString(),
             'stamp' : stamp.toString()
           },
           "apns": {

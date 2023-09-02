@@ -1,4 +1,5 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:campus_link_student/Registration/database.dart';
 import 'package:campus_link_student/Screens/loadingscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -738,25 +739,112 @@ class _StudentDetailsState extends State<StudentDetails> {
                             "Active" : false,
                             "Token" : FieldValue.arrayUnion([usermodel["Token"]])
                           };
-                          await FirebaseFirestore.instance
-                              .collection("Messages")
-                              .doc(
-                              "${universityController.text.trim().split(" ")[0]} "
-                                  "${collegeController.text.trim().split(" ")[0]} "
-                                  "${courseController.text.trim().split(" ")[0]} "
-                                  "${branchController.text.trim().split(" ")[0]} "
-                                  "${yearController.text.trim().split(" ")[0]} "
-                                  "${sectionController.text.trim().split(" ")[0]} "
-                                  "${subjectlist[i].text.trim().split(" ")[0]}")
-                              .update({
-                            "Members": FieldValue.arrayUnion([
-                              {
-                                "Email": "${usermodel["Email"]}",
-                                "Post": "Students"
-                              }
-                            ]),
-                            usermodel["Email"].toString().split("@")[0]:  map,
+                          List<dynamic> channelList = await FirebaseFirestore.instance.collection("Chat_Channels").doc("Channels").get().then((value){
+                            return value.data()?["Channels"];
                           });
+
+                          if(channelList.contains("${universityController.text.trim().split(" ")[0]} "
+                              "${collegeController.text.trim().split(" ")[0]} "
+                              "${courseController.text.trim().split(" ")[0]} "
+                              "${branchController.text.trim().split(" ")[0]} "
+                              "${yearController.text.trim().split(" ")[0]} "
+                              "${sectionController.text.trim().split(" ")[0]} "
+                              "${subjectlist[i].text.trim().split(" ")[0]}")){
+                            await FirebaseFirestore.instance
+                                .collection("Messages")
+                                .doc(
+                                "${universityController.text.trim().split(" ")[0]} "
+                                    "${collegeController.text.trim().split(" ")[0]} "
+                                    "${courseController.text.trim().split(" ")[0]} "
+                                    "${branchController.text.trim().split(" ")[0]} "
+                                    "${yearController.text.trim().split(" ")[0]} "
+                                    "${sectionController.text.trim().split(" ")[0]} "
+                                    "${subjectlist[i].text.trim().split(" ")[0]}")
+                                .update({
+                              "Members": FieldValue.arrayUnion([
+                                {
+                                  "Email": "${usermodel["Email"]}",
+                                  "Post": "Students"
+                                }
+                              ]),
+                              usermodel["Email"].toString().split("@")[0]:  map,
+                            });
+                          }
+                          else{
+                            DateTime stamp= DateTime.now();
+                            await FirebaseFirestore.instance
+                                .collection("Messages")
+                                .doc(
+                                "${universityController.text.trim().split(" ")[0]} "
+                                    "${collegeController.text.trim().split(" ")[0]} "
+                                    "${courseController.text.trim().split(" ")[0]} "
+                                    "${branchController.text.trim().split(" ")[0]} "
+                                    "${yearController.text.trim().split(" ")[0]} "
+                                    "${sectionController.text.trim().split(" ")[0]} "
+                                    "${subjectlist[i].text.trim().split(" ")[0]}")
+                                .set({
+                              "CreatedOn" : {
+                                "Date" : stamp,
+                                "Name" : usermodel["Name"]
+                              },
+                              "Messages": {
+                                "UID" : usermodel["Email"],
+                                "Image" : usermodel["Profile_URL"],
+                                "Name" : usermodel["Name"],
+                                "text" : "Hello",
+                                "Stamp": stamp
+                              },
+                              "Members": FieldValue.arrayUnion([
+                                {
+                                  "Email": "${usermodel["Email"]}",
+                                  "Post": "Students"
+                                }
+                              ]),
+                              usermodel["Email"].toString().split("@")[0]:  map,
+
+                            });
+                            await FirebaseFirestore
+                                .instance
+                                .collection("Messages")
+                                .doc(
+                                "${universityController.text.trim().split(" ")[0]} "
+                                    "${collegeController.text.trim().split(" ")[0]} "
+                                    "${courseController.text.trim().split(" ")[0]} "
+                                    "${branchController.text.trim().split(" ")[0]} "
+                                    "${yearController.text.trim().split(" ")[0]} "
+                                    "${sectionController.text.trim().split(" ")[0]} "
+                                    "${subjectlist[i].text.trim().split(" ")[0]}").collection("Messages_Detail").doc("Messages_Details").set(
+                              {
+                                "${usermodel["Email"]}_${stamp}_Delevered" : FieldValue.arrayUnion([
+                                  {
+                                    "Email" : usermodel["Email"],
+                                    "Stamp" : stamp
+                                  }
+                                ]),
+                                "${usermodel["Email"]}_${stamp}_Seen" : FieldValue.arrayUnion([
+                                  {
+                                    "Email" : usermodel["Email"],
+                                    "Stamp" : stamp
+                                  }
+                                ])
+                              }
+                            );
+                            await FirebaseFirestore.instance.collection("Chat_Channels").doc("Channels").update({
+                              "Channels" : FieldValue.arrayUnion([
+                                "${universityController.text.trim().split(" ")[0]} "
+                                    "${collegeController.text.trim().split(" ")[0]} "
+                                    "${courseController.text.trim().split(" ")[0]} "
+                                    "${branchController.text.trim().split(" ")[0]} "
+                                    "${yearController.text.trim().split(" ")[0]} "
+                                    "${sectionController.text.trim().split(" ")[0]} "
+                                    "${subjectlist[i].text.trim().split(" ")[0]}"
+                              ])
+                            });
+                            
+                          }
+
+
+
                         }
                       }
                            print(".............................1");
@@ -770,23 +858,22 @@ class _StudentDetailsState extends State<StudentDetails> {
                           sectionController.text.toString().isNotEmpty) {
                         await FirebaseFirestore.instance
                             .collection("Students")
-                            .doc(FirebaseAuth.instance.currentUser?.email)
+                            .doc(usermodel["Email"])
                             .update({
                           "Rollnumber": rollno.text.trim().toString(),
-                          "University":
-                          universityController.text.trim().toString(),
+                          "University": universityController.text.trim().toString(),
                           "College": collegeController.text.trim().toString(),
                           "Course": courseController.text.trim().toString(),
                           "Year": yearController.text.trim().toString(),
                           "Branch": branchController.text.trim().toString(),
                           "Section": sectionController.text.trim().toString(),
-                          "Subject": subject,
+                          "Subject": FieldValue.arrayUnion(subject),
                           "Active": false
-                        }).then((value) {
-                          Navigator.pop(context);
+                        })
+                            .then(
+                                (value) async {
 
-                          // Creating Channel for students group
-                          Navigator.pop(context);
+
                           InAppNotifications.instance
                             ..titleFontSize = 20.0
                             ..descriptionFontSize = 16.0
@@ -805,8 +892,16 @@ class _StudentDetailsState extends State<StudentDetails> {
                                 color: Colors.red,
                                 size: 25,
                               ));
-
                           print("Successfully uploaded");
+                        })
+                            .whenComplete(() async {
+                          await database().fetchuser().whenComplete(() {
+                            Navigator.pop(context);
+
+                            // Creating Channel for students group
+
+                            Navigator.pop(context);
+                          });
                         }).onError((error, stackTrace) {
                           print("Error is: $error");
                           Navigator.pop(context);
@@ -814,16 +909,13 @@ class _StudentDetailsState extends State<StudentDetails> {
                             ..titleFontSize = 35.0
                             ..descriptionFontSize = 20.0
                             ..textColor = Colors.black
-                            ..backgroundColor =
-                            const Color.fromRGBO(150, 150, 150, 1)
+                            ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
                             ..shadow = true
-                            ..animationStyle =
-                                InAppNotificationsAnimationStyle.scale;
+                            ..animationStyle = InAppNotificationsAnimationStyle.scale;
                           InAppNotifications.show(
                               title: 'Failed',
                               duration: const Duration(seconds: 2),
-                              description:
-                              error.toString().split(']')[1].trim(),
+                              description: error.toString().split(']')[0].trim(),
                               leading: const Icon(
                                 Icons.error_outline_outlined,
                                 color: Colors.red,
@@ -851,8 +943,9 @@ class _StudentDetailsState extends State<StudentDetails> {
                               size: 20,
                             ));
 
-                        print("..............End");
                       }
+
+
                     },
                     style: ElevatedButton.styleFrom(
                       shape: const StadiumBorder(),
