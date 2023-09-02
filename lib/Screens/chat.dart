@@ -826,8 +826,11 @@ class _chat_pageState extends State<chat_page> {
                               TextButton(
                                 onPressed: () async {
                                   DateTime stamp = DateTime.now();
+                                  int l=message.length+1;
                                   final doc=await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").get();
 
+                                  messageController.text.trim() != ""
+                                      ?
                                   !doc.exists
                                       ?
                                   await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").set({
@@ -851,7 +854,8 @@ class _chat_pageState extends State<chat_page> {
                                       "Stamp" : stamp
                                     }]),
                                   })
-                                  ;
+                                      :
+                                      null;
                                   messageController.text.trim() ==
                                       ""
                                       ? null
@@ -890,7 +894,7 @@ class _chat_pageState extends State<chat_page> {
                                       usermodel["Email"].toString().split("@")[0] : {
                                         "Active" : true,
                                         "Last_Active": DateTime.now(),
-                                        "Read_Count" : message.length+1,
+                                        "Read_Count" : l,
                                         "Token": FieldValue.arrayUnion([usermodel["Token"]]),
                                       }
                                     },
@@ -1124,24 +1128,7 @@ class _chat_pageState extends State<chat_page> {
     );
   }
 
-  Future<void> readTick() async {
-    await FirebaseFirestore.instance
-        .collection("Messages")
-        .doc(widget.channel)
-        .get()
-        .then((value) {
-      value.data()!["Members"].forEach((email) async {
-        await FirebaseFirestore.instance
-            .collection("Messages")
-            .doc(widget.channel)
-            .get()
-            .then((value2) {
-          tick.add(
-              value2.data()![email.toString().split("@")[0]]["Readed_count"]);
-        });
-      });
-    }).whenComplete(() => setState(() {}));
-  }
+
 
   int activeStatus(
       AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
@@ -1161,27 +1148,12 @@ class _chat_pageState extends State<chat_page> {
     return count;
   }
 
+
   develered(AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) async {
     print(" ..............here");
     int lastcount = snapshot.data!.data()?[usermodel["Email"].toString().split("@")[0]]["Read_Count"];
     int len = snapshot.data!.data()?["Messages"].length;
-    for(int i=len;i>lastcount;i--){
-      String? stamp= snapshot.data!.data()?["Messages"][i-1]["Stamp"].toDate().toString().split(".")[0];
-      String? email= snapshot.data!.data()?["Messages"][i-1]["Email"];
 
-      if(email != usermodel["Email"]){
-        await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").update({
-          "${stamp}_seen": FieldValue.arrayUnion([
-            {
-              "Email": usermodel["Email"],
-              "Stamp": DateTime.now(),
-              "From" : "delevered"
-            }
-          ]),
-
-        });
-      }
-    }
     if (lastcount != len) {
       print("..................if");
       await FirebaseFirestore.instance
@@ -1195,6 +1167,23 @@ class _chat_pageState extends State<chat_page> {
           "Token" : FieldValue.arrayUnion([usermodel["Token"]])
         }
       });
+      for(int i=len;i>lastcount;i--){
+        String? stamp= snapshot.data!.data()?["Messages"][i-1]["Stamp"].toDate().toString().split(".")[0];
+        String? email= snapshot.data!.data()?["Messages"][i-1]["Email"];
+
+        if(email != usermodel["Email"]){
+          await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").update({
+            "${stamp}_seen": FieldValue.arrayUnion([
+              {
+                "Email": usermodel["Email"],
+                "Stamp": DateTime.now(),
+                "From" : "delevered"
+              }
+            ]),
+
+          });
+        }
+      }
     }
   }
 }

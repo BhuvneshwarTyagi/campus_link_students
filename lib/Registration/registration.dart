@@ -735,15 +735,6 @@ class _StudentDetailsState extends State<StudentDetails> {
                                   "${sectionController.text.trim().split(" ")[0]} "
                                   "${subjectlist[i].text.trim().split(" ")[0]}")
                               .update({
-                            "Messages": FieldValue.arrayUnion([
-                              {
-                                "Name": usermodel["Name"],
-                                "text": "Hello",
-                                "UID": usermodel["Email"],
-                                "Stamp": DateTime.now(),
-                                "Image": usermodel["Profile_URL"]
-                              }
-                            ]),
                             "Members": FieldValue.arrayUnion([
                               {
                                 "Email": "${usermodel["Email"]}",

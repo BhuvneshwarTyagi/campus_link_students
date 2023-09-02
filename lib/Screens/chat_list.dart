@@ -60,8 +60,13 @@ class _chatsystemState extends State<chatsystem> {
                                 "${snapshot2.data?.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]}")
                             : null;
                         return InkWell(
+
                           onTap: () async {
-                            for (int i = readCount; i > count; i--) {
+                            int readCount1 = 0;
+                            int count1 = 0;
+                            readCount1 = snapshot2.data?.data()!["Messages"].length;
+                            count1 = int.parse("${snapshot2.data?.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]}");
+                            for (int i = readCount1; i > count1; i--) {
                               String? stamp = snapshot2.data!
                                   .data()?["Messages"][i-1]["Stamp"]
                                   .toDate()
@@ -92,7 +97,7 @@ class _chatsystemState extends State<chatsystem> {
                                 .update({
                               usermodel["Email"].toString().split("@")[0]: {
                                 "Last_Active": DateTime.now(),
-                                "Read_Count": readCount,
+                                "Read_Count": readCount1,
                                 "Active": true,
                                 "Token": FieldValue.arrayUnion([usermodel["Token"]])
                               }

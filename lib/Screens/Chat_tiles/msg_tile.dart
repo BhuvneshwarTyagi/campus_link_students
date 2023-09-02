@@ -71,7 +71,7 @@ class MsgTile extends StatelessWidget {
         :
     name.length>=text.length
         ?
-    size.width * 0.033 * len
+    size.width * 0.04 * len
         :
     size.width * 0.0235 * len
         ;

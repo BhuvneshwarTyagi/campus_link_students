@@ -261,9 +261,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       if( student_record!=null && student_record.contains(_email.text.trim())) {
 
                         String test = await signin(
-                            _email.text.trim(), _password.text.trim()).whenComplete(() {
-                              Navigator.pop(context);
-                        });
+                            _email.text.trim(), _password.text.trim());
                         if (!mounted) return;
                         if (test == "1") {
                           Navigator.pushReplacement(
