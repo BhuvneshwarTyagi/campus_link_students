@@ -92,14 +92,32 @@ class NotificationServices{
     }
   }
 
-  void setUserState({required UserState userState}) {
-    String? userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId == null) return;
-    int stateNum = Utils.stateToNum(userState);
-    FirebaseFirestore.instance.collection("Students").doc(userId).update({
-      "state": stateNum,
-      "lastSeen": DateTime.now().millisecondsSinceEpoch.toString(),
-    });
+  Future<void> setUserState({required String status}) async {
+    if(status != "Online"){
+      String? userId = FirebaseAuth.instance.currentUser?.email;
+      final userdoc= await FirebaseFirestore.instance.collection("Students").doc(userId).get();
+      final university = userdoc.data()?["University"];
+      final clg = userdoc.data()?["College"];
+      final course = userdoc.data()?["Course"];
+      final branch = userdoc.data()?["Branch"];
+      final year = userdoc.data()?["Year"];
+      final sec = userdoc.data()?["Section"];
+
+
+      List<dynamic> subjects= userdoc.data()?["Subject"];
+
+      for(var subject in subjects){
+        await FirebaseFirestore.instance.collection("Messages")
+            .doc("${university.toString().split(' ')[0]} ${clg.toString().split(' ')[0]} ${course.toString().split(' ')[0]} ${branch.toString().split(' ')[0]} ${year.toString().split(' ')[0]} ${sec.toString().split(' ')[0]} ${subject.toString().split(' ')[0]}").update(
+            {
+              "${userdoc["Email"].toString().split("@")[0]}.Active" : false,
+              "${userdoc["Email"].toString().split("@")[0]}.Last_Active" : DateTime.now()
+            }
+        );
+      }
+    }
+
+
   }
 
   }

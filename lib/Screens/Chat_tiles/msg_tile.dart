@@ -12,24 +12,24 @@ import 'Video_Tile.dart';
 class MsgTile extends StatelessWidget {
   const MsgTile(
       {super.key,
-      required this.imageMsg,
-      required this.reply,
-      required this.name,
-      required this.text,
-      required this.sender,
-      required this.scrollindex,
-      required this.replyIndex,
-      required this.replyToName,
-      required this.ReplyToText,
-      required this.scrollController,
-      required this.channel,
-      required this.imageURL,
-      required this.videoURL,
-      required this.videoThumbnailURL,
-      required this.videoMsg,
+        required this.imageMsg,
+        required this.reply,
+        required this.name,
+        required this.text,
+        required this.sender,
+        required this.scrollindex,
+        required this.replyIndex,
+        required this.replyToName,
+        required this.ReplyToText,
+        required this.scrollController,
+        required this.channel,
+        required this.imageURL,
+        required this.videoURL,
+        required this.videoThumbnailURL,
+        required this.videoMsg,
 
-      required this.stamp,
-      required this.comressedURL, required this.image});
+        required this.stamp,
+        required this.comressedURL, required this.image});
   final bool imageMsg;
   final String comressedURL;
   final bool reply;
@@ -63,18 +63,18 @@ class MsgTile extends StatelessWidget {
         :
     sender
         ?
-        text.length <= 3
-    ?
-        size.width * 0.033 * 9
-            :
-        size.width * 0.0235 * len
+    text.length <= 3
+        ?
+    size.width * 0.033 * 9
+        :
+    size.width * 0.0235 * len
         :
     name.length>=text.length
         ?
-    size.width * 0.04 * len
+    size.width * 0.033 * len
         :
     size.width * 0.0235 * len
-        ;
+    ;
     if(width < size.width*0.3){
       width=size.width*0.3;
     }
@@ -84,35 +84,35 @@ class MsgTile extends StatelessWidget {
           horizontal: size.width * 0.01, vertical: size.height * 0.01),
       decoration: BoxDecoration(
 
-          borderRadius: const BorderRadius.only(
-            topRight: Radius.circular(30),
-            topLeft: Radius.circular(30),
-            bottomRight: Radius.circular(20),
-            bottomLeft: Radius.circular(20),
+        borderRadius: const BorderRadius.only(
+          topRight: Radius.circular(30),
+          topLeft: Radius.circular(30),
+          bottomRight: Radius.circular(20),
+          bottomLeft: Radius.circular(20),
 
-          ),
-          gradient: !sender?
+        ),
+        gradient: !sender?
 
-          const LinearGradient(colors: [
-              Color.fromRGBO(85, 184, 205, 1),
-            Color.fromRGBO(199, 84, 205, 1),
+        const LinearGradient(colors: [
+          Color.fromRGBO(85, 184, 205, 1),
+          Color.fromRGBO(199, 84, 205, 1),
 
-          ])
-
-
-
-              :
+        ])
 
 
 
-          const LinearGradient(
+            :
+
+
+
+        const LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: [
             Color.fromRGBO(0, 0, 130, 1),
             Color.fromRGBO(28, 180, 224, 1)
           ],
-          ),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,7 +128,7 @@ class MsgTile extends StatelessWidget {
                 width: size.width*0.01,
               ),
               SizedBox(
-                width: width - size.width*0.18,
+                  width: width - size.width*0.18,
                   child: NameTile(sender:sender,name: name)
               ),
 
@@ -138,11 +138,12 @@ class MsgTile extends StatelessWidget {
           reply
               ?
           ReplyTile(
-              scrollController: scrollController,
-              replyIndex: replyIndex,
-              scrollindex: scrollindex,
-              replyToName: replyToName,
-              ReplyToText: ReplyToText,
+            sender: sender,
+            scrollController: scrollController,
+            replyIndex: replyIndex,
+            scrollindex: scrollindex,
+            replyToName: replyToName,
+            ReplyToText: ReplyToText,
           )
               : const SizedBox(),
           text.isNotEmpty ? TextTile(sender: sender,text: text) : const SizedBox(),
@@ -157,13 +158,13 @@ class MsgTile extends StatelessWidget {
               : const SizedBox(),
           videoMsg
               ? Center(
-                child: VideoTile(
-            channel: channel,
-            videoURL: videoURL,
-            videoThumbnailURL: videoThumbnailURL,
-            stamp: stamp,
-          ),
-              )
+            child: VideoTile(
+              channel: channel,
+              videoURL: videoURL,
+              videoThumbnailURL: videoThumbnailURL,
+              stamp: stamp,
+            ),
+          )
               : const SizedBox(),
 
         ],

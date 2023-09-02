@@ -733,8 +733,14 @@ class _StudentDetailsState extends State<StudentDetails> {
                             yearController.text.isNotEmpty &&
                             sectionController.text.isNotEmpty &&
                             subjectlist[i].text.trim().isNotEmpty) {
-                          Map<String, dynamic> map = {
+                          Map<String, dynamic> map1 = {
                             "Read_Count": 0,
+                            "Last_Active": DateTime.now(),
+                            "Active" : false,
+                            "Token" : FieldValue.arrayUnion([usermodel["Token"]])
+                          };
+                          Map<String, dynamic> map2 = {
+                            "Read_Count": 1,
                             "Last_Active": DateTime.now(),
                             "Active" : false,
                             "Token" : FieldValue.arrayUnion([usermodel["Token"]])
@@ -767,7 +773,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                                   "Post": "Students"
                                 }
                               ]),
-                              usermodel["Email"].toString().split("@")[0]:  map,
+                              usermodel["Email"].toString().split("@")[0]:  map1,
                             });
                           }
                           else{
@@ -787,20 +793,22 @@ class _StudentDetailsState extends State<StudentDetails> {
                                 "Date" : stamp,
                                 "Name" : usermodel["Name"]
                               },
-                              "Messages": {
-                                "UID" : usermodel["Email"],
-                                "Image" : usermodel["Profile_URL"],
-                                "Name" : usermodel["Name"],
-                                "text" : "Hello",
-                                "Stamp": stamp
-                              },
+                              "Messages": FieldValue.arrayUnion([
+                                {
+                                  "UID" : usermodel["Email"],
+                                  "Image" : usermodel["Profile_URL"],
+                                  "Name" : usermodel["Name"],
+                                  "text" : "Hello",
+                                  "Stamp": stamp
+                                }
+                              ]),
                               "Members": FieldValue.arrayUnion([
                                 {
                                   "Email": "${usermodel["Email"]}",
                                   "Post": "Students"
                                 }
                               ]),
-                              usermodel["Email"].toString().split("@")[0]:  map,
+                              usermodel["Email"].toString().split("@")[0]:  map2,
 
                             });
                             await FirebaseFirestore
@@ -813,15 +821,15 @@ class _StudentDetailsState extends State<StudentDetails> {
                                     "${branchController.text.trim().split(" ")[0]} "
                                     "${yearController.text.trim().split(" ")[0]} "
                                     "${sectionController.text.trim().split(" ")[0]} "
-                                    "${subjectlist[i].text.trim().split(" ")[0]}").collection("Messages_Detail").doc("Messages_Details").set(
+                                    "${subjectlist[i].text.trim().split(" ")[0]}").collection("Messages_Detail").doc("Messages_Detail").set(
                               {
-                                "${usermodel["Email"]}_${stamp}_Delevered" : FieldValue.arrayUnion([
+                                "${usermodel["Email"].toString().split('@')[0]}_${stamp.toString().split('.')[0]}_Delevered" : FieldValue.arrayUnion([
                                   {
                                     "Email" : usermodel["Email"],
                                     "Stamp" : stamp
                                   }
                                 ]),
-                                "${usermodel["Email"]}_${stamp}_Seen" : FieldValue.arrayUnion([
+                                "${usermodel["Email"].toString().split('@')[0]}_${stamp.toString().split('.')[0]}_Seen" : FieldValue.arrayUnion([
                                   {
                                     "Email" : usermodel["Email"],
                                     "Stamp" : stamp
@@ -895,13 +903,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                           print("Successfully uploaded");
                         })
                             .whenComplete(() async {
-                          await database().fetchuser().whenComplete(() {
-                            Navigator.pop(context);
 
-                            // Creating Channel for students group
-
-                            Navigator.pop(context);
-                          });
                         }).onError((error, stackTrace) {
                           print("Error is: $error");
                           Navigator.pop(context);
@@ -945,7 +947,13 @@ class _StudentDetailsState extends State<StudentDetails> {
 
                       }
 
+                      await database().fetchuser().whenComplete(() {
+                        Navigator.pop(context);
 
+                        // Creating Channel for students group
+
+                        Navigator.pop(context);
+                      });
                     },
                     style: ElevatedButton.styleFrom(
                       shape: const StadiumBorder(),

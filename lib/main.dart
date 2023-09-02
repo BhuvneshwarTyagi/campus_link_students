@@ -231,11 +231,12 @@ enum LocationStatus { UNKNOWN, INITIALIZED, RUNNING, STOPPED }
 
 
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     NotificationServices.initialize(context);
 
     FirebaseMessaging.onMessage.listen(firebaseMessagingonmessageHandler);
@@ -245,22 +246,23 @@ class _MyAppState extends State<MyApp> {
 
   }
 
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     try {
       //super.didChangeAppLifecycleState(state);
       switch (state) {
         case AppLifecycleState.resumed:
-          NotificationServices().setUserState(userState: UserState.Online);
-
+          print("....44444444Resumed");
+          setState(() {});
           break;
         case AppLifecycleState.inactive:
-          NotificationServices().setUserState(userState: UserState.Offline);
+          NotificationServices().setUserState(status: "Offline");
           break;
         case AppLifecycleState.paused:
-          NotificationServices().setUserState(userState: UserState.Waiting);
+          NotificationServices().setUserState(status: "Waiting");
           break;
         case AppLifecycleState.detached:
-          NotificationServices().setUserState(userState: UserState.Offline);
+          NotificationServices().setUserState(status: "Offline");
           break;
           // TODO: Handle this case.
       }
