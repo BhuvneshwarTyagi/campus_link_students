@@ -721,6 +721,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                           childCurrent: const StudentDetails(),
                         ),
                       );
+                      print(".............push");
                       for (int i = 0; i < subjectlist.length; i++) {
                         subject.add(subjectlist[i].text.trim());
 
@@ -758,7 +759,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                           });
                         }
                       }
-
+                           print(".............................1");
 
                       if (rollno.text.toString().isNotEmpty &&
                           universityController.text.toString().isNotEmpty &&
@@ -808,6 +809,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                           print("Successfully uploaded");
                         }).onError((error, stackTrace) {
                           print("Error is: $error");
+                          Navigator.pop(context);
                           InAppNotifications.instance
                             ..titleFontSize = 35.0
                             ..descriptionFontSize = 20.0
@@ -848,6 +850,8 @@ class _StudentDetailsState extends State<StudentDetails> {
                               color: Colors.red,
                               size: 20,
                             ));
+
+                        print("..............End");
                       }
                     },
                     style: ElevatedButton.styleFrom(

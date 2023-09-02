@@ -41,7 +41,7 @@ class _MainPageState extends State<MainPage> {
             snapshot.hasData) {
           if (FirebaseAuth.instance.currentUser!.emailVerified) {
             !loaded ?
-            fetch_userdata()
+            getToken()
                 :
             null;
 
@@ -63,7 +63,7 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
- /* void getToken() async {
+  void getToken() async {
     await FirebaseMessaging.instance.getToken().then((token) async {
       await FirebaseFirestore.instance.collection("Students").doc(
           FirebaseAuth.instance.currentUser!.email).update({
@@ -109,7 +109,7 @@ class _MainPageState extends State<MainPage> {
       }
     },
     );
-  }*/
+  }
 
 
   Future<void> fetch_userdata() async {

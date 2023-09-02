@@ -167,7 +167,12 @@ class _chatsystemState extends State<chatsystem> {
          SizedBox(
            width: size.width*1,
            height: size.height*1,
-           child: Text("No Group created.... "),
+           child: const Center(
+             child: Image(
+               image: AssetImage("assets/icon/No_data_found.png"),
+               fit: BoxFit.cover,
+             ),
+           ),
          )
     );
   }
