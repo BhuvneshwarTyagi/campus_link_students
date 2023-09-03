@@ -149,7 +149,7 @@ class _chat_pageState extends State<chat_page> {
                                             .length,
                                         url: snapshot.data
                                             ?.data()![
-                                        "image_URL"],
+                                        "image_URL"] ?? "",
                                       ),
                                       type: PageTransitionType
                                           .rightToLeftJoined,

@@ -25,19 +25,14 @@ class Attendance extends StatefulWidget {
 }
 
 class _AttendanceState extends State<Attendance> {
-  //###########################################################################
 
   DateTime endDate = DateTime.now();
-  TextEditingController end_date_controller = TextEditingController();
+  TextEditingController endDateController = TextEditingController();
   DateTime startDate = DateTime.now();
-  TextEditingController start_date_controller = TextEditingController();
+  TextEditingController startDateController = TextEditingController();
 
-  final _st = GoogleFonts.exo(
-      fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black26);
-  @override
-
-  @override
-  final TextEditingController monthcontroller = TextEditingController();
+  final _st = GoogleFonts.exo(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black26);
+  final TextEditingController monthController = TextEditingController();
   List months = [
     "January",
     "February",
@@ -53,18 +48,18 @@ class _AttendanceState extends State<Attendance> {
     "December"
   ];
 
-  TextEditingController Subject_Controller = TextEditingController();
+  TextEditingController subjectController = TextEditingController();
 
-  List<dynamic> _subjects = usermodel["Subject"];
-  String selected_subject = "";
+  List<dynamic> subjects = usermodel["Subject"];
+  String selectedSubject = "";
 
-  String selected_month = "";
-  var month_number = -1;
+  String selectedMonth = "";
+  var monthNumber = -1;
 
 
   List<bool> selected =List.filled(6, false);
-  bool attendance_data = false;
-  var previous_index = -1;
+  bool attendanceData = false;
+  var previousIndex = -1;
 
 
   // Chart Data
@@ -81,8 +76,9 @@ class _AttendanceState extends State<Attendance> {
   ];
 
 
+  @override
   Widget build(BuildContext context) {
-    int touchedIndex=-1;
+    int? touchedIndex=-1;
     Size size = MediaQuery.of(context).size;
     return Container(
         decoration: BoxDecoration(
@@ -116,7 +112,7 @@ class _AttendanceState extends State<Attendance> {
                       width: size.width * 1,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: _subjects.length,
+                        itemCount: subjects.length,
                         itemBuilder: (context, index) {
                           return Row(
                             children: [
@@ -130,14 +126,14 @@ class _AttendanceState extends State<Attendance> {
                                       onTap: () {
                                         var preIndex = index;
                                         setState(() {
-                                          if(previous_index!=-1)
+                                          if(previousIndex!=-1)
                                           {
-                                            selected[previous_index] = false;
+                                            selected[previousIndex] = false;
                                           }
                                           selected[index] = true;
-                                          previous_index=index;
-                                          print(_subjects[index]);
-                                          selected_subject = _subjects[index];
+                                          previousIndex=index;
+                                          print(subjects[index]);
+                                          selectedSubject = subjects[index];
                                         });
                                       },
                                       child: Container(
@@ -177,7 +173,7 @@ class _AttendanceState extends State<Attendance> {
                                     SizedBox(
                                       height: size.height * 0.008,
                                     ),
-                                    AutoSizeText("${_subjects[index]}",
+                                    AutoSizeText("${subjects[index]}",
                                       style: GoogleFonts.openSans(
                                           color:selected[index]
                                               ?
@@ -334,15 +330,13 @@ class _AttendanceState extends State<Attendance> {
                             height: size.height * 0.08,
                             width: size.width * 0.36,
                             child: TextField(
-                              controller: start_date_controller,
+                              controller: startDateController,
                               onTap: () async {
                                 final startdate = await _selectDate(context)
                                     .whenComplete(() {});
                                 setState(() {
                                   startDate = startdate;
-                                  print("......................$startDate");
-                                  start_date_controller.text =
-                                      startDate.toString().substring(0, 10);
+                                  startDateController.text = startDate.toString().substring(0, 10);
                                   //print(".....${selected_subject.trim()}-${start_date_controller.text.trim().toString().split("-")[1]}");
                                 });
                               },
@@ -361,7 +355,7 @@ class _AttendanceState extends State<Attendance> {
 
                                   hintText: "Start Date",
                                   prefixIcon: Icon(Icons.date_range,
-                                      color:start_date_controller.text.isEmpty
+                                      color:startDateController.text.isEmpty
                                           ?
                                       Colors.black87
                                           :
@@ -372,7 +366,7 @@ class _AttendanceState extends State<Attendance> {
                                       borderRadius:
                                       BorderRadius.all(Radius.circular(15)),
                                       borderSide: BorderSide(
-                                          color:start_date_controller.text.isEmpty
+                                          color:startDateController.text.isEmpty
                                               ?
                                           Colors.black
                                               :
@@ -385,7 +379,7 @@ class _AttendanceState extends State<Attendance> {
                             height: size.height * 0.08,
                             width: size.width * 0.36,
                             child: TextField(
-                              controller: end_date_controller,
+                              controller: endDateController,
                               cursorColor: Colors.black,
                               style: GoogleFonts.openSans(
                                   color: Colors.white
@@ -395,7 +389,7 @@ class _AttendanceState extends State<Attendance> {
                                 setState(() {
                                   endDate = enddate;
                                   print(enddate.toString());
-                                  end_date_controller.text =
+                                  endDateController.text =
                                       enddate.toString().substring(0, 10);
                                 });
                               },
@@ -405,7 +399,7 @@ class _AttendanceState extends State<Attendance> {
                                       borderRadius:
                                       const BorderRadius.all(Radius.circular(15)),
                                       borderSide: BorderSide(
-                                        color: end_date_controller.text.isEmpty
+                                        color: endDateController.text.isEmpty
                                             ?
                                         Colors.black
                                             :
@@ -414,7 +408,7 @@ class _AttendanceState extends State<Attendance> {
                                       )),
                                   hintText: "End Date",
                                   prefixIcon: Icon(Icons.date_range,
-                                      color:end_date_controller.text.isEmpty
+                                      color:endDateController.text.isEmpty
                                           ?
                                       Colors.black87
                                           :
@@ -427,7 +421,7 @@ class _AttendanceState extends State<Attendance> {
                                       const BorderRadius.all(Radius.circular(15)),
                                       borderSide:
                                       BorderSide(
-                                          color: end_date_controller.text.isEmpty
+                                          color: endDateController.text.isEmpty
                                               ?
                                           Colors.black
                                               :
@@ -450,7 +444,7 @@ class _AttendanceState extends State<Attendance> {
                                 onPressed: (){
 
                                 setState(() {
-                                  attendance_data=false;
+                                  attendanceData=false;
                                 });
 
                                   Navigator.push(
@@ -465,11 +459,11 @@ class _AttendanceState extends State<Attendance> {
                                   );
 
 
-                                  if (selected_subject == "" ||
-                                      end_date_controller.text == "" ||
-                                      start_date_controller.text == "") {
+                                  if (selectedSubject == "" ||
+                                      endDateController.text == "" ||
+                                      startDateController.text == "") {
                                     setState(() {
-                                      attendance_data = false;
+                                      attendanceData = false;
                                     });
                                     InAppNotifications.instance
                                       ..titleFontSize = 22.0
@@ -492,9 +486,10 @@ class _AttendanceState extends State<Attendance> {
                                               fontSize: size.height * 0.06,
                                               fontWeight: FontWeight.w900),
                                         ));
+                                    Navigator.pop(context);
                                   }
                                   else{
-                                    count_attendance().whenComplete(() {
+                                    countAttendance().whenComplete(() {
                                       Navigator.pop(context);
                                     });
                                   }
@@ -514,7 +509,7 @@ class _AttendanceState extends State<Attendance> {
                     SizedBox(
                       height: size.height * 0.03,
                     ),
-                    attendance_data
+                    attendanceData
                         ?
                     Column(
                       children: [
@@ -552,7 +547,7 @@ class _AttendanceState extends State<Attendance> {
                                         width: size.width * 0.02,
                                       ),
                                       AutoSizeText(
-                                          " ${selected_subject}",
+                                          " ${selectedSubject}",
                                           style: GoogleFonts.openSans(
                                               color: Colors.white,
                                               fontSize:
@@ -638,29 +633,30 @@ class _AttendanceState extends State<Attendance> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Container(
+                            SizedBox(
                               height: size.height*0.48,
                               width: size.width*0.45,
                               child: PieChart(
                                 PieChartData(
-                                  /*pieTouchData: PieTouchData(
+                                  pieTouchData: PieTouchData(
                                       touchCallback: (_, pieTouchResponse ) {
-                                        var pieTouchResponse;
+                                        //var pieTouchResponse;
                                         setState(() {
-                                          if (pieTouchResponse.touchInput is FlLongPressEnd ||
-                                              pieTouchResponse.touchInput is FlPanEndEvent) {
+                                          if (pieTouchResponse?.touchedSection is FlLongPressEnd ||
+                                              pieTouchResponse?.touchedSection is FlPanEndEvent) {
                                             touchedIndex = -1;
                                           } else {
-                                            touchedIndex = pieTouchResponse.touchedSectionIndex;
+                                            touchedIndex = pieTouchResponse?.touchedSection?.touchedSectionIndex;
                                           }
                                         });
-                                      },)*/
+                                        print("....stastwst$touchedIndex");
+                                      },),
                                     borderData: FlBorderData(
                                       show: false,
                                     ),
                                     sectionsSpace: 10,
                                     centerSpaceRadius: 65,
-                                    sections: SectionData(context)
+                                    sections: sectionData(context)
                                 ),
                               ),
                             ),
@@ -793,11 +789,11 @@ class _AttendanceState extends State<Attendance> {
         ));
   }
 
-  Future<void> count_attendance() async {
+  Future<void> countAttendance() async {
     final now = DateTime.now();
     var currentMon = now.month;
-    if (month_number == -1) {
-        month_number = currentMon;
+    if (monthNumber == -1) {
+        monthNumber = currentMon;
     }
       attendance_count=0;
       absent_count=0;
@@ -807,7 +803,7 @@ class _AttendanceState extends State<Attendance> {
         .collection("Students")
         .doc(FirebaseAuth.instance.currentUser?.email)
         .collection("Attendance")
-        .doc("$selected_subject-${startDate.month}")
+        .doc("$selectedSubject-${startDate.month}")
         .get()
         .then((value) {
       return value.data();
@@ -849,7 +845,7 @@ class _AttendanceState extends State<Attendance> {
           .collection("Students")
           .doc(FirebaseAuth.instance.currentUser?.email)
           .collection("Attendance")
-          .doc("$selected_subject-${endDate.month}")
+          .doc("$selectedSubject-${endDate.month}")
           .get()
           .then((value) {
         return value.data();
@@ -874,7 +870,7 @@ class _AttendanceState extends State<Attendance> {
     setState(() {
       total_lecture = attendance_count + absent_count;
       percentage=(attendance_count/total_lecture)*100;
-     attendance_data = true;
+     attendanceData = true;
     });
 
 
@@ -888,41 +884,42 @@ class _AttendanceState extends State<Attendance> {
         firstDate: DateTime(2023, 5),
         lastDate: DateTime(2101));
     if (picked != null && picked != date) {
-      setState(() {
         date = picked;
-      });
-      print(date);
     }
     return date;
+  }
+
+  List<PieChartSectionData> sectionData(BuildContext context){
+   return PieData().data
+        .asMap()
+        .map<int,PieChartSectionData>((index, data){
+      double fontsize=16;
+      final value=PieChartSectionData(
+          color: data.color,
+          value: data.present,
+          radius: MediaQuery.of(context).size.height*0.06,
+          title: '${data.present}%',
+          titleStyle: GoogleFonts.openSans(
+              color:Colors.amber,
+              fontSize: fontsize,
+              fontWeight: FontWeight.w600
+          )
+      );
+      return MapEntry(index, value);
+    })
+        .values
+        .toList();
   }
 }
 
 
 // Pie Chart Data
 
-List<PieChartSectionData> SectionData(BuildContext context) => PieData.data
-    .asMap()
-    .map<int,PieChartSectionData>((index, data){
-  double fontsize=16;
-  final value=PieChartSectionData(
-      color: data.color,
-      value: data.present,
-      radius: MediaQuery.of(context).size.height*0.06,
-      title: '${data.present}%',
-      titleStyle: GoogleFonts.openSans(
-          color:Colors.amber,
-          fontSize: fontsize,
-          fontWeight: FontWeight.w600
-      )
-  );
-  return MapEntry(index, value);
-})
-    .values
-    .toList();
+
 
 class PieData
 {
-  static List<Data>data= [
+  List<Data> data = [
     Data(name: "Present",present: percentage,color:Colors.greenAccent),
     Data(name: "Absent",present: 100.0-percentage,color: Colors.red)
   ];
@@ -930,8 +927,8 @@ class PieData
 
 class Data
 {
-  late final String name;
-  late final double present;
+  late String name;
+  late double present;
   late Color color;
   Data({required this.name,required this.present,required this.color});
 }

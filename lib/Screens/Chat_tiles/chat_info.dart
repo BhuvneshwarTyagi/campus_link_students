@@ -361,9 +361,10 @@ class _Chat_InfoState extends State<Chat_Info> {
                                                 CircleAvatar(
                                                   radius: size.width*0.07,
                                                   backgroundColor: Colors.white10,
+                                                  backgroundImage:   NetworkImage(snapshot2.data?.data()!["Profile_URL"] ?? ""),
                                                   child: snapshot2.data!.data()!["Profile_URL"]!=null
                                                       ?
-                                                  Image(image: NetworkImage(snapshot2.data?.data()!["Profile_URL"]))
+                                                  const SizedBox()
                                                       :
                                                   AutoSizeText(
                                                     snapshot2.data?.data()!["Name"].toString().substring(0,1) ?? "A",
@@ -404,14 +405,14 @@ class _Chat_InfoState extends State<Chat_Info> {
                                               ],
                                             ),
                                           ),
-                                          snapshot.data?.data()!["Admins"].contains(usermodel["Email"])
+                                          snapshot.data?.data()!["Admins"].contains(snapshot.data?.data()!["Members"][index]["Email"])
                                               ?
                                           Container(
                                             height: size.height*0.03,
                                             width: size.width*0.22,
                                             decoration: BoxDecoration(
                                                 shape: BoxShape.rectangle,
-                                                borderRadius: BorderRadius.all(Radius.circular(8)),
+                                                borderRadius: const BorderRadius.all(Radius.circular(8)),
                                                 border: Border.all(
                                                     color: Colors.white38,
                                                     width: 1
