@@ -9,13 +9,12 @@ import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
-
 import '../Registration/database.dart';
 
-var absent_count = 0;
-var total_lecture = 0;
-double percentage=0;
-var attendance_count = 0;
+var absentCount = 0;
+var totalLecture = 0;
+double percentage = 0;
+var attendanceCount = 0;
 
 class Attendance extends StatefulWidget {
   const Attendance({Key? key}) : super(key: key);
@@ -25,13 +24,13 @@ class Attendance extends StatefulWidget {
 }
 
 class _AttendanceState extends State<Attendance> {
-
   DateTime endDate = DateTime.now();
   TextEditingController endDateController = TextEditingController();
   DateTime startDate = DateTime.now();
   TextEditingController startDateController = TextEditingController();
 
-  final _st = GoogleFonts.exo(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black26);
+  final _st = GoogleFonts.exo(
+      fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black26);
   final TextEditingController monthController = TextEditingController();
   List months = [
     "January",
@@ -56,29 +55,23 @@ class _AttendanceState extends State<Attendance> {
   String selectedMonth = "";
   var monthNumber = -1;
 
-
-  List<bool> selected =List.filled(6, false);
+  List<bool> selected = List.filled(6, false);
   bool attendanceData = false;
   var previousIndex = -1;
-
 
   // Chart Data
 
   //pai chart data
-  Map<String, double> dataMap = {
-    "Present": 5,
-    "Absent": 3,
+  int? touchedIndex;
+  final colorList = <Color>[Colors.indigo, Colors.purpleAccent];
 
-  };
-  final colorList = <Color>[
-    Colors.indigo,
-    Colors.purpleAccent
-  ];
+  // Bar chart Data List
+  List<String>dateWithMonthList=[];
 
+  List<BarChartGroupData> barChartGroupDataList = [];
 
   @override
   Widget build(BuildContext context) {
-    int? touchedIndex=-1;
     Size size = MediaQuery.of(context).size;
     return Container(
         decoration: BoxDecoration(
@@ -101,703 +94,742 @@ class _AttendanceState extends State<Attendance> {
         child: Scaffold(
           extendBody: true,
           backgroundColor: Colors.transparent,
-          body: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: size.height * 0.12,
-                      width: size.width * 1,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: subjects.length,
-                        itemBuilder: (context, index) {
-                          return Row(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(
-                                    left: size.width * 0.016,
-                                    right: size.width * 0.016),
-                                child: Column(
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        var preIndex = index;
-                                        setState(() {
-                                          if(previousIndex!=-1)
-                                          {
-                                            selected[previousIndex] = false;
-                                          }
-                                          selected[index] = true;
-                                          previousIndex=index;
-                                          print(subjects[index]);
-                                          selectedSubject = subjects[index];
-                                        });
-                                      },
-                                      child: Container(
-                                        height: size.height * 0.068,
-                                        width: size.width * 0.2,
-                                        decoration: BoxDecoration(
-                                            gradient: const LinearGradient(
-                                              begin: Alignment.centerLeft,
-                                              end: Alignment.centerRight,
-                                              colors: [
-                                                Color.fromRGBO(
-                                                    169, 169, 207, 1),
-                                                // Color.fromRGBO(86, 149, 178, 1),
-                                                Color.fromRGBO(
-                                                    189, 201, 214, 1),
-                                                //Color.fromRGBO(118, 78, 232, 1),
-                                                Color.fromRGBO(
-                                                    175, 207, 240, 1),
+          body: Container(
+            height: size.height,
+            width: size.width * 0.95,
+            color: Colors.transparent,
+            child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: size.height * 0.12,
+                        width: size.width * 1,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: subjects.length,
+                          itemBuilder: (context, index) {
+                            return Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      left: size.width * 0.016,
+                                      right: size.width * 0.016),
+                                  child: Column(
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          var preIndex = index;
+                                          setState(() {
+                                            if (previousIndex != -1) {
+                                              selected[previousIndex] = false;
+                                            }
+                                            selected[index] = true;
+                                            previousIndex = index;
+                                            print(subjects[index]);
+                                            selectedSubject = subjects[index];
+                                          });
+                                        },
+                                        child: Container(
+                                          height: size.height * 0.068,
+                                          width: size.width * 0.2,
+                                          decoration: BoxDecoration(
+                                              gradient: const LinearGradient(
+                                                begin: Alignment.centerLeft,
+                                                end: Alignment.centerRight,
+                                                colors: [
+                                                  Color.fromRGBO(
+                                                      169, 169, 207, 1),
+                                                  // Color.fromRGBO(86, 149, 178, 1),
+                                                  Color.fromRGBO(
+                                                      189, 201, 214, 1),
+                                                  //Color.fromRGBO(118, 78, 232, 1),
+                                                  Color.fromRGBO(
+                                                      175, 207, 240, 1),
 
-                                                // Color.fromRGBO(86, 149, 178, 1),
-                                                Color.fromRGBO(
-                                                    189, 201, 214, 1),
-                                                Color.fromRGBO(
-                                                    169, 169, 207, 1),
-                                              ],
-                                            ),
-                                            shape: BoxShape.circle,
-                                            border: selected[index]
-                                                ? Border.all(
-                                                color: Colors.white,
-                                                width: 2)
-                                                : Border.all(
-                                                color: Colors.blueAccent,
-                                                width: 1)),
+                                                  // Color.fromRGBO(86, 149, 178, 1),
+                                                  Color.fromRGBO(
+                                                      189, 201, 214, 1),
+                                                  Color.fromRGBO(
+                                                      169, 169, 207, 1),
+                                                ],
+                                              ),
+                                              shape: BoxShape.circle,
+                                              border: selected[index]
+                                                  ? Border.all(
+                                                      color: Colors.white,
+                                                      width: 2)
+                                                  : Border.all(
+                                                      color: Colors.blueAccent,
+                                                      width: 1)),
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: size.height * 0.008,
-                                    ),
-                                    AutoSizeText("${subjects[index]}",
-                                      style: GoogleFonts.openSans(
-                                          color:selected[index]
-                                              ?
-                                          Colors.white
-                                              :
-                                          Colors.black87
+                                      SizedBox(
+                                        height: size.height * 0.008,
                                       ),
-                                    )
-                                  ],
+                                      AutoSizeText(
+                                        "${subjects[index]}",
+                                        style: GoogleFonts.openSans(
+                                            color: selected[index]
+                                                ? Colors.white
+                                                : Colors.black87),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
+                              ],
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: size.height * 0.08,
-                      width: size.width * 1,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          /*SearchField(
-                      controller: monthcontroller,
-                      suggestionItemDecoration: SuggestionDecoration(),
-                      key: const Key("Search key"),
-                      suggestions:
-                          months.map((e) => SearchFieldListItem(e)).toList(),
-                      searchStyle: GoogleFonts.exo(
+                      SizedBox(
+                        height: size.height * 0.08,
+                        width: size.width * 1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            /*SearchField(
+                        controller: monthcontroller,
+                        suggestionItemDecoration: SuggestionDecoration(),
+                        key: const Key("Search key"),
+                        suggestions:
+                            months.map((e) => SearchFieldListItem(e)).toList(),
+                        searchStyle: GoogleFonts.exo(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800),
+                        suggestionStyle: GoogleFonts.exo(
                           color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800),
-                      suggestionStyle: GoogleFonts.exo(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                      ),
-                      marginColor: Colors.blue,
-                      suggestionsDecoration: SuggestionDecoration(
-                          color: Colors.blue,
-                          //shape: BoxShape.rectangle,
-                          padding: const EdgeInsets.all(10),
-                          border: Border.all(width: 2, color: Colors.white),
-                          borderRadius: BorderRadius.circular(0)),
-                      searchInputDecoration: InputDecoration(
-                          fillColor: Colors.blueAccent,
-                          filled: true,
-                          hintStyle: GoogleFonts.exo(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              width: 3,
-                              color: Colors.white,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusColor: Colors.white,
-                          disabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              width: 3,
-                              color: Colors.white,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              width: 3,
-                              color: Colors.white,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          )),
-                      onSuggestionTap: (value) {
-                        print(value.searchKey);
-
-                        print(monthcontroller.text.toString());
-                        setState(() {
-                          selected_month = monthcontroller.text.toString();
-                          month_number = months.indexOf(selected_month) + 1;
-                          count_attendance();
-                        });
-                        print(month_number);
-                        //FocusScope.of(context).requestFocus();
-                      },
-                      enabled: true,
-                      hint: "${months[DateTime.now().month - 1]}",
-                      itemHeight: 50,
-                      maxSuggestionsInViewPort: 3,
-                    ),*/
-                          /*SizedBox(
-                          height: size.height*0.085,
-                          width: size.width*0.31,
-                          child: SearchField(
-                            controller: Subject_Controller,
-                            suggestionItemDecoration: SuggestionDecoration(),
-                            key: const Key("Search key"),
-                            suggestions:
-                            _subjects.map((e) => SearchFieldListItem(e)).toList(),
-                            searchStyle: _st,
-                            suggestionStyle: _st,
-                            marginColor: Colors.black,
-                            suggestionsDecoration: SuggestionDecoration(
-                                color:Colors.blue,
-                                //shape: BoxShape.rectangle,
-                                padding: const EdgeInsets.all(10),
-                                border: Border.all(width: 1, color: Colors.black),
-                                borderRadius: BorderRadius.circular(0)),
-                            searchInputDecoration: InputDecoration(
-                                hintText: "Subject",
-                                contentPadding: EdgeInsets.all(size.height*0.02),
-                                fillColor: Colors.transparent,
-                                filled: true,
-                                // hintStyle: _st,
-                                suffixIcon: Icon(Icons.arrow_drop_down,color: Colors.black,size: size.height*0.04,),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    width: 1,
-                                    color: Colors.black,
-                                  ),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                focusColor: Colors.transparent,
-                                disabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    width: 1,
-                                    color: Colors.black,
-                                  ),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    width: 1,
-                                    color: Colors.black,
-                                  ),
-                                  borderRadius: BorderRadius.circular(15),
-                                )),
-                            onSuggestionTap: (value) {
-                              FocusScope.of(context).unfocus();
-
-                              setState(() {
-                                selected_subject=Subject_Controller.text.toString().trim();
-                              });
-
-
-                            },
-                            enabled: true,
-                            hint: "subject",
-                            itemHeight: 50,
-                            maxSuggestionsInViewPort: 3,
-                          ),
-                        ),*/
-                          SizedBox(
-                            height: size.height * 0.08,
-                            width: size.width * 0.36,
-                            child: TextField(
-                              controller: startDateController,
-                              onTap: () async {
-                                final startdate = await _selectDate(context)
-                                    .whenComplete(() {});
-                                setState(() {
-                                  startDate = startdate;
-                                  startDateController.text = startDate.toString().substring(0, 10);
-                                  //print(".....${selected_subject.trim()}-${start_date_controller.text.trim().toString().split("-")[1]}");
-                                });
-                              },
-                              style: GoogleFonts.openSans(
-                                  color: Colors.white
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                        ),
+                        marginColor: Colors.blue,
+                        suggestionsDecoration: SuggestionDecoration(
+                            color: Colors.blue,
+                            //shape: BoxShape.rectangle,
+                            padding: const EdgeInsets.all(10),
+                            border: Border.all(width: 2, color: Colors.white),
+                            borderRadius: BorderRadius.circular(0)),
+                        searchInputDecoration: InputDecoration(
+                            fillColor: Colors.blueAccent,
+                            filled: true,
+                            hintStyle: GoogleFonts.exo(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                width: 3,
+                                color: Colors.white,
                               ),
-                              keyboardType: TextInputType.none,
-                              cursorColor: Colors.black,
-                              decoration: InputDecoration(
-                                  focusedBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                                      borderSide: BorderSide(
-                                          color: Colors.white,
-                                          width: 2
-                                      )),
-
-                                  hintText: "Start Date",
-                                  prefixIcon: Icon(Icons.date_range,
-                                      color:startDateController.text.isEmpty
-                                          ?
-                                      Colors.black87
-                                          :
-                                      Colors.white,
-                                      size: size.height * 0.03),
-                                  fillColor: Colors.lightBlueAccent,
-                                  enabledBorder:  OutlineInputBorder(
-                                      borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
-                                      borderSide: BorderSide(
-                                          color:startDateController.text.isEmpty
-                                              ?
-                                          Colors.black
-                                              :
-                                          Colors.white,
-                                          width: 1
-                                      ))),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                          ),
-                          SizedBox(
-                            height: size.height * 0.08,
-                            width: size.width * 0.36,
-                            child: TextField(
-                              controller: endDateController,
-                              cursorColor: Colors.black,
-                              style: GoogleFonts.openSans(
-                                  color: Colors.white
+                            focusColor: Colors.white,
+                            disabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                width: 3,
+                                color: Colors.white,
                               ),
-                              onTap: () async {
-                                final enddate = await _selectDate(context);
-                                setState(() {
-                                  endDate = enddate;
-                                  print(enddate.toString());
-                                  endDateController.text =
-                                      enddate.toString().substring(0, 10);
-                                });
-                              },
-                              keyboardType: TextInputType.none,
-                              decoration: InputDecoration(
-                                  focusedBorder:   OutlineInputBorder(
-                                      borderRadius:
-                                      const BorderRadius.all(Radius.circular(15)),
-                                      borderSide: BorderSide(
-                                        color: endDateController.text.isEmpty
-                                            ?
-                                        Colors.black
-                                            :
-                                        Colors.white,
-                                        width: 1,
-                                      )),
-                                  hintText: "End Date",
-                                  prefixIcon: Icon(Icons.date_range,
-                                      color:endDateController.text.isEmpty
-                                          ?
-                                      Colors.black87
-                                          :
-                                      Colors.white
-                                      ,
-                                      size: size.height * 0.03),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                width: 3,
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            )),
+                        onSuggestionTap: (value) {
+                          print(value.searchKey);
+
+                          print(monthcontroller.text.toString());
+                          setState(() {
+                            selected_month = monthcontroller.text.toString();
+                            month_number = months.indexOf(selected_month) + 1;
+                            count_attendance();
+                          });
+                          print(month_number);
+                          //FocusScope.of(context).requestFocus();
+                        },
+                        enabled: true,
+                        hint: "${months[DateTime.now().month - 1]}",
+                        itemHeight: 50,
+                        maxSuggestionsInViewPort: 3,
+                      ),*/
+                            /*SizedBox(
+                            height: size.height*0.085,
+                            width: size.width*0.31,
+                            child: SearchField(
+                              controller: Subject_Controller,
+                              suggestionItemDecoration: SuggestionDecoration(),
+                              key: const Key("Search key"),
+                              suggestions:
+                              _subjects.map((e) => SearchFieldListItem(e)).toList(),
+                              searchStyle: _st,
+                              suggestionStyle: _st,
+                              marginColor: Colors.black,
+                              suggestionsDecoration: SuggestionDecoration(
+                                  color:Colors.blue,
+                                  //shape: BoxShape.rectangle,
+                                  padding: const EdgeInsets.all(10),
+                                  border: Border.all(width: 1, color: Colors.black),
+                                  borderRadius: BorderRadius.circular(0)),
+                              searchInputDecoration: InputDecoration(
+                                  hintText: "Subject",
+                                  contentPadding: EdgeInsets.all(size.height*0.02),
                                   fillColor: Colors.transparent,
-                                  enabledBorder:  OutlineInputBorder(
-                                      borderRadius:
-                                      const BorderRadius.all(Radius.circular(15)),
-                                      borderSide:
-                                      BorderSide(
-                                          color: endDateController.text.isEmpty
-                                              ?
-                                          Colors.black
-                                              :
-                                          Colors.white,
-                                          width: 1
-
-                                      ))),
-                            ),
-                          ),
-                          SizedBox(
-                            height: size.height*0.074,
-                            width: size.width*0.15,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                backgroundColor: Colors.greenAccent
-                              ),
-                                onPressed: (){
+                                  filled: true,
+                                  // hintStyle: _st,
+                                  suffixIcon: Icon(Icons.arrow_drop_down,color: Colors.black,size: size.height*0.04,),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      width: 1,
+                                      color: Colors.black,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  focusColor: Colors.transparent,
+                                  disabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      width: 1,
+                                      color: Colors.black,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(
+                                      width: 1,
+                                      color: Colors.black,
+                                    ),
+                                    borderRadius: BorderRadius.circular(15),
+                                  )),
+                              onSuggestionTap: (value) {
+                                FocusScope.of(context).unfocus();
 
                                 setState(() {
-                                  attendanceData=false;
+                                  selected_subject=Subject_Controller.text.toString().trim();
                                 });
 
-                                  Navigator.push(
-                                    context,
-                                    PageTransition(
-                                      child: const loading(text: 'Data is Proceed Please Wait'),
-                                      type: PageTransitionType.bottomToTop,
-                                      duration: const Duration(milliseconds: 400),
-                                      alignment: Alignment.bottomCenter,
-                                      childCurrent: const Attendance(),
-                                    ),
-                                  );
 
-
-                                  if (selectedSubject == "" ||
-                                      endDateController.text == "" ||
-                                      startDateController.text == "") {
+                              },
+                              enabled: true,
+                              hint: "subject",
+                              itemHeight: 50,
+                              maxSuggestionsInViewPort: 3,
+                            ),
+                          ),*/
+                            SizedBox(
+                              height: size.height * 0.08,
+                              width: size.width * 0.36,
+                              child: TextField(
+                                controller: startDateController,
+                                onTap: () async {
+                                  final startdate = await _selectDate(context)
+                                      .whenComplete(() {});
+                                  setState(() {
+                                    startDate = startdate;
+                                    startDateController.text =
+                                        startDate.toString().substring(0, 10);
+                                    //print(".....${selected_subject.trim()}-${start_date_controller.text.trim().toString().split("-")[1]}");
+                                  });
+                                },
+                                style:
+                                    GoogleFonts.openSans(color: Colors.white),
+                                keyboardType: TextInputType.none,
+                                cursorColor: Colors.black,
+                                decoration: InputDecoration(
+                                    focusedBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15)),
+                                        borderSide: BorderSide(
+                                            color: Colors.white, width: 2)),
+                                    hintText: "Start Date",
+                                    prefixIcon: Icon(Icons.date_range,
+                                        color: startDateController.text.isEmpty
+                                            ? Colors.black87
+                                            : Colors.white,
+                                        size: size.height * 0.03),
+                                    fillColor: Colors.lightBlueAccent,
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15)),
+                                        borderSide: BorderSide(
+                                            color:
+                                                startDateController.text.isEmpty
+                                                    ? Colors.black
+                                                    : Colors.white,
+                                            width: 1))),
+                              ),
+                            ),
+                            SizedBox(
+                              height: size.height * 0.08,
+                              width: size.width * 0.36,
+                              child: TextField(
+                                controller: endDateController,
+                                cursorColor: Colors.black,
+                                style:
+                                    GoogleFonts.openSans(color: Colors.white),
+                                onTap: () async {
+                                  final enddate = await _selectDate(context);
+                                  setState(() {
+                                    endDate = enddate;
+                                    print(enddate.toString());
+                                    endDateController.text =
+                                        enddate.toString().substring(0, 10);
+                                  });
+                                },
+                                keyboardType: TextInputType.none,
+                                decoration: InputDecoration(
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(15)),
+                                        borderSide: BorderSide(
+                                          color: endDateController.text.isEmpty
+                                              ? Colors.black
+                                              : Colors.white,
+                                          width: 1,
+                                        )),
+                                    hintText: "End Date",
+                                    prefixIcon: Icon(Icons.date_range,
+                                        color: endDateController.text.isEmpty
+                                            ? Colors.black87
+                                            : Colors.white,
+                                        size: size.height * 0.03),
+                                    fillColor: Colors.transparent,
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(15)),
+                                        borderSide: BorderSide(
+                                            color:
+                                                endDateController.text.isEmpty
+                                                    ? Colors.black
+                                                    : Colors.white,
+                                            width: 1))),
+                              ),
+                            ),
+                            SizedBox(
+                              height: size.height * 0.074,
+                              width: size.width * 0.15,
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      backgroundColor: Colors.greenAccent),
+                                  onPressed: () {
                                     setState(() {
                                       attendanceData = false;
                                     });
-                                    InAppNotifications.instance
-                                      ..titleFontSize = 22.0
-                                      ..descriptionFontSize = 16.0
-                                      ..textColor = Colors.black
-                                      ..backgroundColor =
-                                      const Color.fromRGBO(190, 190, 190, 1)
-                                      ..shadow = true
-                                      ..animationStyle =
-                                          InAppNotificationsAnimationStyle
-                                              .scale;
-                                    InAppNotifications.show(
-                                        title: 'Failed',
-                                        duration: const Duration(seconds: 5),
-                                        description: "Please select all Data",
-                                        leading: AutoSizeText(
-                                          "!",
-                                          style: GoogleFonts.gfsDidot(
-                                              color: Colors.red,
-                                              fontSize: size.height * 0.06,
-                                              fontWeight: FontWeight.w900),
-                                        ));
-                                    Navigator.pop(context);
-                                  }
-                                  else{
-                                    countAttendance().whenComplete(() {
+
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        child: const loading(
+                                            text:
+                                                'Data is Proceed Please Wait'),
+                                        type: PageTransitionType.bottomToTop,
+                                        duration:
+                                            const Duration(milliseconds: 400),
+                                        alignment: Alignment.bottomCenter,
+                                        childCurrent: const Attendance(),
+                                      ),
+                                    );
+
+                                    if (selectedSubject == "" ||
+                                        endDateController.text == "" ||
+                                        startDateController.text == "") {
+                                      setState(() {
+                                        attendanceData = false;
+                                      });
+                                      InAppNotifications.instance
+                                        ..titleFontSize = 22.0
+                                        ..descriptionFontSize = 16.0
+                                        ..textColor = Colors.black
+                                        ..backgroundColor =
+                                            const Color.fromRGBO(
+                                                190, 190, 190, 1)
+                                        ..shadow = true
+                                        ..animationStyle =
+                                            InAppNotificationsAnimationStyle
+                                                .scale;
+                                      InAppNotifications.show(
+                                          title: 'Failed',
+                                          duration: const Duration(seconds: 5),
+                                          description: "Please select all Data",
+                                          leading: AutoSizeText(
+                                            "!",
+                                            style: GoogleFonts.gfsDidot(
+                                                color: Colors.red,
+                                                fontSize: size.height * 0.06,
+                                                fontWeight: FontWeight.w900),
+                                          ));
                                       Navigator.pop(context);
-                                    });
-                                  }
-
-
-                                },
-                                child:Center(child: Icon(Icons.arrow_downward,color: Colors.black,size: size.height*0.04,)) ),
-                          )
-                        ],
+                                    } else {
+                                      countAttendance(size).whenComplete(() {
+                                        Navigator.pop(context);
+                                      });
+                                    }
+                                  },
+                                  child: Center(
+                                      child: Icon(
+                                    Icons.arrow_downward,
+                                    color: Colors.black,
+                                    size: size.height * 0.04,
+                                  ))),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                    Divider(
-                      color: Colors.black,
-                      height: MediaQuery.of(context).size.height*0.06,
-                      thickness: MediaQuery.of(context).size.height*0.001,
-                    ),
-                    SizedBox(
-                      height: size.height * 0.03,
-                    ),
-                    attendanceData
-                        ?
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: size.height * 0.03,
-                        ),
-                        Container(
-                            width: size.width * 0.9,
-                            height: size.height * 0.31,
-                            decoration: BoxDecoration(
-                                color: Colors.blueAccent,
-                                border: Border.all(
-                                    color: Colors.amberAccent,
-                                    width: 2),
-                                borderRadius:
-                                BorderRadius.circular(15.0)),
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment:
-                                MainAxisAlignment.center,
-                                crossAxisAlignment:
-                                CrossAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: size.width * 0.055,
-                                      ),
-                                      AutoSizeText("Subject : ",
-                                          style: GoogleFonts.openSans(
-                                              color: Colors.white,
-                                              fontSize:
-                                              size.height * 0.026)),
-                                      SizedBox(
-                                        width: size.width * 0.02,
-                                      ),
-                                      AutoSizeText(
-                                          " ${selectedSubject}",
-                                          style: GoogleFonts.openSans(
-                                              color: Colors.white,
-                                              fontSize:
-                                              size.height * 0.026)),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: size.height * 0.02,
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: size.width * 0.055,
-                                      ),
-                                      AutoSizeText("Present : ",
-                                          style: GoogleFonts.openSans(
-                                              color: Colors.white,
-                                              fontSize:
-                                              size.height * 0.026)),
-                                      SizedBox(
-                                        height: size.height * 0.02,
-                                      ),
-                                      AutoSizeText(" $attendance_count",
-                                          style: GoogleFonts.openSans(
-                                              color: Colors.white,
-                                              fontSize:
-                                              size.height * 0.026)),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: size.height * 0.02,
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: size.width * 0.055,
-                                      ),
-                                      AutoSizeText("Absent : ",
-                                          style: GoogleFonts.openSans(
-                                              color: Colors.white,
-                                              fontSize:
-                                              size.height * 0.026)),
-                                      SizedBox(
-                                        height: size.height * 0.02,
-                                      ),
-                                      AutoSizeText(" $absent_count",
-                                          style: GoogleFonts.openSans(
-                                              color: Colors.white,
-                                              fontSize:
-                                              size.height * 0.026)),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: size.height * 0.02,
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: size.width * 0.055,
-                                      ),
-                                      AutoSizeText("Total Lecture : ",
-                                          style: GoogleFonts.openSans(
-                                              color: Colors.white,
-                                              fontSize:
-                                              size.height * 0.026)),
-                                      SizedBox(
-                                        height: size.height * 0.02,
-                                      ),
-                                      AutoSizeText(" $total_lecture",
-                                          style: GoogleFonts.openSans(
-                                              color: Colors.white,
-                                              fontSize:
-                                              size.height * 0.026)),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            )),
-                        SizedBox(
-                          height: size.height * 0.042,
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            SizedBox(
-                              height: size.height*0.48,
-                              width: size.width*0.45,
-                              child: PieChart(
-                                PieChartData(
-                                  pieTouchData: PieTouchData(
-                                      touchCallback: (_, pieTouchResponse ) {
-                                        //var pieTouchResponse;
-                                        setState(() {
-                                          if (pieTouchResponse?.touchedSection is FlLongPressEnd ||
-                                              pieTouchResponse?.touchedSection is FlPanEndEvent) {
-                                            touchedIndex = -1;
-                                          } else {
-                                            touchedIndex = pieTouchResponse?.touchedSection?.touchedSectionIndex;
-                                          }
-                                        });
-                                        print("....stastwst$touchedIndex");
-                                      },),
-                                    borderData: FlBorderData(
-                                      show: false,
-                                    ),
-                                    sectionsSpace: 10,
-                                    centerSpaceRadius: 65,
-                                    sections: sectionData(context)
-                                ),
-                              ),
-                            ),
-                            Column(
+                      Divider(
+                        color: Colors.black,
+                        height: MediaQuery.of(context).size.height * 0.06,
+                        thickness: MediaQuery.of(context).size.height * 0.001,
+                      ),
+                      SizedBox(
+                        height: size.height * 0.025,
+                      ),
+                      attendanceData
+                          ? Column(
                               children: [
+                                SizedBox(
+                                  height: size.height * 0.03,
+                                ),
+                                Container(
+                                    width: size.width * 0.9,
+                                    height: size.height * 0.31,
+                                    decoration: BoxDecoration(
+                                        color: Colors.blueAccent,
+                                        border: Border.all(
+                                            color: Colors.amberAccent,
+                                            width: 2),
+                                        borderRadius:
+                                            BorderRadius.circular(15.0)),
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              SizedBox(
+                                                width: size.width * 0.055,
+                                              ),
+                                              AutoSizeText("Subject : ",
+                                                  style: GoogleFonts.openSans(
+                                                      color: Colors.white,
+                                                      fontSize:
+                                                          size.height * 0.026)),
+                                              SizedBox(
+                                                width: size.width * 0.02,
+                                              ),
+                                              AutoSizeText(
+                                                  " ${selectedSubject}",
+                                                  style: GoogleFonts.openSans(
+                                                      color: Colors.white,
+                                                      fontSize:
+                                                          size.height * 0.026)),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.02,
+                                          ),
+                                          Row(
+                                            children: [
+                                              SizedBox(
+                                                width: size.width * 0.055,
+                                              ),
+                                              AutoSizeText("Present : ",
+                                                  style: GoogleFonts.openSans(
+                                                      color: Colors.white,
+                                                      fontSize:
+                                                          size.height * 0.026)),
+                                              SizedBox(
+                                                height: size.height * 0.02,
+                                              ),
+                                              AutoSizeText(" $attendanceCount",
+                                                  style: GoogleFonts.openSans(
+                                                      color: Colors.white,
+                                                      fontSize:
+                                                          size.height * 0.026)),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.02,
+                                          ),
+                                          Row(
+                                            children: [
+                                              SizedBox(
+                                                width: size.width * 0.055,
+                                              ),
+                                              AutoSizeText("Absent : ",
+                                                  style: GoogleFonts.openSans(
+                                                      color: Colors.white,
+                                                      fontSize:
+                                                          size.height * 0.026)),
+                                              SizedBox(
+                                                height: size.height * 0.02,
+                                              ),
+                                              AutoSizeText(" $absentCount",
+                                                  style: GoogleFonts.openSans(
+                                                      color: Colors.white,
+                                                      fontSize:
+                                                          size.height * 0.026)),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.02,
+                                          ),
+                                          Row(
+                                            children: [
+                                              SizedBox(
+                                                width: size.width * 0.055,
+                                              ),
+                                              AutoSizeText("Total Lecture : ",
+                                                  style: GoogleFonts.openSans(
+                                                      color: Colors.white,
+                                                      fontSize:
+                                                          size.height * 0.026)),
+                                              SizedBox(
+                                                height: size.height * 0.02,
+                                              ),
+                                              AutoSizeText(" $totalLecture",
+                                                  style: GoogleFonts.openSans(
+                                                      color: Colors.white,
+                                                      fontSize:
+                                                          size.height * 0.026)),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    )),
+                                SizedBox(
+                                  height: size.height * 0.03,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SizedBox(
+                                    height: size.height * 0.05,
+                                    child: AutoSizeText(
+                                      "Bar Chart",
+                                      style: GoogleFonts.openSans(
+                                          fontSize: size.height * 0.04,
+                                          color: Colors.black87,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.4,
+                                  width: size.width * 0.45,
+                                  child: PieChart(
+                                    PieChartData(
+                                        pieTouchData: PieTouchData(
+                                          enabled: true,
+                                          touchCallback: (_, pieTouchResponse) {
+                                            //var pieTouchResponse;
+                                            setState(() {
+                                              if (pieTouchResponse
+                                                          ?.touchedSection
+                                                      is FlLongPressEnd ||
+                                                  pieTouchResponse
+                                                          ?.touchedSection
+                                                      is FlPanEndEvent) {
+                                                touchedIndex = -1;
+                                              } else {
+                                                touchedIndex = pieTouchResponse
+                                                    ?.touchedSection
+                                                    ?.touchedSectionIndex;
+                                              }
+                                            });
+                                            print("....stastwst$touchedIndex");
+                                          },
+                                        ),
+                                        borderData: FlBorderData(
+                                          show: false,
+                                        ),
+                                        sectionsSpace: 10,
+                                        centerSpaceRadius: 65,
+                                        sections:
+                                            sectionData(context, touchedIndex)),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.01,
+                                ),
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
-                                      height:size.height*0.02 ,
-                                      width:size.width*0.04,
+                                      height: size.height * 0.02,
+                                      width: size.width * 0.04,
                                       decoration: const BoxDecoration(
                                           color: Colors.greenAccent,
-                                          shape: BoxShape.circle
-                                      ),
+                                          shape: BoxShape.circle),
                                     ),
                                     AutoSizeText(
                                       "\t\t\t Present",
                                       style: GoogleFonts.openSans(
                                           color: Colors.greenAccent,
-                                          fontSize: size.height*0.025,
-                                          fontWeight: FontWeight.w600
-                                      ),
+                                          fontSize: size.height * 0.025,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    SizedBox(
+                                      width: size.width * 0.26,
+                                    ),
+                                    Container(
+                                      height: size.height * 0.02,
+                                      width: size.width * 0.04,
+                                      decoration: const BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle),
+                                    ),
+                                    AutoSizeText(
+                                      "\t\t\t Absent",
+                                      style: GoogleFonts.openSans(
+                                          color: Colors.red,
+                                          fontSize: size.height * 0.025,
+                                          fontWeight: FontWeight.w600),
                                     )
                                   ],
                                 ),
                                 SizedBox(
-                                  height: size.height*0.01,
+                                  height: size.height * 0.08,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SizedBox(
+                                    height: size.height * 0.05,
+                                    child: AutoSizeText(
+                                      "Bar Chart",
+                                      style: GoogleFonts.openSans(
+                                          fontSize: size.height * 0.04,
+                                          color: Colors.black87,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.04,
+                                ),
+                                Container(
+                                  height: size.height * 0.42,
+                                  width: size.width * 0.88,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.black,
+                                        width: 2,
+                                      ),
+                                      color: Colors.black26.withOpacity(0.7)),
+                                  child: BarChart(
+                                    swapAnimationCurve: Curves.linear,
+                                    swapAnimationDuration: const Duration(milliseconds: 100),
+                                    BarChartData(
+                                      barTouchData: BarTouchData(
+                                        enabled: true,
+                                        allowTouchBarBackDraw: true,
+                                        touchTooltipData: BarTouchTooltipData(
+                                          tooltipBgColor: Colors.white,
+                                          //getTooltipItem: (a, b, c, d) => null,
+                                        ),
+                                      ),
+                                      alignment: BarChartAlignment.center,
+                                      barGroups: barChartGroupDataList,
+                                      titlesData: FlTitlesData(
+                                        show: true,
+                                        bottomTitles: AxisTitles(
+                                          drawBehindEverything: true,
+                                          sideTitles: SideTitles(
+                                            showTitles: true,
+                                            reservedSize: 38,
+                                            interval: size.width * 0.04,
+                                            getTitlesWidget: (value, meta) {
+                                              return Text(dateWithMonthList[value.toInt()],
+                                                style: GoogleFonts.openSans(
+                                                  color: Colors.blueAccent
+                                                ),
+
+
+
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.035,
                                 ),
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
-                                      height:size.height*0.02 ,
-                                      width:size.width*0.04,
+                                      height: size.height * 0.02,
+                                      width: size.width * 0.04,
                                       decoration: const BoxDecoration(
-                                          color: Colors.red,
-                                          shape: BoxShape.circle
-                                      ),
+                                          color: Colors.greenAccent,
+                                          shape: BoxShape.circle),
                                     ),
                                     AutoSizeText(
                                       "\t\t\t Present",
                                       style: GoogleFonts.openSans(
+                                          color: Colors.greenAccent,
+                                          fontSize: size.height * 0.025,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    SizedBox(
+                                      width: size.width * 0.26,
+                                    ),
+                                    Container(
+                                      height: size.height * 0.02,
+                                      width: size.width * 0.04,
+                                      decoration: const BoxDecoration(
+                                          color: Colors.amber,
+                                          shape: BoxShape.circle),
+                                    ),
+                                    AutoSizeText(
+                                      "\t\t\t Absent",
+                                      style: GoogleFonts.openSans(
                                           color: Colors.red,
-                                          fontSize: size.height*0.025,
-                                          fontWeight: FontWeight.w600
-                                      ),
+                                          fontSize: size.height * 0.025,
+                                          fontWeight: FontWeight.w600),
                                     )
                                   ],
-                                )
+                                ),
+                                SizedBox(
+                                  height: size.height * 0.055,
+                                ),
                               ],
                             )
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: SizedBox(
-                            height: size.height*0.05,
-                            child: AutoSizeText(
-                              "Bar Chart",
-                              style: GoogleFonts.openSans(
-                                fontSize: size.height*0.04,
-                                color: Colors.black87,
-                                fontWeight: FontWeight.w700
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.0,
-                        ),
-                        Container(
-                          height: size.height*0.42,
-                          width: size.width*0.88,
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 2,
-                              ),
-                              color: Colors.black26.withOpacity(0.7)
-                          ),
-                          child: BarChart(
-                            BarChartData(
-                              barTouchData:BarTouchData(
-                                touchTooltipData: BarTouchTooltipData(
-                                  tooltipBgColor: Colors.white,
-                                  getTooltipItem: (a, b, c, d) => null,
-                                ),
-                              ) ,
-
-                              alignment: BarChartAlignment.center,
-                              barGroups: List.generate(
-                                dataMap.length,
-                                    (i) => BarChartGroupData(
-                                  x: i,
-                                  barRods: [
-                                    BarChartRodData(
-                                      toY: 10,
-                                      color: Colors.green,
-                                      width: 15.0,
-                                      borderRadius: BorderRadius.circular(10),
-                                      backDrawRodData: BackgroundBarChartRodData(
-                                        show: true,
-                                        color: Colors.green,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              titlesData:  FlTitlesData(
-                                bottomTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    reservedSize: 38,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                        ),
-                        SizedBox(
-                          height: size.height * 0.055,
-                        ),
-                      ],
-                    )
-                        :
-                    const SizedBox(),
-                  ],
-                ),
-              )),
+                          : const SizedBox(),
+                    ],
+                  ),
+                )),
+          ),
         ));
   }
 
-  Future<void> countAttendance() async {
+  Future<void> countAttendance(Size size) async {
+    barChartGroupDataList.clear();
+    dateWithMonthList.clear();
+    double dailyAttendanceCount = 0;
+    var index = -1;
+    String month="";
+    double dailyAbsentCount = 0;
     final now = DateTime.now();
     var currentMon = now.month;
     if (monthNumber == -1) {
-        monthNumber = currentMon;
+      monthNumber = currentMon;
     }
-      attendance_count=0;
-      absent_count=0;
-
+    attendanceCount = 0;
+    absentCount = 0;
+    percentage = 0;
 
     var doc = await FirebaseFirestore.instance
         .collection("Students")
@@ -809,35 +841,84 @@ class _AttendanceState extends State<Attendance> {
       return value.data();
     });
     //print("......................Doc is....$doc");
+
     if (startDate.month == endDate.month) {
+      month=months[startDate.month-1].toString().substring(0,3);
       for (var i = startDate.day; i <= endDate.day; i++) {
+        dateWithMonthList.add("$i\n$month");
+        dailyAbsentCount = 0;
+        dailyAttendanceCount = 0;
+        index++;
         // print(".................map is.${doc?["$i"][0]}..............");
-        if (doc?["$i"]!= null) {
+        if (doc?["$i"] != null) {
           List<dynamic> map = [];
           map = doc?["$i"];
           // print(".................map is.$map..............");
           for (var element in map) {
             print(element);
-            element["Status"] == "Present"
-                ? attendance_count++
-                : absent_count++;
+            if (element["Status"] == "Present") {
+              attendanceCount++;
+              dailyAttendanceCount++;
+            } else {
+              absentCount++;
+              dailyAbsentCount++;
+            }
           }
         }
+
+        barChartGroupDataList.add(BarChartGroupData(x: index, barRods: [
+          BarChartRodData(
+              toY: dailyAttendanceCount,
+              fromY: 0,
+              color: Colors.greenAccent,
+              width: size.width * 0.035,
+              borderRadius: const BorderRadius.all(Radius.zero)),
+          BarChartRodData(
+              toY: dailyAbsentCount + dailyAttendanceCount,
+              fromY: 0,
+              color: Colors.amber,
+              width: size.width * 0.035,
+              borderRadius: const BorderRadius.all(Radius.zero)),
+        ]));
       }
     } else {
       // for first month
       var start = startDate.day;
       var end = database().getDaysInMonth(startDate.year, startDate.month);
+      month=months[startDate.month-1].toString().substring(0,3);
       for (var i = start; i <= end; i++) {
+        dateWithMonthList.add("$i\n$month");
+        dailyAbsentCount = 0;
+        dailyAttendanceCount = 0;
+        index++;
         if (doc?["$i"] != null) {
           List<dynamic> map = [];
           map = doc?["$i"];
           for (var element in map) {
-            element["Status"] == "Present"
-                ? attendance_count++
-                : absent_count++;
+            if (element["Status"] == "Present") {
+              attendanceCount++;
+              dailyAttendanceCount++;
+            } else {
+              absentCount++;
+              dailyAbsentCount++;
+            }
           }
         }
+
+        barChartGroupDataList.add(BarChartGroupData(x: index, barRods: [
+          BarChartRodData(
+              toY: dailyAttendanceCount,
+              fromY: 0,
+              color: Colors.greenAccent,
+              width: size.width * 0.035,
+              borderRadius: const BorderRadius.all(Radius.zero)),
+          BarChartRodData(
+              toY: dailyAbsentCount + dailyAttendanceCount,
+              fromY: 0,
+              color: Colors.amber,
+              width: size.width * 0.035,
+              borderRadius: const BorderRadius.all(Radius.zero)),
+        ]));
       }
 
       // Fore next monts
@@ -853,27 +934,74 @@ class _AttendanceState extends State<Attendance> {
 
       print("...........$doc_2");
       start = 1;
+      month=months[endDate.month-1].toString().substring(0,3);
       for (var i = start; i <= endDate.day; i++) {
+        dateWithMonthList.add("$i\n$month");
+        dailyAbsentCount = 0;
+        dailyAttendanceCount = 0;
+        index++;
         List<dynamic> map = [];
         if (doc_2?["$i"] != null) {
           map = doc_2?["$i"];
-          print("....................$map");
           for (var element in map) {
-            element["Status"] == "Present"
-                ? attendance_count++
-                : absent_count++;
+            if (element["Status"] == "Present") {
+              attendanceCount++;
+              dailyAttendanceCount++;
+            } else {
+              absentCount++;
+              dailyAbsentCount++;
+            }
           }
         }
+        barChartGroupDataList.add(BarChartGroupData(x: index, barRods: [
+          BarChartRodData(
+              toY: dailyAttendanceCount,
+              fromY: 0,
+              color: Colors.greenAccent,
+              width: size.width * 0.035,
+              borderRadius: const BorderRadius.all(Radius.zero)),
+          BarChartRodData(
+              toY: dailyAbsentCount + dailyAttendanceCount,
+              fromY: 0,
+              color: Colors.amber,
+              width: size.width * 0.035,
+              borderRadius: const BorderRadius.all(Radius.zero)),
+        ]));
       }
     }
-
     setState(() {
-      total_lecture = attendance_count + absent_count;
-      percentage=(attendance_count/total_lecture)*100;
-     attendanceData = true;
+      totalLecture = attendanceCount + absentCount;
+      percentage = (attendanceCount / totalLecture) * 100;
+      attendanceData = true;
     });
+  }
 
+  List<PieChartSectionData> sectionData(
+      BuildContext context, int? touchedIndex) {
+    return PieData()
+        .data
+        .asMap()
+        .map<int, PieChartSectionData>((index, data) {
+          double size = index == touchedIndex
+              ? MediaQuery.of(context).size.height * 0.095
+              : MediaQuery.of(context).size.height * 0.08;
+          double _fontSize = index == touchedIndex ? 30 : 16;
 
+          print(",,,,,,,,,,,,${index == touchedIndex}");
+
+          final value = PieChartSectionData(
+              color: data.color,
+              value: data.present,
+              radius: size,
+              title: '${data.present}%',
+              titleStyle: GoogleFonts.openSans(
+                  color: Colors.amber,
+                  fontSize: _fontSize,
+                  fontWeight: FontWeight.w600));
+          return MapEntry(index, value);
+        })
+        .values
+        .toList();
   }
 
   Future<DateTime> _selectDate(BuildContext context) async {
@@ -884,66 +1012,27 @@ class _AttendanceState extends State<Attendance> {
         firstDate: DateTime(2023, 5),
         lastDate: DateTime(2101));
     if (picked != null && picked != date) {
-        date = picked;
+      date = picked;
     }
     return date;
   }
-
-  List<PieChartSectionData> sectionData(BuildContext context){
-   return PieData().data
-        .asMap()
-        .map<int,PieChartSectionData>((index, data){
-      double fontsize=16;
-      final value=PieChartSectionData(
-          color: data.color,
-          value: data.present,
-          radius: MediaQuery.of(context).size.height*0.06,
-          title: '${data.present}%',
-          titleStyle: GoogleFonts.openSans(
-              color:Colors.amber,
-              fontSize: fontsize,
-              fontWeight: FontWeight.w600
-          )
-      );
-      return MapEntry(index, value);
-    })
-        .values
-        .toList();
-  }
 }
-
 
 // Pie Chart Data
 
-
-
-class PieData
-{
+class PieData {
   List<Data> data = [
-    Data(name: "Present",present: percentage,color:Colors.greenAccent),
-    Data(name: "Absent",present: 100.0-percentage,color: Colors.red)
+    Data(name: "Present", present: percentage, color: Colors.greenAccent),
+    Data(name: "Absent", present: 100.0 - percentage, color: Colors.red)
   ];
 }
 
-class Data
-{
+class Data {
   late String name;
   late double present;
   late Color color;
-  Data({required this.name,required this.present,required this.color});
+  Data({required this.name, required this.present, required this.color});
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
 Table(
