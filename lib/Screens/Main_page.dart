@@ -63,7 +63,9 @@ class _MainPageState extends State<MainPage> {
   }
   Future<void> fetchuser() async {
     await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
-      usermodel=value.data()!;
+      setState(() {
+        usermodel=value.data()!;
+      });
     }).whenComplete((){
       setState(() {
         if (kDebugMode) {

@@ -7,6 +7,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 
 
 import '../Registration/database.dart';
@@ -331,7 +332,7 @@ class _AttendanceState extends State<Attendance> {
                         ),*/
                           SizedBox(
                             height: size.height * 0.08,
-                            width: size.width * 0.4,
+                            width: size.width * 0.36,
                             child: TextField(
                               controller: start_date_controller,
                               onTap: () async {
@@ -382,7 +383,7 @@ class _AttendanceState extends State<Attendance> {
                           ),
                           SizedBox(
                             height: size.height * 0.08,
-                            width: size.width * 0.4,
+                            width: size.width * 0.36,
                             child: TextField(
                               controller: end_date_controller,
                               cursorColor: Colors.black,
@@ -396,37 +397,6 @@ class _AttendanceState extends State<Attendance> {
                                   print(enddate.toString());
                                   end_date_controller.text =
                                       enddate.toString().substring(0, 10);
-                                  if (selected_subject == "" ||
-                                      end_date_controller.text == "" ||
-                                      start_date_controller.text == "") {
-                                    setState(() {
-                                      attendance_data = false;
-                                    });
-                                    InAppNotifications.instance
-                                      ..titleFontSize = 22.0
-                                      ..descriptionFontSize = 16.0
-                                      ..textColor = Colors.black
-                                      ..backgroundColor =
-                                      const Color.fromRGBO(190, 190, 190, 1)
-                                      ..shadow = true
-                                      ..animationStyle =
-                                          InAppNotificationsAnimationStyle
-                                              .scale;
-                                    InAppNotifications.show(
-                                        title: 'Failed',
-                                        duration: const Duration(seconds: 5),
-                                        description: "Please select all Data",
-                                        leading: AutoSizeText(
-                                          "!",
-                                          style: GoogleFonts.gfsDidot(
-                                              color: Colors.red,
-                                              fontSize: size.height * 0.06,
-                                              fontWeight: FontWeight.w900),
-                                        ));
-                                  }
-                                  else{
-                                    count_attendance();
-                                  }
                                 });
                               },
                               keyboardType: TextInputType.none,
@@ -467,6 +437,72 @@ class _AttendanceState extends State<Attendance> {
                                       ))),
                             ),
                           ),
+                          SizedBox(
+                            height: size.height*0.074,
+                            width: size.width*0.15,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                backgroundColor: Colors.greenAccent
+                              ),
+                                onPressed: (){
+
+                                setState(() {
+                                  attendance_data=false;
+                                });
+
+                                  Navigator.push(
+                                    context,
+                                    PageTransition(
+                                      child: const loading(text: 'Data is Proceed Please Wait'),
+                                      type: PageTransitionType.bottomToTop,
+                                      duration: const Duration(milliseconds: 400),
+                                      alignment: Alignment.bottomCenter,
+                                      childCurrent: const Attendance(),
+                                    ),
+                                  );
+
+
+                                  if (selected_subject == "" ||
+                                      end_date_controller.text == "" ||
+                                      start_date_controller.text == "") {
+                                    setState(() {
+                                      attendance_data = false;
+                                    });
+                                    InAppNotifications.instance
+                                      ..titleFontSize = 22.0
+                                      ..descriptionFontSize = 16.0
+                                      ..textColor = Colors.black
+                                      ..backgroundColor =
+                                      const Color.fromRGBO(190, 190, 190, 1)
+                                      ..shadow = true
+                                      ..animationStyle =
+                                          InAppNotificationsAnimationStyle
+                                              .scale;
+                                    InAppNotifications.show(
+                                        title: 'Failed',
+                                        duration: const Duration(seconds: 5),
+                                        description: "Please select all Data",
+                                        leading: AutoSizeText(
+                                          "!",
+                                          style: GoogleFonts.gfsDidot(
+                                              color: Colors.red,
+                                              fontSize: size.height * 0.06,
+                                              fontWeight: FontWeight.w900),
+                                        ));
+                                  }
+                                  else{
+                                    count_attendance().whenComplete(() {
+                                      Navigator.pop(context);
+                                    });
+                                  }
+
+
+                                },
+                                child:Center(child: Icon(Icons.arrow_downward,color: Colors.black,size: size.height*0.04,)) ),
+                          )
                         ],
                       ),
                     ),
@@ -474,6 +510,9 @@ class _AttendanceState extends State<Attendance> {
                       color: Colors.black,
                       height: MediaQuery.of(context).size.height*0.06,
                       thickness: MediaQuery.of(context).size.height*0.001,
+                    ),
+                    SizedBox(
+                      height: size.height * 0.03,
                     ),
                     attendance_data
                         ?
@@ -758,14 +797,12 @@ class _AttendanceState extends State<Attendance> {
     final now = DateTime.now();
     var currentMon = now.month;
     if (month_number == -1) {
-      setState(() {
         month_number = currentMon;
-      });
     }
       attendance_count=0;
       absent_count=0;
-    print(".....startDate..${startDate.day}");
-    print(".....EndDate..${endDate.day}");
+
+
     var doc = await FirebaseFirestore.instance
         .collection("Students")
         .doc(FirebaseAuth.instance.currentUser?.email)
@@ -837,8 +874,10 @@ class _AttendanceState extends State<Attendance> {
     setState(() {
       total_lecture = attendance_count + absent_count;
       percentage=(attendance_count/total_lecture)*100;
-      attendance_data = true;
+     attendance_data = true;
     });
+
+
   }
 
   Future<DateTime> _selectDate(BuildContext context) async {
