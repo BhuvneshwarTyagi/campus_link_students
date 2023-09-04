@@ -1,14 +1,25 @@
+
+
+import 'dart:io';
+
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../Constraints.dart';
 import '../Registration/registration.dart';
 //TextEditingController _Controller=TextEditingController();
+bool profile_update=false;
+
 
 class Profile_page extends StatefulWidget {
   const Profile_page({super.key});
+
 
   @override
   State<Profile_page> createState() => _Profile_pageState();
@@ -90,23 +101,79 @@ class _Profile_pageState extends State<Profile_page> {
                         SizedBox(
                           height: size.height * 0.02,
                         ),
-                        Center(
-                          child: CircleAvatar(
-                            radius: size.height * 0.09,
+                        Stack(
+                           children: [
+                             Center(
+                               child: CircleAvatar(
+                                 radius: size.height * 0.07,
 
-                            backgroundImage: usermodel["Profile_URL"] != null
-                                ? NetworkImage(usermodel["Profile_URL"])
-                                : null,
-                             backgroundColor: Colors.grey,
-                            child: usermodel["Profile_URL"] == null
-                                ? AutoSizeText(
-                              usermodel["Name"].toString().substring(0, 1),
-                              style: GoogleFonts.exo(
-                                  fontSize: size.height * 0.05,
-                                  fontWeight: FontWeight.w600),
-                            )
-                                : null,
-                          ),
+                                 backgroundImage: usermodel["Profile_URL"] != null
+                                     ? NetworkImage(usermodel["Profile_URL"])
+                                     : null,
+                                 backgroundColor: Colors.grey,
+                                 child: usermodel["Profile_URL"] == null
+                                     ? AutoSizeText(
+                                   usermodel["Name"].toString().substring(0, 1),
+                                   style: GoogleFonts.exo(
+                                       fontSize: size.height * 0.05,
+                                       fontWeight: FontWeight.w600),
+                                 )
+                                     : null,
+                               ),
+                             ),
+                             Positioned(
+                                 bottom: -5,
+                                 left: 220,
+                                 child: IconButton(
+                                     icon: Icon(Icons.camera_alt_rounded,size:size.height*0.03 ,color: Colors.white,),
+                                     onPressed: () async {
+
+                                       ImagePicker imagePicker=ImagePicker();
+                                       print(imagePicker);
+                                       XFile? file=await imagePicker.pickImage(source: ImageSource.gallery);
+                                       print(file?.path);
+
+                                       setState(() {
+                                         profile_update=true;
+                                       });
+                                       // Create reference of Firebase Storage
+
+                                       Reference reference=FirebaseStorage.instance.ref();
+
+                                       // Create Directory into Firebase Storage
+
+                                       Reference image_directory=reference.child("User_profile");
+
+
+                                       Reference image_folder=image_directory.child("${usermodel["Email"]}");
+
+                                       await image_folder.putFile(File(file!.path)).whenComplete(() async {
+
+
+                                         String download_url=await image_folder.getDownloadURL();
+                                         print("uploaded");
+                                         print(download_url);
+                                         await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).update({
+                                           "Profile_URL":download_url,
+                                         }).whenComplete(() async {
+                                           await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
+
+                                             setState(() {
+                                               usermodel=value.data()!;
+                                             });
+                                           }).whenComplete(() {
+                                             setState(() {
+                                               profile_update=false;
+                                             });
+                                           });
+
+                                         });
+                                         setState(() {
+                                           profile_update=false;
+                                         });
+                                       },
+                                       );}))
+                           ],
                         ),
                         Padding(
                           padding: EdgeInsets.all(size.height * 0.022),

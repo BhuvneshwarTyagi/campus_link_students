@@ -186,10 +186,10 @@ class _AttendanceState extends State<Attendance> {
                         ),
                       ),
                       SizedBox(
-                        height: size.height * 0.08,
+                        height: size.height * 0.075,
                         width: size.width * 1,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             /*SearchField(
                         controller: monthcontroller,
@@ -321,9 +321,22 @@ class _AttendanceState extends State<Attendance> {
                               maxSuggestionsInViewPort: 3,
                             ),
                           ),*/
-                            SizedBox(
+                            Container(
+
                               height: size.height * 0.08,
                               width: size.width * 0.36,
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Color.fromRGBO(177, 54, 101, 1),
+                                    Color.fromRGBO(43, 39, 113, 1),
+                                  ]
+                                ),
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(15)),
+
+
+                              ),
                               child: TextField(
                                 controller: startDateController,
                                 onTap: () async {
@@ -339,22 +352,23 @@ class _AttendanceState extends State<Attendance> {
                                 style:
                                     GoogleFonts.openSans(color: Colors.white),
                                 keyboardType: TextInputType.none,
-                                cursorColor: Colors.black,
+                                cursorColor: Colors.white70,
                                 decoration: InputDecoration(
                                     focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(15)),
-                                        borderSide: BorderSide(
-                                            color: Colors.white, width: 2)),
+                                      borderSide: BorderSide(
+                                          color: Colors.white, width: 2),
+                                    ),
                                     hintText: "Start Date",
                                     prefixIcon: Icon(Icons.date_range,
                                         color: startDateController.text.isEmpty
                                             ? Colors.black87
                                             : Colors.white,
                                         size: size.height * 0.03),
-                                    fillColor: Colors.lightBlueAccent,
+                                    fillColor: Colors.transparent,
                                     enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
+                                        borderRadius: const BorderRadius.all(
                                             Radius.circular(15)),
                                         borderSide: BorderSide(
                                             color:
@@ -364,9 +378,21 @@ class _AttendanceState extends State<Attendance> {
                                             width: 1))),
                               ),
                             ),
-                            SizedBox(
+                            Container(
                               height: size.height * 0.08,
                               width: size.width * 0.36,
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                    colors: [
+                                      Color.fromRGBO(177, 54, 101, 1),
+                                      Color.fromRGBO(43, 39, 113, 1),
+                                    ]
+                                ),
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(15)),
+
+
+                              ),
                               child: TextField(
                                 controller: endDateController,
                                 cursorColor: Colors.black,
@@ -410,15 +436,27 @@ class _AttendanceState extends State<Attendance> {
                                             width: 1))),
                               ),
                             ),
-                            SizedBox(
+                            Container(
                               height: size.height * 0.074,
                               width: size.width * 0.15,
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                    colors: [
+                                      Color.fromRGBO(177, 54, 101, 1),
+                                      Color.fromRGBO(43, 39, 113, 1),
+                                    ]
+                                ),
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(15)),
+
+
+                              ),
                               child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
-                                      backgroundColor: Colors.greenAccent),
+                                      backgroundColor:  Colors.transparent),
                                   onPressed: () {
                                     setState(() {
                                       attendanceData = false;
@@ -476,7 +514,7 @@ class _AttendanceState extends State<Attendance> {
                                   child: Center(
                                       child: Icon(
                                     Icons.arrow_downward,
-                                    color: Colors.black,
+                                    color: Colors.white,
                                     size: size.height * 0.04,
                                   ))),
                             )
@@ -500,13 +538,18 @@ class _AttendanceState extends State<Attendance> {
                                 Container(
                                     width: size.width * 0.9,
                                     height: size.height * 0.31,
-                                    decoration: BoxDecoration(
-                                        color: Colors.blueAccent,
-                                        border: Border.all(
-                                            color: Colors.amberAccent,
-                                            width: 2),
-                                        borderRadius:
-                                            BorderRadius.circular(15.0)),
+                                    decoration: const BoxDecoration(
+                                      gradient: LinearGradient(
+                                          colors: [
+                                            Color.fromRGBO(177, 54, 101, 1),
+                                            Color.fromRGBO(43, 39, 113, 1),
+                                          ]
+                                      ),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15)),
+
+
+                                    ),
                                     child: Center(
                                       child: Column(
                                         mainAxisAlignment:
