@@ -346,7 +346,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.push(context,PageTransition(child: const ForgotPassword(), type: PageTransitionType.rightToLeft,duration:const Duration(milliseconds: 350)));
+                        Navigator.pushReplacement(context,PageTransition(child: const ForgotPassword(), type: PageTransitionType.rightToLeft,duration:const Duration(milliseconds: 350)));
                       },
                       child: const Text("Forgot Password ?", style: TextStyle(
                           color: Colors.black,
@@ -384,7 +384,7 @@ class _SignInScreenState extends State<SignInScreen> {
           ,),
         TextButton(
           onPressed: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               PageTransition(
                 child: const SignUpScreen(),

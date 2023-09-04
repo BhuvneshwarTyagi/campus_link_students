@@ -432,7 +432,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
         TextButton(
 
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              PageTransition(
+                child: const SignInScreen(),
+                type: PageTransitionType.rightToLeftJoined,
+                duration: const Duration(milliseconds: 350),
+                childCurrent: const SignUpScreen(),
+              ),
+            );
           },
           child: const Text("Sign In", style: TextStyle(
               color: Colors.black,

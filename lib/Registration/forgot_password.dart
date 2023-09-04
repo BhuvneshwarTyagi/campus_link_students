@@ -201,7 +201,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       String test=await forgot(_email.text.trim());
                       if(!mounted) return;
                       if(test=="1"){
-                        Navigator.push(
+                        Navigator.pushReplacement(
                             context,
                             PageTransition(
                                 child: const SignInScreen(),
