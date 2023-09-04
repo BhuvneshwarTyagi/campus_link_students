@@ -837,7 +837,7 @@ class _chat_pageState extends State<chat_page> {
                                   }]),
                                 }).whenComplete(() async {
                                   await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").update({
-                                    "${usermodel["Email"].toString().split('@')[0]}_${stamp}_Seened": FieldValue.arrayUnion([usermodel["Email"]]),
+                                    "${usermodel["Email"].toString().split('@')[0]}_${stamp.toString().split(".")[0]}_Seened": FieldValue.arrayUnion([usermodel["Email"]]),
 
                                   });
                                 })
@@ -1166,7 +1166,7 @@ class _chat_pageState extends State<chat_page> {
           List<dynamic> list= doc.data()?["${email.toString().split('@')[0]}_${stamp}_Seened"];
           if(!list.contains("${usermodel["Email"]}")){
             await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").update({
-              "${email.toString().split('@')[0]}_${stamp}_Seen": FieldValue.arrayUnion([
+              "${email.toString().split('@')[0]}_${stamp.toString().split(".")[0]}_Seen": FieldValue.arrayUnion([
                 {
                   "Email": usermodel["Email"],
                   "Stamp": DateTime.now(),

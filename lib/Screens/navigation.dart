@@ -76,11 +76,14 @@ class _navigationState extends State<navigation> {
                 int count=0;
 
                 int end=snapshot.hasData ? snapshot.data!.docs.length :0;
+                print("............................${snapshot.data?.docs[0].data()}");
               for(int i=0;i<end; i++){
-                int read=snapshot.data?.docs[i].data()[usermodel["Email"].toString().split("@")[0]]["Read_Count"];
-                int len=snapshot.data?.docs[i].data()["Messages"].length;
-                print("${read-len}");
-                count=len-read;
+
+                  int read=snapshot.data?.docs[i].data()[usermodel["Email"].toString().split("@")[0]]["Read_Count"];
+                  int len=snapshot.data?.docs[i].data()["Messages"].length;
+                  print("${len-read}");
+                  count+=len-read;
+
               }
 
               return snapshot.hasData
