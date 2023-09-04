@@ -252,7 +252,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
       //super.didChangeAppLifecycleState(state);
       switch (state) {
         case AppLifecycleState.resumed:
-          print("....44444444Resumed");
           setState(() {});
           break;
         case AppLifecycleState.inactive:
@@ -264,9 +263,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
         case AppLifecycleState.detached:
           NotificationServices().setUserState(status: "Offline");
           break;
-          // TODO: Handle this case.
-        case AppLifecycleState.hidden:
-          // TODO: Handle this case.
+
       }
     } catch (e) {
       if (kDebugMode) {

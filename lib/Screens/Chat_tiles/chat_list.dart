@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import '../../Constraints.dart';
 import 'chat.dart';
 
@@ -20,6 +21,8 @@ class _chatsystemState extends State<chatsystem> {
       "${usermodel["Branch"].toString().trim().split(" ")[0]} "
       "${usermodel["Year"].toString().trim().split(" ")[0]} "
       "${usermodel["Section"].toString().trim().split(" ")[0]} ";
+
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -44,7 +47,8 @@ class _chatsystemState extends State<chatsystem> {
             .doc(usermodel["Email"])
             .snapshots(),
         builder: (context, snapshot) {
-
+          print("chat List");
+          markFalse();
           return snapshot.hasData
               ? ListView.builder(
                   itemCount: snapshot.data?.data()!["Subject"].length,
@@ -58,58 +62,55 @@ class _chatsystemState extends State<chatsystem> {
                             ? readCount = snapshot2.data?.data()!["Messages"].length
                             : null;
                         snapshot2.hasData
-                            ? count =
-                            int.parse(
-                                "${snapshot2.data?.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]}")
+                            ? count = int.parse("${snapshot2.data?.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]}")
                             : null;
                         return InkWell(
 
                           onTap: () async {
-                            int readCount1 = 0;
-                            int count1 = 0;
-                            readCount1 = snapshot2.data?.data()!["Messages"].length;
-                            count1 = int.parse("${snapshot2.data?.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]}");
-                            for (int i = readCount1; i > count1; i--) {
-                              print(".............${snapshot2.data!.data()?["Messages"]}");
-                              String? stamp = snapshot2.data!.data()?["Messages"][i-1]["Stamp"].toDate().toString().split('.')[0];
-                              String? email = snapshot2.data!.data()?["Messages"][i-1]["UID"];
-
-                              if (email != usermodel["Email"]) {
-                                await FirebaseFirestore.instance
-                                    .collection("Messages")
-                                    .doc(channel_perfix+snapshot.data?.data()!["Subject"][index])
-                                    .collection("Messages_Detail")
-                                    .doc("Messages_Detail")
-                                    .update({
-                                  "${email?.split('@')[0]}_${stamp}_Seen" : FieldValue.arrayUnion([
-                                    {
-                                      "Email": usermodel["Email"],
-                                      "Stamp": DateTime.now()
-                                    }
-                                  ]),
-                                });
-                              }
-                            }
-                            await FirebaseFirestore.instance
-                                .collection("Messages")
-                                .doc(channel_perfix+snapshot.data?.data()!["Subject"][index])
-                                .update({
-                              usermodel["Email"].toString().split("@")[0]: {
-                                "Last_Active": DateTime.now(),
-                                "Read_Count": readCount1,
-                                "Active": true,
-                                "Token": FieldValue.arrayUnion([usermodel["Token"]])
-                              }
-                            }).whenComplete(() {
-                              Navigator.push(
+                            // int readCount1 = 0;
+                            // int count1 = 0;
+                            // readCount1 = snapshot2.data?.data()!["Messages"].length;
+                            // count1 = int.parse("${snapshot2.data?.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]}");
+                            // for (int i = readCount1; i > count1; i--) {
+                            //   print(".............${snapshot2.data!.data()?["Messages"]}");
+                            //   String? stamp = snapshot2.data!.data()?["Messages"][i-1]["Stamp"].toDate().toString().split('.')[0];
+                            //   String? email = snapshot2.data!.data()?["Messages"][i-1]["UID"];
+                            //
+                            //   if (email != usermodel["Email"]) {
+                            //     await FirebaseFirestore.instance
+                            //         .collection("Messages")
+                            //         .doc(channel_perfix+snapshot.data?.data()!["Subject"][index])
+                            //         .collection("Messages_Detail")
+                            //         .doc("Messages_Detail")
+                            //         .update({
+                            //       "${email?.split('@')[0]}_${stamp}_Seen" : FieldValue.arrayUnion([
+                            //         {
+                            //           "Email": usermodel["Email"],
+                            //           "Stamp": DateTime.now()
+                            //         }
+                            //       ]),
+                            //     });
+                            //   }
+                            // }
+                            // await FirebaseFirestore.instance
+                            //     .collection("Messages")
+                            //     .doc(channel_perfix+snapshot.data?.data()!["Subject"][index])
+                            //     .update({
+                            //   usermodel["Email"].toString().split("@")[0]: {
+                            //     "Last_Active": DateTime.now(),
+                            //     "Read_Count": readCount1,
+                            //     "Active": true,
+                            //     "Token": FieldValue.arrayUnion([usermodel["Token"]])
+                            //   }
+                            // }).whenComplete(() {
+                              Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) => chat_page(
-                                        channel: channel_perfix +
-                                            snapshot.data?.data()!["Subject"]
-                                                [index]),
-                                  ));
-                            });
+                                  MaterialPageRoute(builder: (context) => chat_page(
+                                      channel: channel_perfix +
+                                          snapshot.data?.data()!["Subject"]
+                                          [index]),)
+                                  );
+                            //});
                           },
                           child: Container(
                             height: 90,
@@ -171,5 +172,14 @@ class _chatsystemState extends State<chatsystem> {
            ),
          )
     );
+  }
+
+  Future<void> markFalse() async {
+    for(var subject in usermodel["Subject"]){
+      await FirebaseFirestore.instance.collection("Messages").doc(channel_perfix+subject.toString()).update({
+        "${usermodel["Email"].toString().split("@")[0]}.Active" : false
+      });
+    }
+    print(".....................false");
   }
 }
