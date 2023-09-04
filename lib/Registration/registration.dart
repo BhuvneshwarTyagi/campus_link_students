@@ -876,7 +876,8 @@ class _StudentDetailsState extends State<StudentDetails> {
                           "Branch": branchController.text.trim().toString(),
                           "Section": sectionController.text.trim().toString(),
                           "Subject": FieldValue.arrayUnion(subject),
-                          "Active": false
+                          "Active": false,
+                          "bg": "bg-1.jpg"
                         })
                             .then(
                                 (value) async {
