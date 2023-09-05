@@ -39,7 +39,8 @@ class _MarksState extends State<Marks> {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Container(
-
+        height: size.height,
+        width: size.width,
         decoration: BoxDecoration(
           // image: DecorationImage(image: AssetImage("assets/images/bg-image.png"),fit: BoxFit.fill
           gradient: LinearGradient(
@@ -148,7 +149,7 @@ class _MarksState extends State<Marks> {
                     height: size.height * 0.042,
                   ),
                   SizedBox(
-                    height: size.height*0.9,
+
                     child: StreamBuilder(
                       stream: FirebaseFirestore.instance
                           .collection("Students")
@@ -157,9 +158,33 @@ class _MarksState extends State<Marks> {
                       builder: (context, snapshot) {
                         if(snapshot.hasData)
                           {
-                            int s1Marks=int.parse(snapshot.data!.data()?["S-1-$selectedSubject"]);
-                            int s1MaxMarks=int.parse(snapshot.data!.data()?["S-1-max_marks"]);
-                            s1Percent=double.parse(((s1Marks/s1MaxMarks)*100).toStringAsFixed(2));
+                            if(snapshot.data!.data()?["S-1-$selectedSubject"]!=null && snapshot.data!.data()?["S-1-max_marks"]!=null) {
+                              int s1Marks = int.parse(snapshot.data!
+                                  .data()?["S-1-$selectedSubject"]);
+                              int s1MaxMarks = int.parse(
+                                  snapshot.data!.data()?["S-1-max_marks"]);
+                              s1Percent = double.parse(
+                                  ((s1Marks / s1MaxMarks) * 100)
+                                      .toStringAsFixed(2));
+                            }
+                            if(snapshot.data!.data()?["S-2-$selectedSubject"]!=null && snapshot.data!.data()?["S-2-max_marks"]!=null) {
+                              int s2Marks = int.parse(snapshot.data!
+                                  .data()?["S-2-$selectedSubject"]);
+                              int s2MaxMarks = int.parse(
+                                  snapshot.data!.data()?["S-2-max_marks"]);
+                              s2Percent = double.parse(
+                                  ((s2Marks / s2MaxMarks) * 100)
+                                      .toStringAsFixed(2));
+                            }
+                            if(snapshot.data!.data()?["S-3-$selectedSubject"]!=null && snapshot.data!.data()?["S-3-max_marks"]!=null) {
+                              int s3Marks = int.parse(snapshot.data!
+                                  .data()?["S-3-$selectedSubject"]);
+                              int s3MaxMarks = int.parse(
+                                  snapshot.data!.data()?["S-3-max_marks"]);
+                              s3Percent = double.parse(
+                                  ((s3Marks / s3MaxMarks) * 100)
+                                      .toStringAsFixed(2));
+                            }
                           }
 
                         return snapshot.hasData
@@ -432,54 +457,173 @@ class _MarksState extends State<Marks> {
                                       ),
                                     ),
                                     SizedBox(
-                                      height: size.height*0.03,
+                                      height: size.height*0.032,
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: SizedBox(
-                                        height: size.height * 0.05,
-                                        child: AutoSizeText(
-                                          "Pie Chart",
-                                          style: GoogleFonts.openSans(
-                                              fontSize: size.height * 0.04,
-                                              color: Colors.black87,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                      ),
-                                    ),
+                                    snapshot.data!.data()?["S-1-$selectedSubject"]!=null && snapshot.data!.data()?["S-1-max_marks"]!=null
+                                    ?
                                     SizedBox(
-                                      height: size.height * 0.4,
+                                      height: size.height * 0.5,
                                       width: size.width * 0.45,
-                                      child: PieChart(
-                                        PieChartData(
-                                            pieTouchData: PieTouchData(
-                                              enabled: true,
-                                              touchCallback: (_, pieTouchResponse) {
-                                                //var pieTouchResponse;
-                                                setState(() {
-                                                  if (pieTouchResponse
-                                                      ?.touchedSection
-                                                  is FlLongPressEnd ||
-                                                      pieTouchResponse
-                                                          ?.touchedSection
-                                                      is FlPanEndEvent) {
-                                                    touchedIndex = -1;
-                                                  } else {
-                                                    touchedIndex = pieTouchResponse?.touchedSection?.touchedSectionIndex;
-                                                  }
-                                                });
-                                               print("....stastwst$touchedIndex");
-                                              },
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: size.height * 0.05,
+                                            child: AutoSizeText(
+                                              "Pie Chart For Sessional-1",
+                                              style: GoogleFonts.openSans(
+                                                  fontSize: size.height * 0.04,
+                                                  color: Colors.black87,
+                                                  fontWeight: FontWeight.w700),
                                             ),
-                                            borderData: FlBorderData(
-                                              show: false,
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.4,
+                                            width: size.width * 0.45,
+                                            child: PieChart(
+                                              PieChartData(
+                                                  pieTouchData: PieTouchData(
+                                                    enabled: true,
+                                                    touchCallback: (_, pieTouchResponse) {
+                                                      //var pieTouchResponse;
+                                                      setState(() {
+                                                        if (pieTouchResponse
+                                                            ?.touchedSection
+                                                        is FlLongPressEnd ||
+                                                            pieTouchResponse
+                                                                ?.touchedSection
+                                                            is FlPanEndEvent) {
+                                                          touchedIndex = -1;
+                                                        } else {
+                                                          touchedIndex = pieTouchResponse?.touchedSection?.touchedSectionIndex;
+                                                        }
+                                                      });
+                                                      print("....stastwst$touchedIndex");
+                                                    },
+                                                  ),
+                                                  borderData: FlBorderData(
+                                                    show: false,
+                                                  ),
+                                                  sectionsSpace: 10,
+                                                  centerSpaceRadius: 65,
+                                                  sections:
+                                                  sectionData(context, touchedIndex)),
                                             ),
-                                            sectionsSpace: 10,
-                                            centerSpaceRadius: 65,
-                                            sections:
-                                            sectionData(context, touchedIndex)),
+                                          )
+                                        ],
                                       ),
-                                    ),
+                                    )
+                                    :
+                                        const SizedBox(),
+                                    snapshot.data!.data()?["S-2-$selectedSubject"]!=null && snapshot.data!.data()?["S-2-max_marks"]!=null
+                                        ?
+                                    SizedBox(
+                                      height: size.height * 0.5,
+                                      width: size.width * 0.45,
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: size.height * 0.05,
+                                            child: AutoSizeText(
+                                              "Pie Chart For Sessional-2",
+                                              style: GoogleFonts.openSans(
+                                                  fontSize: size.height * 0.04,
+                                                  color: Colors.black87,
+                                                  fontWeight: FontWeight.w700),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.4,
+                                            width: size.width * 0.45,
+                                            child: PieChart(
+                                              PieChartData(
+                                                  pieTouchData: PieTouchData(
+                                                    enabled: true,
+                                                    touchCallback: (_, pieTouchResponse) {
+                                                      //var pieTouchResponse;
+                                                      setState(() {
+                                                        if (pieTouchResponse
+                                                            ?.touchedSection
+                                                        is FlLongPressEnd ||
+                                                            pieTouchResponse
+                                                                ?.touchedSection
+                                                            is FlPanEndEvent) {
+                                                          touchedIndex = -1;
+                                                        } else {
+                                                          touchedIndex = pieTouchResponse?.touchedSection?.touchedSectionIndex;
+                                                        }
+                                                      });
+                                                     // print("....stastwst$touchedIndex");
+                                                    },
+                                                  ),
+                                                  borderData: FlBorderData(
+                                                    show: false,
+                                                  ),
+                                                  sectionsSpace: 10,
+                                                  centerSpaceRadius: 65,
+                                                  sections:
+                                                  sectionData(context, touchedIndex)),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                        :
+                                    const SizedBox(),
+                                    /*snapshot.data!.data()?["S-3-$selectedSubject"]!=null && snapshot.data!.data()?["S-3-max_marks"]!=null
+                                        ?
+                                    SizedBox(
+                                      height: size.height * 0.5,
+                                      width: size.width * 0.45,
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            height: size.height * 0.05,
+                                            child: AutoSizeText(
+                                              "Pie Chart For Sessional-1",
+                                              style: GoogleFonts.openSans(
+                                                  fontSize: size.height * 0.04,
+                                                  color: Colors.black87,
+                                                  fontWeight: FontWeight.w700),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: size.height * 0.4,
+                                            width: size.width * 0.45,
+                                            child: PieChart(
+                                              PieChartData(
+                                                  pieTouchData: PieTouchData(
+                                                    enabled: true,
+                                                    touchCallback: (_, pieTouchResponse) {
+                                                      //var pieTouchResponse;
+                                                      setState(() {
+                                                        if (pieTouchResponse
+                                                            ?.touchedSection
+                                                        is FlLongPressEnd ||
+                                                            pieTouchResponse
+                                                                ?.touchedSection
+                                                            is FlPanEndEvent) {
+                                                          touchedIndex = -1;
+                                                        } else {
+                                                          touchedIndex = pieTouchResponse?.touchedSection?.touchedSectionIndex;
+                                                        }
+                                                      });
+                                                      print("....stastwst$touchedIndex");
+                                                    },
+                                                  ),
+                                                  borderData: FlBorderData(
+                                                    show: false,
+                                                  ),
+                                                  sectionsSpace: 10,
+                                                  centerSpaceRadius: 65,
+                                                  sections:
+                                                  sectionData(context, touchedIndex)),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                        :
+                                    const SizedBox(),*/
                                     SizedBox(
                                       height: size.height * 0.01,
                                     ),
