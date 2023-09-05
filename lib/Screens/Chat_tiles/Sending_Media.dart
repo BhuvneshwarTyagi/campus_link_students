@@ -330,16 +330,18 @@ class _SendMediaState extends State<SendMedia> {
                       List<dynamic> members = doc.data()?["Members"];
                       for (var member in members) {
                         String email=member["Email"];
-                        String token = doc.data()?[email.toString().split("@")[0]]["Token"];
+                        List<dynamic> tokens = doc.data()?[email.toString().split("@")[0]]["Token"];
                         if(email!=usermodel["Email"]){
-                          database().sendPushMessage(
-                              token,
-                              messageController.text.trim(),
-                              widget.channel,
-                              true,
-                              widget.channel.toString().split(" ")[6],
-                              stamp
-                          );
+                          for(var token in tokens){
+                            database().sendPushMessage(
+                                token,
+                                messageController.text.trim(),
+                                widget.channel,
+                                true,
+                                widget.channel.toString().split(" ")[6],
+                                stamp
+                            );
+                          }
                         }
                       }
                     },
@@ -637,16 +639,18 @@ class _SendMediaState extends State<SendMedia> {
                         List<dynamic> members = doc.data()?["Members"];
                         for (var member in members) {
                           String email=member["Email"];
-                          String token = doc.data()?[email.toString().split("@")[0]]["Token"];
+                          List<dynamic> tokens = doc.data()?[email.toString().split("@")[0]]["Token"];
                           if(email!=usermodel["Email"]){
-                            database().sendPushMessage(
-                                token,
-                                messageController.text.trim(),
-                                widget.channel,
-                                true,
-                                widget.channel.toString().split(" ")[6],
-                                stamp
-                            );
+                            for(var token in tokens){
+                              database().sendPushMessage(
+                                  token,
+                                  messageController.text.trim(),
+                                  widget.channel,
+                                  true,
+                                  widget.channel.toString().split(" ")[6],
+                                  stamp
+                              );
+                            }
                           }
                         }
                       },

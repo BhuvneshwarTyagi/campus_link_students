@@ -75,10 +75,10 @@ class _navigationState extends State<navigation> {
               builder: (context, snapshot) {
                 int count=0;
 
-                int end=snapshot.hasData ? snapshot.data!.docs[0].data()[usermodel["Email"].toString().split("@")[0]] == null ? 0 : snapshot.data!.docs.length : 0;
-
+                int end=snapshot.hasData ? snapshot.data!.docs.length : 0;
+                print(end);
               for(int i=0;i<end; i++){
-
+                print(i);
                   int read=snapshot.data?.docs[i].data()[usermodel["Email"].toString().split("@")[0]]["Read_Count"];
                   int len=snapshot.data?.docs[i].data()["Messages"].length;
                   print("${len-read}");

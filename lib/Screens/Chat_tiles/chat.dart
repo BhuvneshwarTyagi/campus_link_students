@@ -399,7 +399,7 @@ class _chat_pageState extends State<chat_page> {
                                         :
                                     "",
                                     snapshot2.data?.data()!["${message[index]["UID"].toString().split("@")[0]}_${message[index]["Stamp"].toDate().toString().split('.')[0]}_Delevered"].length == snapshot.data!.data()?["Members"].length,
-                                    snapshot2.data?.data()!["${message[index]["UID"].toString().split("@")[0]}_${message[index]["Stamp"].toDate().toString().split('.')[0]}_Seen"].length == snapshot.data!.data()?["Members"].length,
+                                    snapshot2.data?.data()!["${message[index]["UID"].toString().split("@")[0]}_${message[index]["Stamp"].toDate().toString().split('.')[0]}_Seened"].length == snapshot.data!.data()?["Members"].length,
                                   ),
                                 ),
                               )
@@ -467,7 +467,7 @@ class _chat_pageState extends State<chat_page> {
                                       :
                                   "",
                                   snapshot2.data?.data()!["${message[index]["UID"].toString().split("@")[0]}_${message[index]["Stamp"].toDate().toString().split(".")[0]}_Delevered"].length == snapshot.data!.data()?["Members"].length,
-                                  snapshot2.data?.data()!["${message[index]["UID"].toString().split("@")[0]}_${message[index]["Stamp"].toDate().toString().split(".")[0]}_Seen"].length == snapshot.data!.data()?["Members"].length,
+                                  snapshot2.data?.data()!["${message[index]["UID"].toString().split("@")[0]}_${message[index]["Stamp"].toDate().toString().split(".")[0]}_Seened"].length == snapshot.data!.data()?["Members"].length,
                                 ),
                               )
                             ],
