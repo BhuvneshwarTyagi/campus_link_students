@@ -42,7 +42,7 @@ class database
     return GeoPoint(double.parse(x.latitude.toStringAsPrecision(21)), double.parse(x.longitude.toStringAsPrecision(21)));
   }
   Future<void> fetchuser() async {
-    await FirebaseFirestore.instance.collection("Teachers").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
+    await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
       usermodel=value.data()!;
     }).whenComplete(() => print(usermodel));
 
