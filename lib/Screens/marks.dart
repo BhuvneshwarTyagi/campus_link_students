@@ -103,12 +103,8 @@ class _MarksState extends State<Marks> {
                                             end: Alignment.centerRight,
                                             colors: [
                                               Color.fromRGBO(169, 169, 207, 1),
-                                              // Color.fromRGBO(86, 149, 178, 1),
                                               Color.fromRGBO(189, 201, 214, 1),
-                                              //Color.fromRGBO(118, 78, 232, 1),
                                               Color.fromRGBO(175, 207, 240, 1),
-
-                                              // Color.fromRGBO(86, 149, 178, 1),
                                               Color.fromRGBO(189, 201, 214, 1),
                                               Color.fromRGBO(169, 169, 207, 1),
                                             ],
@@ -145,8 +141,10 @@ class _MarksState extends State<Marks> {
                     height: MediaQuery.of(context).size.height * 0.06,
                     thickness: MediaQuery.of(context).size.height * 0.001,
                   ),
+
+
                   SizedBox(
-                    height: size.height * 0.042,
+                    height: size.height * 0.04,
                   ),
                   SizedBox(
 
@@ -199,8 +197,8 @@ class _MarksState extends State<Marks> {
                                   decoration: const BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        Color.fromRGBO(177, 54, 101, 1),
-                                        Color.fromRGBO(43, 39, 113, 1),
+                                        Color.fromRGBO(200, 62, 118, 1),
+                                        Color.fromRGBO(70, 50, 110, 1),
                                       ],
                                     ),
                                     borderRadius:
@@ -459,116 +457,213 @@ class _MarksState extends State<Marks> {
                                     SizedBox(
                                       height: size.height*0.032,
                                     ),
-                                    snapshot.data!.data()?["S-1-$selectedSubject"]!=null && snapshot.data!.data()?["S-1-max_marks"]!=null
-                                    ?
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Container(
+                                            height: size.height * 0.048,
+                                            width: size.width * 0.25,
+                                            decoration: BoxDecoration(
+                                                gradient: const LinearGradient(
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                  colors: [
+                                                    Colors.blue,
+                                                    Colors.purpleAccent,
+                                                  ],
+                                                ),
+                                                borderRadius:
+                                                const BorderRadius.all(Radius.circular(20)),
+                                                border: Border.all(color: Colors.black, width: 2)),
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.transparent),
+                                              onPressed: () {
+                                                setState(() {
+
+                                                  snapshot.data!.data()?["S-1-$selectedSubject"]!=null && snapshot.data!.data()?["S-1-max_marks"]!=null
+                                                      ?
+                                                  SizedBox(
+                                                    height: size.height * 0.5,
+                                                    width: size.width * 0.45,
+                                                    child: Column(
+                                                      children: [
+                                                        SizedBox(
+                                                          height: size.height * 0.05,
+                                                          child: AutoSizeText(
+                                                            "Pie Chart For Sessional-1",
+                                                            style: GoogleFonts.openSans(
+                                                                fontSize: size.height * 0.04,
+                                                                color: Colors.black87,
+                                                                fontWeight: FontWeight.w700),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: size.height * 0.4,
+                                                          width: size.width * 0.45,
+                                                          child: PieChart(
+                                                            PieChartData(
+                                                                pieTouchData: PieTouchData(
+                                                                  enabled: true,
+                                                                  touchCallback: (_, pieTouchResponse) {
+                                                                    //var pieTouchResponse;
+                                                                    setState(() {
+                                                                      if (pieTouchResponse
+                                                                          ?.touchedSection
+                                                                      is FlLongPressEnd ||
+                                                                          pieTouchResponse
+                                                                              ?.touchedSection
+                                                                          is FlPanEndEvent) {
+                                                                        touchedIndex = -1;
+                                                                      } else {
+                                                                        touchedIndex = pieTouchResponse?.touchedSection?.touchedSectionIndex;
+                                                                      }
+                                                                    });
+                                                                    print("....stastwst$touchedIndex");
+                                                                  },
+                                                                ),
+                                                                borderData: FlBorderData(
+                                                                  show: false,
+                                                                ),
+                                                                sectionsSpace: 10,
+                                                                centerSpaceRadius: 65,
+                                                                sections:
+                                                                sectionData(context, touchedIndex)),
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )
+                                                      :
+                                                  const SizedBox(
+                                                    child: AutoSizeText("NO data Found"),
+                                                  );
+                                                  
+                                                });
+
+                                              },
+                                              child: const AutoSizeText("S-1"),
+                                            )),
+                                        Container(
+                                            height: size.height * 0.048,
+                                            width: size.width * 0.25,
+                                            decoration: BoxDecoration(
+                                                gradient: const LinearGradient(
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                  colors: [
+                                                    Colors.blue,
+                                                    Colors.purpleAccent,
+                                                  ],
+                                                ),
+                                                borderRadius:
+                                                const BorderRadius.all(Radius.circular(20)),
+                                                border: Border.all(color: Colors.black, width: 2)),
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.transparent),
+                                              onPressed: () {
+                                                setState(() {
+
+
+                                                  snapshot.data!.data()?["S-2-$selectedSubject"]!=null && snapshot.data!.data()?["S-2-max_marks"]!=null
+                                                      ?
+                                                  SizedBox(
+                                                    height: size.height * 0.5,
+                                                    width: size.width * 0.45,
+                                                    child: Column(
+                                                      children: [
+                                                        SizedBox(
+                                                          height: size.height * 0.05,
+                                                          child: AutoSizeText(
+                                                            "Pie Chart For Sessional-2",
+                                                            style: GoogleFonts.openSans(
+                                                                fontSize: size.height * 0.04,
+                                                                color: Colors.black87,
+                                                                fontWeight: FontWeight.w700),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: size.height * 0.4,
+                                                          width: size.width * 0.45,
+                                                          child: PieChart(
+                                                            PieChartData(
+                                                                pieTouchData: PieTouchData(
+                                                                  enabled: true,
+                                                                  touchCallback: (_, pieTouchResponse) {
+                                                                    //var pieTouchResponse;
+                                                                    setState(() {
+                                                                      if (pieTouchResponse
+                                                                          ?.touchedSection
+                                                                      is FlLongPressEnd ||
+                                                                          pieTouchResponse
+                                                                              ?.touchedSection
+                                                                          is FlPanEndEvent) {
+                                                                        touchedIndex = -1;
+                                                                      } else {
+                                                                        touchedIndex = pieTouchResponse?.touchedSection?.touchedSectionIndex;
+                                                                      }
+                                                                    });
+                                                                    // print("....stastwst$touchedIndex");
+                                                                  },
+                                                                ),
+                                                                borderData: FlBorderData(
+                                                                  show: false,
+                                                                ),
+                                                                sectionsSpace: 10,
+                                                                centerSpaceRadius: 65,
+                                                                sections:
+                                                                sectionData(context, touchedIndex)),
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )
+                                                      :
+                                                  const SizedBox(
+                                                    child: AutoSizeText("No data found"),
+                                                  );
+
+                                                });
+
+                                              },
+                                              child: const AutoSizeText("S-2"),
+                                            )),
+                                        Container(
+                                            height: size.height * 0.048,
+                                            width: size.width * 0.25,
+                                            decoration: BoxDecoration(
+                                                gradient: const LinearGradient(
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                  colors: [
+                                                    Colors.blue,
+                                                    Colors.purpleAccent,
+                                                  ],
+                                                ),
+                                                borderRadius:
+                                                const BorderRadius.all(Radius.circular(20)),
+                                                border: Border.all(color: Colors.black, width: 2)),
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.transparent),
+                                              onPressed: () {
+                                                setState(() {
+
+                                                });
+
+                                              },
+                                              child: const AutoSizeText("S-3"),
+                                            )),
+
+                                      ],
+                                    ),
                                     SizedBox(
-                                      height: size.height * 0.5,
-                                      width: size.width * 0.45,
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            height: size.height * 0.05,
-                                            child: AutoSizeText(
-                                              "Pie Chart For Sessional-1",
-                                              style: GoogleFonts.openSans(
-                                                  fontSize: size.height * 0.04,
-                                                  color: Colors.black87,
-                                                  fontWeight: FontWeight.w700),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: size.height * 0.4,
-                                            width: size.width * 0.45,
-                                            child: PieChart(
-                                              PieChartData(
-                                                  pieTouchData: PieTouchData(
-                                                    enabled: true,
-                                                    touchCallback: (_, pieTouchResponse) {
-                                                      //var pieTouchResponse;
-                                                      setState(() {
-                                                        if (pieTouchResponse
-                                                            ?.touchedSection
-                                                        is FlLongPressEnd ||
-                                                            pieTouchResponse
-                                                                ?.touchedSection
-                                                            is FlPanEndEvent) {
-                                                          touchedIndex = -1;
-                                                        } else {
-                                                          touchedIndex = pieTouchResponse?.touchedSection?.touchedSectionIndex;
-                                                        }
-                                                      });
-                                                      print("....stastwst$touchedIndex");
-                                                    },
-                                                  ),
-                                                  borderData: FlBorderData(
-                                                    show: false,
-                                                  ),
-                                                  sectionsSpace: 10,
-                                                  centerSpaceRadius: 65,
-                                                  sections:
-                                                  sectionData(context, touchedIndex)),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    )
-                                    :
-                                        const SizedBox(),
-                                    snapshot.data!.data()?["S-2-$selectedSubject"]!=null && snapshot.data!.data()?["S-2-max_marks"]!=null
-                                        ?
-                                    SizedBox(
-                                      height: size.height * 0.5,
-                                      width: size.width * 0.45,
-                                      child: Column(
-                                        children: [
-                                          SizedBox(
-                                            height: size.height * 0.05,
-                                            child: AutoSizeText(
-                                              "Pie Chart For Sessional-2",
-                                              style: GoogleFonts.openSans(
-                                                  fontSize: size.height * 0.04,
-                                                  color: Colors.black87,
-                                                  fontWeight: FontWeight.w700),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: size.height * 0.4,
-                                            width: size.width * 0.45,
-                                            child: PieChart(
-                                              PieChartData(
-                                                  pieTouchData: PieTouchData(
-                                                    enabled: true,
-                                                    touchCallback: (_, pieTouchResponse) {
-                                                      //var pieTouchResponse;
-                                                      setState(() {
-                                                        if (pieTouchResponse
-                                                            ?.touchedSection
-                                                        is FlLongPressEnd ||
-                                                            pieTouchResponse
-                                                                ?.touchedSection
-                                                            is FlPanEndEvent) {
-                                                          touchedIndex = -1;
-                                                        } else {
-                                                          touchedIndex = pieTouchResponse?.touchedSection?.touchedSectionIndex;
-                                                        }
-                                                      });
-                                                     // print("....stastwst$touchedIndex");
-                                                    },
-                                                  ),
-                                                  borderData: FlBorderData(
-                                                    show: false,
-                                                  ),
-                                                  sectionsSpace: 10,
-                                                  centerSpaceRadius: 65,
-                                                  sections:
-                                                  sectionData(context, touchedIndex)),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    )
-                                        :
-                                    const SizedBox(),
+                                      height: size.height*0.03,
+                                    ),
+
+                                   
                                     /*snapshot.data!.data()?["S-3-$selectedSubject"]!=null && snapshot.data!.data()?["S-3-max_marks"]!=null
                                         ?
                                     SizedBox(
@@ -625,7 +720,7 @@ class _MarksState extends State<Marks> {
                                         :
                                     const SizedBox(),*/
                                     SizedBox(
-                                      height: size.height * 0.01,
+                                      height: size.height * 0.05,
                                     ),
 
                                   ],

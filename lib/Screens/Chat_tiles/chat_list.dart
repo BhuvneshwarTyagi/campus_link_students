@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import '../../Constraints.dart';
+import '../loadingscreen.dart';
 import 'chat.dart';
 
 class chatsystem extends StatefulWidget {
@@ -41,125 +42,113 @@ class _chatsystemState extends State<chatsystem> {
       body:
          ! no_subjects
         ?
-      StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection("Students")
-            .doc(usermodel["Email"])
-            .snapshots(),
-        builder: (context, snapshot) {
-          print("chat List");
-          markFalse();
-          return snapshot.hasData
-              ? ListView.builder(
-                  itemCount: snapshot.data?.data()!["Subject"].length,
-                  itemBuilder: (context, index) {
-                    return StreamBuilder(
-                      stream: FirebaseFirestore.instance.collection("Messages").doc(channel_perfix+snapshot.data?.data()!["Subject"][index]).snapshots(),
-                      builder: (context, snapshot2) {
-                        int readCount = 0;
-                        int count = 0;
-                        snapshot2.hasData
-                            ? readCount = snapshot2.data?.data()!["Messages"].length
-                            : null;
-                        snapshot2.hasData
-                            ? count = int.parse("${snapshot2.data?.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]}")
-                            : null;
-                        return InkWell(
+         SizedBox(
+           height: size.height*0.8,
+           width: size.width,
+           child: ListView.builder(
+             scrollDirection: Axis.vertical,
+             itemCount: usermodel["Subject"].length,
+             itemBuilder: (context, index) {
+               return SizedBox(
+                 height: size.height*0.1,
+                 width: size.width,
+                 child: StreamBuilder(
+                     stream: FirebaseFirestore.instance.collection("Messages").doc( channel_perfix +usermodel["Subject"][index]).snapshots(),
+                     builder: (context, snapshot) {
+                       print("chat List");
 
-                          onTap: () async {
-                            // int readCount1 = 0;
-                            // int count1 = 0;
-                            // readCount1 = snapshot2.data?.data()!["Messages"].length;
-                            // count1 = int.parse("${snapshot2.data?.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]}");
-                            // for (int i = readCount1; i > count1; i--) {
-                            //   print(".............${snapshot2.data!.data()?["Messages"]}");
-                            //   String? stamp = snapshot2.data!.data()?["Messages"][i-1]["Stamp"].toDate().toString().split('.')[0];
-                            //   String? email = snapshot2.data!.data()?["Messages"][i-1]["UID"];
-                            //
-                            //   if (email != usermodel["Email"]) {
-                            //     await FirebaseFirestore.instance
-                            //         .collection("Messages")
-                            //         .doc(channel_perfix+snapshot.data?.data()!["Subject"][index])
-                            //         .collection("Messages_Detail")
-                            //         .doc("Messages_Detail")
-                            //         .update({
-                            //       "${email?.split('@')[0]}_${stamp}_Seen" : FieldValue.arrayUnion([
-                            //         {
-                            //           "Email": usermodel["Email"],
-                            //           "Stamp": DateTime.now()
-                            //         }
-                            //       ]),
-                            //     });
-                            //   }
-                            // }
-                            // await FirebaseFirestore.instance
-                            //     .collection("Messages")
-                            //     .doc(channel_perfix+snapshot.data?.data()!["Subject"][index])
-                            //     .update({
-                            //   usermodel["Email"].toString().split("@")[0]: {
-                            //     "Last_Active": DateTime.now(),
-                            //     "Read_Count": readCount1,
-                            //     "Active": true,
-                            //     "Token": FieldValue.arrayUnion([usermodel["Token"]])
-                            //   }
-                            // }).whenComplete(() {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => chat_page(
-                                      channel: channel_perfix +
-                                          snapshot.data?.data()!["Subject"]
-                                          [index]),)
-                                  );
-                            //});
-                          },
-                          child: Container(
-                            height: 90,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              border: Border(
-                                bottom: BorderSide(color: Colors.black, width: 1),
-                              ),
-                            ),
-                            padding: EdgeInsets.all(size.width * 0.02),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const CircleAvatar(
-                                  backgroundColor: Color.fromRGBO(86, 149, 178, 1),
-                                  radius: 30,
-                                  child: Text(
-                                    "P",
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 30),
-                                  ),
-                                ),
-                                SizedBox(width: size.width * 0.03),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    AutoSizeText(
-                                      "${snapshot.data?.data()!["Subject"][index]}",
-                                      style: GoogleFonts.poppins(
-                                          color: Colors.black, fontSize: 18),
-                                    ),
-                                    SizedBox(
-                                      height: size.height * 0.03,
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                    );
-                  },
-                )
-              : const Center(
-                  child: CircularProgressIndicator(),
-                );
-        },
-      )
+                       int readCount=0;
+                       int count=0;
+                       snapshot.hasData
+                           ?
+                       readCount= snapshot.data?.data()!["Messages"].length
+                           :
+                       null;
+                       snapshot.hasData
+                           ?
+                       count= int.parse("${snapshot.data?.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]}")
+                           :
+                       null;
+                       return snapshot.hasData
+                           ?
+                       InkWell(
+                         onTap: () async {
+
+                           Navigator.pushReplacement(
+                             context,
+                             MaterialPageRoute(
+                               builder: (context) => chat_page(channel: channel_perfix + usermodel["Subject"][index]),
+                             ),
+                           );
+                         },
+                         child: Container(
+                           height: size.height*0.1,
+                           decoration: const BoxDecoration(
+                               color: Colors.white,
+                               border: Border(bottom: BorderSide(color: Colors.black, width: 1))),
+                           padding: EdgeInsets.all(size.width*0.02),
+                           child: Row(
+                             mainAxisAlignment: MainAxisAlignment.start,
+                             children: [
+                               CircleAvatar(
+                                 backgroundColor: const Color.fromRGBO(86, 149, 178, 1),
+                                 radius: size.width*0.07,
+                                 // backgroundImage: NetworkImage(snapshot.data!.data()!["image_URL"]),
+                               ),
+
+                               SizedBox(width: size.width*0.03),
+                               Column(
+                                 mainAxisAlignment: MainAxisAlignment.center,
+                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                 children: [
+                                   AutoSizeText("${usermodel["Subject"][index]}",
+                                     style: GoogleFonts.poppins(color: Colors.black,fontSize: size.width*0.045,fontWeight: FontWeight.w500),
+                                   ),
+                                   Row(
+                                     children: [
+                                       SizedBox(
+                                         width: size.width*0.7,
+                                         child: AutoSizeText("${snapshot.data?.data()!["Messages"][snapshot.data?.data()!["Messages"].length-1]["Name"]}: ${snapshot.data?.data()!["Messages"][snapshot.data?.data()!["Messages"].length-1]["text"].length <25 ? snapshot.data?.data()!["Messages"][snapshot.data?.data()!["Messages"].length-1]["text"] : snapshot.data?.data()!["Messages"][snapshot.data?.data()!["Messages"].length-1]["text"].toString().substring(0,25)}",
+                                           style: GoogleFonts.poppins(
+                                               color: Colors.black.withOpacity(0.80),
+                                               fontSize: size.width*0.035,
+                                               fontWeight: FontWeight.w400
+                                           ),
+                                           textAlign: TextAlign.left,
+                                         ),
+                                       ),
+                                       readCount - count>0
+                                           ?
+                                       CircleAvatar(
+                                         radius: size.width*0.03,
+                                         backgroundColor: Colors.green,
+                                         child: AutoSizeText("${readCount - count}",
+                                           style: GoogleFonts.poppins(
+                                               color: Colors.white,
+                                               fontSize: size.width*0.035,
+                                               fontWeight: FontWeight.w400
+                                           ),
+                                           textAlign: TextAlign.left,
+                                         ),
+                                       )
+                                           :
+                                       const SizedBox(),
+                                     ],
+                                   )
+                                 ],
+                               )
+                             ],
+                           ),
+                         ),
+                       )
+                           :
+                      const SizedBox();
+                     }
+                 ),
+               );
+             },
+           ),
+         )
              :
          SizedBox(
            width: size.width*1,

@@ -328,8 +328,8 @@ class _AttendanceState extends State<Attendance> {
                               decoration: const BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    Color.fromRGBO(177, 54, 101, 1),
-                                    Color.fromRGBO(43, 39, 113, 1),
+                                    Color.fromRGBO(200, 62, 118, 1),
+                                    Color.fromRGBO(70, 50, 110, 1),
                                   ]
                                 ),
                                 borderRadius: BorderRadius.all(
@@ -384,8 +384,8 @@ class _AttendanceState extends State<Attendance> {
                               decoration: const BoxDecoration(
                                 gradient: LinearGradient(
                                     colors: [
-                                      Color.fromRGBO(177, 54, 101, 1),
-                                      Color.fromRGBO(43, 39, 113, 1),
+                                      Color.fromRGBO(200, 62, 118, 1),
+                                      Color.fromRGBO(70, 50, 110, 1),
                                     ]
                                 ),
                                 borderRadius: BorderRadius.all(
