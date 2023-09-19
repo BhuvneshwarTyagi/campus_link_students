@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
 
 class Assignment extends StatefulWidget {
   const Assignment({Key? key}) : super(key: key);
@@ -142,7 +141,7 @@ class _AssignmentState extends State<Assignment> {
             Scaffold(
 
               backgroundColor: Colors.transparent,
-              body: Container(
+              body: SizedBox(
                 height: size.height*0.8,
                 child: const Center(child: Text("View Assignment")),
               ),

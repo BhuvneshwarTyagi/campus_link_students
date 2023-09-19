@@ -24,7 +24,15 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   bool loaded=false;
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    var temp= FirebaseAuth.instance.currentUser;
+    if(temp != null){
+      fetchuser();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +47,7 @@ class _MainPageState extends State<MainPage> {
           } else if (snapshot.connectionState == ConnectionState.active && snapshot.hasData)
           {
             if(FirebaseAuth.instance.currentUser!.emailVerified){
-              !loaded
-                  ?
-              fetchuser()
-                  :
-              null;
+
 
               return
                 loaded ?
@@ -63,25 +67,29 @@ class _MainPageState extends State<MainPage> {
       );
   }
 
-  Future<void> fetchuser() async {
-    await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
-      setState(() {
-        usermodel=value.data()!;
-      });
-    }).whenComplete(() async {
-      await FirebaseMessaging.instance.getToken().then((token) async {
-        await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
-          'Token' : token,
-        }).whenComplete(() {
-          setState(() {
-            if (kDebugMode) {
-              print(usermodel);
-            }
-            loaded=true;
+  Future<void> fetchuser() async{
+    if(!loaded){
+      await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
+        setState(() {
+          usermodel=value.data()!;
+        });
+      }).whenComplete(() async {
+        await FirebaseMessaging.instance.getToken().then((token) async {
+          await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
+            'Token' : token,
+          }).whenComplete(() {
+            setState(() {
+              if (kDebugMode) {
+                print(usermodel);
+              }
+              loaded=true;
+            });
           });
+
         });
 
-    });
-
+      }
+      );
+    }
   }
-    );}}
+}
