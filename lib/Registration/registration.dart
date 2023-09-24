@@ -855,8 +855,13 @@ class _StudentDetailsState extends State<StudentDetails> {
                             });
                             
                           }
+                          await FirebaseFirestore.instance
+                              .collection("Students")
+                              .doc(usermodel["Email"])
+                              .update({
+                            "Message_channels" : FieldValue.arrayUnion(["${universityController.text.trim()} ${collegeController.text.trim()} ${courseController.text.trim()} ${branchController.text.trim()} ${yearController.text.trim()} ${sectionController.text.trim()} ${subjectlist[i].text.trim()}"]),
 
-
+                          });
 
                         }
                       }
@@ -868,7 +873,9 @@ class _StudentDetailsState extends State<StudentDetails> {
                           collegeController.text.toString().isNotEmpty &&
                           yearController.text.toString().isNotEmpty &&
                           branchController.text.toString().isNotEmpty &&
-                          sectionController.text.toString().isNotEmpty) {
+                          sectionController.text.toString().isNotEmpty &&
+                          subject.isNotEmpty
+                      ) {
                         await FirebaseFirestore.instance
                             .collection("Students")
                             .doc(usermodel["Email"])
@@ -882,7 +889,8 @@ class _StudentDetailsState extends State<StudentDetails> {
                           "Section": sectionController.text.trim().toString(),
                           "Subject": FieldValue.arrayUnion(subject),
                           "Active": false,
-                          "bg": "bg-1.jpg"
+                          "bg": "bg-1.jpg",
+
                         })
                             .then(
                                 (value) async {
@@ -930,7 +938,8 @@ class _StudentDetailsState extends State<StudentDetails> {
                                 size: 55,
                               ));
                         });
-                      } else {
+                      }
+                      else {
                         Navigator.pop(context);
                         InAppNotifications.instance
                           ..titleFontSize = 14.0
