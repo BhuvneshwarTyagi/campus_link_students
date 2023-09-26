@@ -18,7 +18,6 @@ var attendanceCount = 0;
 
 class Attendance extends StatefulWidget {
   const Attendance({Key? key}) : super(key: key);
-
   @override
   State<Attendance> createState() => _AttendanceState();
 }
@@ -66,7 +65,7 @@ class _AttendanceState extends State<Attendance> {
   final colorList = <Color>[Colors.indigo, Colors.purpleAccent];
 
   // Bar chart Data List
-  List<String>dateWithMonthList=[];
+  List<String> dateWithMonthList = [];
 
   List<BarChartGroupData> barChartGroupDataList = [];
 
@@ -75,6 +74,7 @@ class _AttendanceState extends State<Attendance> {
     Size size = MediaQuery.of(context).size;
     return Container(
         decoration: BoxDecoration(
+          color: Colors.transparent,
           // image: DecorationImage(image: AssetImage("assets/images/bg-image.png"),fit: BoxFit.fill
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -96,7 +96,7 @@ class _AttendanceState extends State<Attendance> {
           backgroundColor: Colors.transparent,
           body: Container(
             height: size.height,
-            width: size.width * 0.95,
+            width: size.width ,
             color: Colors.transparent,
             child: Padding(
                 padding: const EdgeInsets.all(4.0),
@@ -105,7 +105,7 @@ class _AttendanceState extends State<Attendance> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      /*SizedBox(
                         height: size.height * 0.12,
                         width: size.width * 1,
                         child: ListView.builder(
@@ -184,7 +184,7 @@ class _AttendanceState extends State<Attendance> {
                             );
                           },
                         ),
-                      ),
+                      ),*/
                       SizedBox(
                         height: size.height * 0.075,
                         width: size.width * 1,
@@ -322,20 +322,16 @@ class _AttendanceState extends State<Attendance> {
                             ),
                           ),*/
                             Container(
-
                               height: size.height * 0.08,
                               width: size.width * 0.36,
                               decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Color.fromRGBO(200, 62, 118, 1),
-                                    Color.fromRGBO(70, 50, 110, 1),
-                                  ]
+                                gradient:  LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [Colors.blue, Colors.purpleAccent],
                                 ),
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(15)),
-
-
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
                               ),
                               child: TextField(
                                 controller: startDateController,
@@ -355,8 +351,8 @@ class _AttendanceState extends State<Attendance> {
                                 cursorColor: Colors.white70,
                                 decoration: InputDecoration(
                                     focusedBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(15)),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(15)),
                                       borderSide: BorderSide(
                                           color: Colors.white, width: 2),
                                     ),
@@ -383,15 +379,12 @@ class _AttendanceState extends State<Attendance> {
                               width: size.width * 0.36,
                               decoration: const BoxDecoration(
                                 gradient: LinearGradient(
-                                    colors: [
-                                      Color.fromRGBO(200, 62, 118, 1),
-                                      Color.fromRGBO(70, 50, 110, 1),
-                                    ]
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [Colors.blue, Colors.purpleAccent],
                                 ),
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(15)),
-
-
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
                               ),
                               child: TextField(
                                 controller: endDateController,
@@ -440,23 +433,20 @@ class _AttendanceState extends State<Attendance> {
                               height: size.height * 0.074,
                               width: size.width * 0.15,
                               decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                    colors: [
-                                      Color.fromRGBO(177, 54, 101, 1),
-                                      Color.fromRGBO(43, 39, 113, 1),
-                                    ]
+                                gradient:  LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [Colors.blue, Colors.purpleAccent],
                                 ),
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(15)),
-
-
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
                               ),
                               child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
-                                      backgroundColor:  Colors.transparent),
+                                      backgroundColor: Colors.transparent),
                                   onPressed: () {
                                     setState(() {
                                       attendanceData = false;
@@ -476,7 +466,7 @@ class _AttendanceState extends State<Attendance> {
                                       ),
                                     );
 
-                                    if (selectedSubject == "" ||
+                                    if (
                                         endDateController.text == "" ||
                                         startDateController.text == "") {
                                       setState(() {
@@ -513,7 +503,7 @@ class _AttendanceState extends State<Attendance> {
                                   },
                                   child: Center(
                                       child: Icon(
-                                    Icons.arrow_downward,
+                                    Icons.search,
                                     color: Colors.white,
                                     size: size.height * 0.04,
                                   ))),
@@ -530,326 +520,380 @@ class _AttendanceState extends State<Attendance> {
                         height: size.height * 0.025,
                       ),
                       attendanceData
-                          ? Column(
-                              children: [
-                                SizedBox(
-                                  height: size.height * 0.03,
-                                ),
-                                Container(
-                                    width: size.width * 0.9,
-                                    height: size.height * 0.31,
-                                    decoration: const BoxDecoration(
-                                      gradient: LinearGradient(
-                                          colors: [
-                                            Color.fromRGBO(177, 54, 101, 1),
-                                            Color.fromRGBO(43, 39, 113, 1),
-                                          ]
-                                      ),
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15)),
-
-
-                                    ),
-                                    child: Center(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              SizedBox(
-                                                width: size.width * 0.055,
-                                              ),
-                                              AutoSizeText("Subject : ",
-                                                  style: GoogleFonts.openSans(
-                                                      color: Colors.white,
-                                                      fontSize:
-                                                          size.height * 0.026)),
-                                              SizedBox(
-                                                width: size.width * 0.02,
-                                              ),
-                                              AutoSizeText(
-                                                  " ${selectedSubject}",
-                                                  style: GoogleFonts.openSans(
-                                                      color: Colors.white,
-                                                      fontSize:
-                                                          size.height * 0.026)),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: size.height * 0.02,
-                                          ),
-                                          Row(
-                                            children: [
-                                              SizedBox(
-                                                width: size.width * 0.055,
-                                              ),
-                                              AutoSizeText("Present : ",
-                                                  style: GoogleFonts.openSans(
-                                                      color: Colors.white,
-                                                      fontSize:
-                                                          size.height * 0.026)),
-                                              SizedBox(
-                                                height: size.height * 0.02,
-                                              ),
-                                              AutoSizeText(" $attendanceCount",
-                                                  style: GoogleFonts.openSans(
-                                                      color: Colors.white,
-                                                      fontSize:
-                                                          size.height * 0.026)),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: size.height * 0.02,
-                                          ),
-                                          Row(
-                                            children: [
-                                              SizedBox(
-                                                width: size.width * 0.055,
-                                              ),
-                                              AutoSizeText("Absent : ",
-                                                  style: GoogleFonts.openSans(
-                                                      color: Colors.white,
-                                                      fontSize:
-                                                          size.height * 0.026)),
-                                              SizedBox(
-                                                height: size.height * 0.02,
-                                              ),
-                                              AutoSizeText(" $absentCount",
-                                                  style: GoogleFonts.openSans(
-                                                      color: Colors.white,
-                                                      fontSize:
-                                                          size.height * 0.026)),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: size.height * 0.02,
-                                          ),
-                                          Row(
-                                            children: [
-                                              SizedBox(
-                                                width: size.width * 0.055,
-                                              ),
-                                              AutoSizeText("Total Lecture : ",
-                                                  style: GoogleFonts.openSans(
-                                                      color: Colors.white,
-                                                      fontSize:
-                                                          size.height * 0.026)),
-                                              SizedBox(
-                                                height: size.height * 0.02,
-                                              ),
-                                              AutoSizeText(" $totalLecture",
-                                                  style: GoogleFonts.openSans(
-                                                      color: Colors.white,
-                                                      fontSize:
-                                                          size.height * 0.026)),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    )),
-                                SizedBox(
-                                  height: size.height * 0.03,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    height: size.height * 0.05,
-                                    child: AutoSizeText(
-                                      "Bar Chart",
-                                      style: GoogleFonts.openSans(
-                                          fontSize: size.height * 0.04,
-                                          color: Colors.black87,
-                                          fontWeight: FontWeight.w700),
-                                    ),
+                          ? Column(children: [
+                              SizedBox(
+                                height: size.height * 0.03,
+                              ),
+                              Container(
+                                  width: size.width * 0.9,
+                                  height: size.height * 0.31,
+                                  decoration: const BoxDecoration(
+                                    gradient: LinearGradient(colors: [
+                                      Color.fromRGBO(177, 54, 101, 1),
+                                      Color.fromRGBO(43, 39, 113, 1),
+                                    ]),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15)),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: size.height * 0.4,
-                                  width: size.width * 0.45,
-                                  child: PieChart(
-                                    PieChartData(
-                                        pieTouchData: PieTouchData(
-                                          enabled: true,
-                                          touchCallback: (_, pieTouchResponse) {
-                                            //var pieTouchResponse;
-                                            setState(() {
-                                              if (pieTouchResponse
-                                                          ?.touchedSection
-                                                      is FlLongPressEnd ||
-                                                  pieTouchResponse
-                                                          ?.touchedSection
-                                                      is FlPanEndEvent) {
-                                                touchedIndex = -1;
-                                              } else {
-                                                touchedIndex = pieTouchResponse
-                                                    ?.touchedSection
-                                                    ?.touchedSectionIndex;
-                                              }
-                                            });
-                                            print("....stastwst$touchedIndex");
-                                          },
-                                        ),
-                                        borderData: FlBorderData(
-                                          show: false,
-                                        ),
-                                        sectionsSpace: 10,
-                                        centerSpaceRadius: 65,
-                                        sections:
-                                            sectionData(context, touchedIndex)),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: size.height * 0.01,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      height: size.height * 0.02,
-                                      width: size.width * 0.04,
-                                      decoration: const BoxDecoration(
-                                          color: Colors.greenAccent,
-                                          shape: BoxShape.circle),
-                                    ),
-                                    AutoSizeText(
-                                      "\t\t\t Present",
-                                      style: GoogleFonts.openSans(
-                                          color: Colors.greenAccent,
-                                          fontSize: size.height * 0.025,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    SizedBox(
-                                      width: size.width * 0.26,
-                                    ),
-                                    Container(
-                                      height: size.height * 0.02,
-                                      width: size.width * 0.04,
-                                      decoration: const BoxDecoration(
-                                          color: Colors.red,
-                                          shape: BoxShape.circle),
-                                    ),
-                                    AutoSizeText(
-                                      "\t\t\t Absent",
-                                      style: GoogleFonts.openSans(
-                                          color: Colors.red,
-                                          fontSize: size.height * 0.025,
-                                          fontWeight: FontWeight.w600),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: size.height * 0.08,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SizedBox(
-                                    height: size.height * 0.05,
-                                    child: AutoSizeText(
-                                      "Bar Chart",
-                                      style: GoogleFonts.openSans(
-                                          fontSize: size.height * 0.04,
-                                          color: Colors.black87,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: size.height * 0.04,
-                                ),
-                                Container(
-                                  height: size.height * 0.42,
-                                  width: size.width * 0.88,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.black,
-                                        width: 2,
-                                      ),
-                                      color: Colors.black26.withOpacity(0.7)),
-                                  child: BarChart(
-                                    swapAnimationCurve: Curves.linear,
-                                    swapAnimationDuration: const Duration(milliseconds: 100),
-                                    BarChartData(
-                                      barTouchData: BarTouchData(
-                                        enabled: true,
-                                        allowTouchBarBackDraw: true,
-                                        touchTooltipData: BarTouchTooltipData(
-                                          tooltipBgColor: Colors.white,
-                                          //getTooltipItem: (a, b, c, d) => null,
-                                        ),
-                                      ),
-                                      alignment: BarChartAlignment.center,
-                                      barGroups: barChartGroupDataList,
-                                      titlesData: FlTitlesData(
-                                        show: true,
-                                        bottomTitles: AxisTitles(
-                                          drawBehindEverything: true,
-                                          sideTitles: SideTitles(
-                                            showTitles: true,
-                                            reservedSize: 38,
-                                            interval: size.width * 0.04,
-                                            getTitlesWidget: (value, meta) {
-                                              return Text(dateWithMonthList[value.toInt()],
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            SizedBox(
+                                              width: size.width * 0.055,
+                                            ),
+                                            AutoSizeText("Subject : ",
                                                 style: GoogleFonts.openSans(
-                                                  color: Colors.blueAccent
-                                                ),
+                                                    color: Colors.white,
+                                                    fontSize:
+                                                        size.height * 0.026)),
+                                            SizedBox(
+                                              width: size.width * 0.02,
+                                            ),
+                                            AutoSizeText(" ${selectedSubject}",
+                                                style: GoogleFonts.openSans(
+                                                    color: Colors.white,
+                                                    fontSize:
+                                                        size.height * 0.026)),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: size.height * 0.02,
+                                        ),
+                                        Row(
+                                          children: [
+                                            SizedBox(
+                                              width: size.width * 0.055,
+                                            ),
+                                            AutoSizeText("Present : ",
+                                                style: GoogleFonts.openSans(
+                                                    color: Colors.white,
+                                                    fontSize:
+                                                        size.height * 0.026)),
+                                            SizedBox(
+                                              height: size.height * 0.02,
+                                            ),
+                                            AutoSizeText(" $attendanceCount",
+                                                style: GoogleFonts.openSans(
+                                                    color: Colors.white,
+                                                    fontSize:
+                                                        size.height * 0.026)),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: size.height * 0.02,
+                                        ),
+                                        Row(
+                                          children: [
+                                            SizedBox(
+                                              width: size.width * 0.055,
+                                            ),
+                                            AutoSizeText("Absent : ",
+                                                style: GoogleFonts.openSans(
+                                                    color: Colors.white,
+                                                    fontSize:
+                                                        size.height * 0.026)),
+                                            SizedBox(
+                                              height: size.height * 0.02,
+                                            ),
+                                            AutoSizeText(" $absentCount",
+                                                style: GoogleFonts.openSans(
+                                                    color: Colors.white,
+                                                    fontSize:
+                                                        size.height * 0.026)),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: size.height * 0.02,
+                                        ),
+                                        Row(
+                                          children: [
+                                            SizedBox(
+                                              width: size.width * 0.055,
+                                            ),
+                                            AutoSizeText("Total Lecture : ",
+                                                style: GoogleFonts.openSans(
+                                                    color: Colors.white,
+                                                    fontSize:
+                                                        size.height * 0.026)),
+                                            SizedBox(
+                                              height: size.height * 0.02,
+                                            ),
+                                            AutoSizeText(" $totalLecture",
+                                                style: GoogleFonts.openSans(
+                                                    color: Colors.white,
+                                                    fontSize:
+                                                        size.height * 0.026)),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  )),
+                              SizedBox(
+                                height: size.height * 0.03,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SizedBox(
+                                  height: size.height * 0.05,
+                                  child: AutoSizeText(
+                                    "Bar Chart",
+                                    style: GoogleFonts.openSans(
+                                        fontSize: size.height * 0.04,
+                                        color: Colors.black87,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                    height: size.height * 0.32,
+                                    width: size.width * 0.98,
+                                    decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            Colors.blue,
+                                            Colors.purpleAccent
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(30.0))),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              SizedBox(
+                                                  height: size.height * 0.22,
+                                                  width: size.width * 0.53,
+                                                  child: Stack(
+                                                    children: [
+                                                      PieChart(
+                                                        PieChartData(
+                                                            pieTouchData:
+                                                                PieTouchData(
+                                                              enabled: true,
+                                                              touchCallback: (_,
+                                                                  pieTouchResponse) {
+                                                                //var pieTouchResponse;
+                                                                setState(() {
+                                                                  if (pieTouchResponse
+                                                                              ?.touchedSection
+                                                                          is FlLongPressEnd ||
+                                                                      pieTouchResponse
+                                                                              ?.touchedSection
+                                                                          is FlPanEndEvent) {
+                                                                    touchedIndex =
+                                                                        -1;
+                                                                  } else {
+                                                                    touchedIndex =
+                                                                        pieTouchResponse
+                                                                            ?.touchedSection
+                                                                            ?.touchedSectionIndex;
+                                                                  }
+                                                                });
+                                                                //print("....stastwst$touchedIndex1");
+                                                              },
+                                                            ),
+                                                            borderData:
+                                                                FlBorderData(
+                                                              show: false,
+                                                            ),
+                                                            sectionsSpace: 8,
+                                                            centerSpaceRadius: size.height*0.07,
+                                                            sections: sectionData(
+                                                                context,
+                                                                touchedIndex)),
+                                                      ),
+                                                      Center(
+                                                          child: AutoSizeText(
+                                                        "${double.parse(percentage.toStringAsPrecision(2))}%",
+                                                        style:
+                                                            GoogleFonts.openSans(
+                                                                fontSize:
+                                                                    size.height *
+                                                                        0.04,
+                                                                color: Colors
+                                                                    .black87,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600),
+                                                      ))
+                                                    ],
+                                                  )),
+                                              Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                 Row(
+                                                   children: [
+                                                     Container(
+                                                       height: size.height * 0.02,
+                                                       width: size.width * 0.04,
+                                                       decoration: const BoxDecoration(
+                                                           color: Colors.greenAccent,
+                                                           shape: BoxShape.circle),
+                                                     ),
+                                                     AutoSizeText(
+                                                       "\t\t\t Present",
+                                                       style: GoogleFonts.openSans(
+                                                           color: Colors.greenAccent,
+                                                           fontSize: size.height * 0.025,
+                                                           fontWeight: FontWeight.w600),
+                                                     ),
+                                                   ],
+                                                 ),
+                                                  SizedBox(
+                                                    height: size.height*0.03,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Container(
+                                                        height: size.height * 0.02,
+                                                        width: size.width * 0.04,
+                                                        decoration: const BoxDecoration(
+                                                            color: Colors.red,
+                                                            shape: BoxShape.circle),
+                                                      ),
+                                                      AutoSizeText(
+                                                        "\t\t\t Present",
+                                                        style: GoogleFonts.openSans(
+                                                            color: Colors.red,
+                                                            fontSize: size.height * 0.025,
+                                                            fontWeight: FontWeight.w600),
+                                                      ),
+                                                    ],
+                                                  )
+                                                ],
+                                              )
+                                            ]),
+
+                                        /*SizedBox(
+                                    height: size.height * 0.08,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SizedBox(
+                                      height: size.height * 0.05,
+                                      child: AutoSizeText(
+                                        "Bar Chart",
+                                        style: GoogleFonts.openSans(
+                                            fontSize: size.height * 0.04,
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.04,
+                                  ),
+                                  Container(
+                                    height: size.height * 0.42,
+                                    width: size.width * 0.88,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: 2,
+                                        ),
+                                        color: Colors.black26.withOpacity(0.7)),
+                                    child: BarChart(
+                                      swapAnimationCurve: Curves.linear,
+                                      swapAnimationDuration: const Duration(milliseconds: 100),
+                                      BarChartData(
+                                        barTouchData: BarTouchData(
+                                          enabled: true,
+                                          allowTouchBarBackDraw: true,
+                                          touchTooltipData: BarTouchTooltipData(
+                                            tooltipBgColor: Colors.white,
+                                            //getTooltipItem: (a, b, c, d) => null,
+                                          ),
+                                        ),
+                                        alignment: BarChartAlignment.center,
+                                        barGroups: barChartGroupDataList,
+                                        titlesData: FlTitlesData(
+                                          show: true,
+                                          bottomTitles: AxisTitles(
+                                            drawBehindEverything: true,
+                                            sideTitles: SideTitles(
+                                              showTitles: true,
+                                              reservedSize: 38,
+                                              interval: size.width * 0.04,
+                                              getTitlesWidget: (value, meta) {
+                                                return Text(dateWithMonthList[value.toInt()],
+                                                  style: GoogleFonts.openSans(
+                                                    color: Colors.blueAccent
+                                                  ),
 
 
 
-                                              );
-                                            },
+                                                );
+                                              },
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: size.height * 0.035,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      height: size.height * 0.02,
-                                      width: size.width * 0.04,
-                                      decoration: const BoxDecoration(
-                                          color: Colors.greenAccent,
-                                          shape: BoxShape.circle),
-                                    ),
-                                    AutoSizeText(
-                                      "\t\t\t Present",
-                                      style: GoogleFonts.openSans(
-                                          color: Colors.greenAccent,
-                                          fontSize: size.height * 0.025,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    SizedBox(
-                                      width: size.width * 0.26,
-                                    ),
-                                    Container(
-                                      height: size.height * 0.02,
-                                      width: size.width * 0.04,
-                                      decoration: const BoxDecoration(
-                                          color: Colors.amber,
-                                          shape: BoxShape.circle),
-                                    ),
-                                    AutoSizeText(
-                                      "\t\t\t Absent",
-                                      style: GoogleFonts.openSans(
-                                          color: Colors.red,
-                                          fontSize: size.height * 0.025,
-                                          fontWeight: FontWeight.w600),
-                                    )
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: size.height * 0.055,
-                                ),
-                              ],
-                            )
+                                  SizedBox(
+                                    height: size.height * 0.035,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        height: size.height * 0.02,
+                                        width: size.width * 0.04,
+                                        decoration: const BoxDecoration(
+                                            color: Colors.greenAccent,
+                                            shape: BoxShape.circle),
+                                      ),
+                                      AutoSizeText(
+                                        "\t\t\t Present",
+                                        style: GoogleFonts.openSans(
+                                            color: Colors.greenAccent,
+                                            fontSize: size.height * 0.025,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      SizedBox(
+                                        width: size.width * 0.26,
+                                      ),
+                                      Container(
+                                        height: size.height * 0.02,
+                                        width: size.width * 0.04,
+                                        decoration: const BoxDecoration(
+                                            color: Colors.amber,
+                                            shape: BoxShape.circle),
+                                      ),
+                                      AutoSizeText(
+                                        "\t\t\t Absent",
+                                        style: GoogleFonts.openSans(
+                                            color: Colors.red,
+                                            fontSize: size.height * 0.025,
+                                            fontWeight: FontWeight.w600),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: size.height * 0.055,
+                                  ),*/
+                                      ],
+                                    )),
+                              )
+                            ])
                           : const SizedBox(),
                     ],
                   ),
@@ -859,11 +903,12 @@ class _AttendanceState extends State<Attendance> {
   }
 
   Future<void> countAttendance(Size size) async {
+    selectedSubject="DBMS";
     barChartGroupDataList.clear();
     dateWithMonthList.clear();
     double dailyAttendanceCount = 0;
     var index = -1;
-    String month="";
+    String month = "";
     double dailyAbsentCount = 0;
     final now = DateTime.now();
     var currentMon = now.month;
@@ -886,7 +931,7 @@ class _AttendanceState extends State<Attendance> {
     //print("......................Doc is....$doc");
 
     if (startDate.month == endDate.month) {
-      month=months[startDate.month-1].toString().substring(0,3);
+      month = months[startDate.month - 1].toString().substring(0, 3);
       for (var i = startDate.day; i <= endDate.day; i++) {
         dateWithMonthList.add("$i\n$month");
         dailyAbsentCount = 0;
@@ -928,7 +973,7 @@ class _AttendanceState extends State<Attendance> {
       // for first month
       var start = startDate.day;
       var end = database().getDaysInMonth(startDate.year, startDate.month);
-      month=months[startDate.month-1].toString().substring(0,3);
+      month = months[startDate.month - 1].toString().substring(0, 3);
       for (var i = start; i <= end; i++) {
         dateWithMonthList.add("$i\n$month");
         dailyAbsentCount = 0;
@@ -977,7 +1022,7 @@ class _AttendanceState extends State<Attendance> {
 
       print("...........$doc_2");
       start = 1;
-      month=months[endDate.month-1].toString().substring(0,3);
+      month = months[endDate.month - 1].toString().substring(0, 3);
       for (var i = start; i <= endDate.day; i++) {
         dateWithMonthList.add("$i\n$month");
         dailyAbsentCount = 0;
@@ -1026,9 +1071,9 @@ class _AttendanceState extends State<Attendance> {
         .asMap()
         .map<int, PieChartSectionData>((index, data) {
           double size = index == touchedIndex
-              ? MediaQuery.of(context).size.height * 0.095
-              : MediaQuery.of(context).size.height * 0.08;
-          double _fontSize = index == touchedIndex ? 30 : 16;
+              ? MediaQuery.of(context).size.height * 0.05
+              : MediaQuery.of(context).size.height * 0.042;
+          double _fontSize = index == touchedIndex ? 20 : 16;
 
           print(",,,,,,,,,,,,${index == touchedIndex}");
 
@@ -1065,8 +1110,8 @@ class _AttendanceState extends State<Attendance> {
 
 class PieData {
   List<Data> data = [
-    Data(name: "Present", present: percentage, color: Colors.greenAccent),
-    Data(name: "Absent", present: 100.0 - percentage, color: Colors.red)
+    Data(name: "Present", present: double.parse(percentage.toStringAsPrecision(2)), color: Colors.greenAccent),
+    Data(name: "Absent", present: double.parse((100.0 - percentage).toStringAsPrecision(2)), color: Colors.red)
   ];
 }
 
