@@ -96,19 +96,14 @@ class NotificationServices{
     if(status != "Online"){
       String? userId = FirebaseAuth.instance.currentUser?.email;
       final userdoc= await FirebaseFirestore.instance.collection("Students").doc(userId).get();
-      final university = userdoc.data()?["University"];
-      final clg = userdoc.data()?["College"];
-      final course = userdoc.data()?["Course"];
-      final branch = userdoc.data()?["Branch"];
-      final year = userdoc.data()?["Year"];
-      final sec = userdoc.data()?["Section"];
 
 
-      List<dynamic> subjects= userdoc.data()?["Subject"];
 
-      for(var subject in subjects){
+      List<dynamic> channels= userdoc.data()?["Message_channels"];
+
+      for(var channel in channels){
         await FirebaseFirestore.instance.collection("Messages")
-            .doc("${university.toString().split(' ')[0]} ${clg.toString().split(' ')[0]} ${course.toString().split(' ')[0]} ${branch.toString().split(' ')[0]} ${year.toString().split(' ')[0]} ${sec.toString().split(' ')[0]} ${subject.toString().split(' ')[0]}").update(
+            .doc(channel).update(
             {
               "${userdoc["Email"].toString().split("@")[0]}.Active" : false,
               "${userdoc["Email"].toString().split("@")[0]}.Last_Active" : DateTime.now()

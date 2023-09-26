@@ -11,8 +11,8 @@ import 'package:video_player/video_player.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../Constraints.dart';
 import '../../Registration/database.dart';
-import 'chat.dart';
 import '../loadingscreen.dart';
+import 'chat.dart';
 
 class SendMedia extends StatefulWidget {
   const SendMedia({super.key, required this.imagePath, required this.channel, required this.messageLength, required this.replyBoxHeight, required this.replyToName, required this.replyToText, required this.replyIndex, required this.video});
@@ -323,7 +323,7 @@ class _SendMediaState extends State<SendMedia> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => chat_page(channel: widget.channel),
+                            builder: (context) => ChatPage(channel: widget.channel),
                           ),
                         );
                       });
@@ -632,7 +632,7 @@ class _SendMediaState extends State<SendMedia> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => chat_page(channel: widget.channel),
+                              builder: (context) => ChatPage(channel: widget.channel),
                             ),
                           );
                         });

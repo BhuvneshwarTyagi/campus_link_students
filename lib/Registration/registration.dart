@@ -734,16 +734,13 @@ class _StudentDetailsState extends State<StudentDetails> {
                             sectionController.text.isNotEmpty &&
                             subjectlist[i].text.trim().isNotEmpty) {
                           Map<String, dynamic> map1 = {
+                            "Active": false,
                             "Read_Count": 0,
-                            "Last_Active": DateTime.now(),
-                            "Active" : false,
-                            "Token" : FieldValue.arrayUnion([usermodel["Token"]])
-                          };
-                          Map<String, dynamic> map2 = {
-                            "Read_Count": 1,
-                            "Last_Active": DateTime.now(),
-                            "Active" : false,
-                            "Token" : FieldValue.arrayUnion([usermodel["Token"]])
+                            "Last_Active" : DateTime.now(),
+                            "Token": FieldValue.arrayUnion([usermodel["Token"]]),
+                            "Profile_URL" : usermodel["Profile_URL"],
+                            "Name" : usermodel["Name"],
+                            "Post" : "Students"
                           };
                           List<dynamic> channelList = await FirebaseFirestore.instance.collection("Chat_Channels").doc("Channels").get().then((value){
                             return value.data()?["Channels"];
@@ -767,12 +764,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                                     "${sectionController.text.trim().split(" ")[0]} "
                                     "${subjectlist[i].text.trim().split(" ")[0]}")
                                 .update({
-                              "Members": FieldValue.arrayUnion([
-                                {
-                                  "Email": "${usermodel["Email"]}",
-                                  "Post": "Students"
-                                }
-                              ]),
+                              "Members": FieldValue.arrayUnion(["${usermodel["Email"]}",]),
                               usermodel["Email"].toString().split("@")[0]:  map1,
                             });
                           }
@@ -793,55 +785,14 @@ class _StudentDetailsState extends State<StudentDetails> {
                                 "Date" : stamp,
                                 "Name" : usermodel["Name"]
                               },
-                              "Messages": FieldValue.arrayUnion([
-                                {
-                                  "UID" : usermodel["Email"],
-                                  "Image" : usermodel["Profile_URL"],
-                                  "Name" : usermodel["Name"],
-                                  "text" : "Hello",
-                                  "Stamp": stamp
-                                }
-                              ]),
+                              "Messages": FieldValue.arrayUnion([]),
                               "Members": FieldValue.arrayUnion([
-                                {
-                                  "Email": "${usermodel["Email"]}",
-                                  "Post": "Students"
-                                }
+                                "${usermodel["Email"]}",
                               ]),
-                              usermodel["Email"].toString().split("@")[0]:  map2,
+                              usermodel["Email"].toString().split("@")[0]:  map1,
 
                             });
-                            await FirebaseFirestore
-                                .instance
-                                .collection("Messages")
-                                .doc(
-                                "${universityController.text.trim().split(" ")[0]} "
-                                    "${collegeController.text.trim().split(" ")[0]} "
-                                    "${courseController.text.trim().split(" ")[0]} "
-                                    "${branchController.text.trim().split(" ")[0]} "
-                                    "${yearController.text.trim().split(" ")[0]} "
-                                    "${sectionController.text.trim().split(" ")[0]} "
-                                    "${subjectlist[i].text.trim().split(" ")[0]}").collection("Messages_Detail").doc("Messages_Detail").set(
-                              {
-                                "${usermodel["Email"].toString().split('@')[0]}_${stamp.toString().split('.')[0]}_Delevered" : FieldValue.arrayUnion([
-                                  {
-                                    "Email" : usermodel["Email"],
-                                    "Stamp" : stamp
-                                  }
-                                ]),
-                                "${usermodel["Email"].toString().split('@')[0]}_${stamp.toString().split('.')[0]}_Seen" : FieldValue.arrayUnion([
-                                  {
-                                    "Email" : usermodel["Email"],
-                                    "Stamp" : stamp
-                                  }
-                                ]),
-                                "${usermodel["Email"].toString().split('@')[0]}_${stamp.toString().split('.')[0]}_Seened" : FieldValue.arrayUnion([
 
-                                  usermodel["Email"]
-
-                                ])
-                              }
-                            );
                             await FirebaseFirestore.instance.collection("Chat_Channels").doc("Channels").update({
                               "Channels" : FieldValue.arrayUnion([
                                 "${universityController.text.trim().split(" ")[0]} "
@@ -859,7 +810,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                               .collection("Students")
                               .doc(usermodel["Email"])
                               .update({
-                            "Message_channels" : FieldValue.arrayUnion(["${universityController.text.trim()} ${collegeController.text.trim()} ${courseController.text.trim()} ${branchController.text.trim()} ${yearController.text.trim()} ${sectionController.text.trim()} ${subjectlist[i].text.trim()}"]),
+                            "Message_channels" : FieldValue.arrayUnion(["${universityController.text.trim().split(" ")[0]} ${collegeController.text.trim().split(" ")[0]} ${courseController.text.trim().split(" ")[0]} ${branchController.text.trim().split(" ")[0]} ${yearController.text.trim().split(" ")[0]} ${sectionController.text.trim().split(" ")[0]} ${subjectlist[i].text.trim()}"]),
 
                           });
 
