@@ -48,6 +48,7 @@ class _ChatPageState extends State<ChatPage> {
             builder: (context, snapshot) {
               String channel='';
               int activeCount=0;
+              String Name='',profileUrl="";
               print(">>>>>>>>>>>>>>>>>>>Chat");
               if(snapshot.hasData){
                 if(!snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]["Active"]){
@@ -56,11 +57,11 @@ class _ChatPageState extends State<ChatPage> {
                 activeCount=activeStatus(snapshot);
                 snapshot.data!.data()!['Type']=="Personal"
                     ?
-                snapshot.data!.data()!['Members'][0]["Email"]==usermodel["Email"]
+                snapshot.data!.data()!['Members'][0]==usermodel["Email"]
                     ?
-                channel=snapshot.data!.data()!['Members'][1]["Name"]
+                channel=snapshot.data!.data()![snapshot.data!.data()!['Members'][1].toString().split("@")[0]]["Name"]
                     :
-                channel=snapshot.data!.data()!['Members'][0]["Name"]
+                channel=usermodel["Name"]
                     :
                 channel=widget.channel;
                 if(loadChat){
@@ -78,7 +79,7 @@ class _ChatPageState extends State<ChatPage> {
 
                   for (var msg in snapshot.data!.data()!["Messages"]) {
                     final message1 = Message(
-                        id: msg['Stamp'].toString(),
+                        id: msg['Stamp'].toDate().toString(),
                         message: msg['text'],
                         createdAt: msg['Stamp'].toDate(),
                         sendBy: msg['UID'],
@@ -94,37 +95,49 @@ class _ChatPageState extends State<ChatPage> {
                   }
                   loadChat=false;
                 }
-                if(!loadChat && snapshot.data!.data()!["Messages"].length > snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]){
+                if(!loadChat && snapshot.data!.data()!["Messages"].length != snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]){
                   print("..........inside");
+                  chatController.chatUsers.clear();
                   for (var member in snapshot.data!.data()!["Members"]) {
                     chatController.chatUsers.add(
                       ChatUser(
                         id: '$member',
-                        name: member.toString().split("@")[0],
+                        name: snapshot.data!.data()![ member.toString().split("@")[0]]['Name'],
                         profilePhoto: snapshot.data!.data()![member.toString().split("@")[0]]["Profile_URL"],
                       ),
                     );
 
                   }
+                  chatController.initialMessageList.clear();
+                  for (var msg in snapshot.data!.data()!["Messages"]) {
+                    print("...................i: $msg");
 
-                  for (int i=snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"];i<snapshot.data!.data()!["Messages"].length;i++) {
-                    print("...................i: $i");
                     final message1 = Message (
-                        id: snapshot.data!.data()!["Messages"][i]['Stamp'].toString(),
-                        message: snapshot.data!.data()!["Messages"][i]['text'],
-                        createdAt: snapshot.data!.data()!["Messages"][i]['Stamp'].toDate(),
-                        sendBy: snapshot.data!.data()!["Messages"][i]["UID"],
+                        id: msg['Stamp'].toDate().toString(),
+                        message: msg['text'],
+                        createdAt: msg['Stamp'].toDate(),
+                        sendBy: msg["UID"],
                         replyMessage: ReplyMessage(
-                          message: snapshot.data!.data()!["Messages"][i]['ReplyMessage'],
-                          messageId: snapshot.data!.data()!["Messages"][i]["ReplyMessageId"],
+                          message: msg['ReplyMessage'],
+                          messageId: msg["ReplyMessageId"],
                           messageType: MessageType.text,
-                          replyTo: snapshot.data!.data()!["Messages"][i]['ReplyTo'],
-                          replyBy: snapshot.data!.data()!["Messages"][i]['ReplyBy'],
+                          replyTo: msg['ReplyTo'],
+                          replyBy: msg['ReplyBy'],
                         )
                     );
                     chatController.initialMessageList.add(message1);
                   }
                   countUpdate(snapshot.data!.data()!["Messages"].length);
+                }
+                if(snapshot.data!.data()!["Type"] == "Personal"){
+                  if(snapshot.data!.data()!["Members"][0]==usermodel["Email"]){
+                    Name=snapshot.data!.data()![snapshot.data!.data()!["Members"][1].toString().split("@")[0]]["Name"];
+                    profileUrl=snapshot.data!.data()![snapshot.data!.data()!["Members"][1].toString().split("@")[0]]["Profile_URL"].toString();
+                  }
+                  else{
+                    Name=snapshot.data!.data()![snapshot.data!.data()!["Members"][0].toString().split("@")[0]]["Name"];
+                    profileUrl=snapshot.data!.data()![snapshot.data!.data()!["Members"][0].toString().split("@")[0]]["Profile_URL"].toString();
+                  }
                 }
               }
 
@@ -140,56 +153,86 @@ class _ChatPageState extends State<ChatPage> {
                 child: ChatView(
                   appBar: AppBar(
                     backgroundColor: Colors.black87,
-                    title: InkWell(
-                      onTap: () async {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
-                            return  Chat_Info(channel: widget.channel, membersCount: snapshot.data!.data()!["Members"].length, url: snapshot.data!.data()!["image_URL"], muted: snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]["Mute Notification"] ?? false,);
-                          },
-                          ),
-                        );
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AutoSizeText(
-                            channel,
+
+                    titleSpacing: 0,
+                    title: Row(
+                      children: [
+                        snapshot.data!.data()!["Type"]!="Personal"
+                            ?
+                        CircleAvatar(
+                          backgroundColor: Colors.white54,
+                          backgroundImage: snapshot.data!.data()!["image_URL"] == "null" ? null : NetworkImage(snapshot.data!.data()!["image_URL"]),
+                          child: snapshot.data!.data()!["image_URL"] != "null"
+                              ?
+                          const SizedBox()
+                              :
+                          Text(widget.channel.split(" ")[6].substring(0,1),
                             style: GoogleFonts.exo(
-                              fontSize: size.width*0.04,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
+                                color: Colors.black,
+                                fontSize: size.width*0.045,
+                                fontWeight: FontWeight.w600
                             ),
                           ),
-                          activeCount > 0
+                        ):
+                        CircleAvatar(
+                          backgroundColor: const Color.fromRGBO(86, 149, 178, 1),
+                          backgroundImage: profileUrl != "null" ? NetworkImage(profileUrl) : null,
+                          child: profileUrl == "null"
                               ?
                           AutoSizeText(
-                            "$activeCount Online",
+                            Name.substring(0,1),
                             style: GoogleFonts.exo(
-                                color: Colors
-                                    .green,
-                                fontSize:
-                                size.width *
-                                    0.028),
-                            minFontSize: 1,
-                            maxLines: 1,
+                                color: Colors.black,
+                                fontSize: size.height * 0.035,
+                                fontWeight: FontWeight.w600),
                           )
-                              :
-                          const SizedBox(),
-                        ],
-                      ),
+                          : null,
+                    ),
+                        SizedBox(width: size.width*0.02,),
+                        InkWell(
+                          onTap: () async {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return  Chat_Info(channel: widget.channel, membersCount: snapshot.data!.data()!["Members"].length, url: snapshot.data!.data()!["image_URL"], muted: snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]["Mute Notification"] ?? false,);
+                              },
+                              ),
+                            );
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AutoSizeText(
+                                channel,
+                                style: GoogleFonts.exo(
+                                  fontSize: size.width*0.04,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              activeCount > 0
+                                  ?
+                              AutoSizeText(
+                                "$activeCount Online",
+                                style: GoogleFonts.exo(
+                                    color: Colors
+                                        .green,
+                                    fontSize:
+                                    size.width *
+                                        0.028),
+                                minFontSize: 1,
+                                maxLines: 1,
+                              )
+                                  :
+                              const SizedBox(),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                     elevation: 0,
                     leading: IconButton(
                       onPressed: (){
-                        // Navigator.pushReplacement(
-                        //     context,
-                        //     PageTransition(
-                        //         child: const chatsystem(),
-                        //         type: PageTransitionType.rightToLeftJoined,
-                        //         childCurrent: ChatPage(channel: widget.channel)
-                        //     )
-                        // );
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
                           return chatsystem();
                         },));
@@ -198,13 +241,22 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ),
                   profileCircleConfig: ProfileCircleConfiguration(
-                    circleRadius: size.width*0.03,
+                    circleRadius: size.width*0.035,
                     profileImageUrl: usermodel["Profile_URL"],
                   ),
                   chatBackgroundConfig: const ChatBackgroundConfiguration(backgroundColor: Colors.black38),
                   currentUser: currentUser,
                   chatController: chatController,
                   onSendTap: onSendTap,
+                  featureActiveConfig: FeatureActiveConfig(
+                      enableOtherUserProfileAvatar: true,
+                      enablePagination: true,
+                      enableSwipeToSeeTime: true,
+                      enableCurrentUserProfileAvatar: true,
+                      enableDoubleTapToLike: true,
+                      receiptsBuilderVisibility: true,
+                      enableTextField: !snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]['Muted'] != true ? false : true
+                  ),
                   sendMessageConfig: SendMessageConfiguration(
 
                       textFieldConfig: TextFieldConfiguration(
@@ -255,12 +307,12 @@ class _ChatPageState extends State<ChatPage> {
                           bodyStyle: TextStyle(color: Colors.white),
                           titleStyle: TextStyle(color: Colors.white),
                         ),
-                        senderNameTextStyle: GoogleFonts.exo(
-                          fontSize: size.width*0.03,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.deepPurpleAccent
-                        ),
                         color: Colors.deepPurple,
+                        senderNameTextStyle: GoogleFonts.exo(
+                            color: Colors.deepPurple,
+                            fontWeight: FontWeight.w500,
+                            fontSize: size.width*0.03
+                        ),
                         borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(0),
                           bottomRight: Radius.circular(15),
@@ -275,6 +327,153 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ),
                   // Add this state once data is available.
+                  replyPopupConfig: ReplyPopupConfiguration(
+                    onUnsendTap: (message) {
+                      deleteMSG(message);
+                    },
+                    topBorderColor: Colors.green,
+                    backgroundColor: Colors.transparent,
+                    replyPopupBuilder: (message, sendByCurrentUser) {
+                      return Container(
+                        decoration: BoxDecoration(
+                            color: Colors.black87,
+                            borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(size.width*0.1)
+                            )
+                        ),
+                        child: Column(
+                          children: [
+                            snapshot.data!.data()!["Admins"].contains(usermodel["Email"])
+                                ?
+                            snapshot.data!.data()!["Admins"].contains(message.sendBy)
+                                ?
+                            snapshot.data!.data()!["Admins"].length>1
+                                ?
+                            ElevatedButton(
+                                onPressed: () async {
+                                  await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
+                                    "Admins" : FieldValue.arrayRemove([message.sendBy])
+                                  });
+                                },
+                                child: Text("Remove ${snapshot.data!.data()![message.sendBy.split("@")[0]]['Name']} from admin"))
+                                :
+                            const SizedBox()
+                                :
+                            ElevatedButton(
+                                onPressed: () async {
+                                  await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
+                                    "Admins" : FieldValue.arrayUnion([message.sendBy])
+                                  });
+                                },
+                                child: Text("Make ${snapshot.data!.data()![message.sendBy.split("@")[0]]['Name']} admin"))
+                                :
+                            const SizedBox(),
+                            snapshot.data!.data()!["Admins"].contains(usermodel["Email"])
+                                ?
+                            snapshot.data!.data()![message.sendBy.split("@")[0]]['Muted'] != true
+                                ?
+                            ElevatedButton(
+                                onPressed: () async {
+                                  await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
+                                    "${message.sendBy.split("@")[0]}.Muted" : true
+                                  });
+                                },
+                                child: Text("Mute ${snapshot.data!.data()![message.sendBy.split("@")[0]]['Name']}"))
+                                :
+                            ElevatedButton(
+                                onPressed: () async {
+                                  await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
+                                    "${message.sendBy.split("@")[0]}.Muted" : false
+                                  });
+                                },
+                                child: Text("Unmute ${snapshot.data!.data()![message.sendBy.split("@")[0]]['Name']}"))
+                                :
+                            const SizedBox(),
+
+                            ElevatedButton(
+                                onPressed: () async {
+                                  if( !(usermodel["Message_channels"].contains("${usermodel["Email"].toString().split("@")[0]}_${message.sendBy.split("@")[0]}") ||
+                                      usermodel["Message_channels"].contains("${message.sendBy.split("@")[0]}_${usermodel["Email"].toString().split("@")[0]}"))){
+                                    Map<String,dynamic> map1 = {
+                                      "Active": false,
+                                      "Read_Count": 0,
+                                      "Last_Active" : DateTime.now(),
+                                      "Token": FieldValue.arrayUnion([usermodel["Token"]]),
+                                      "Profile_URL" : usermodel["Profile_URL"],
+                                      "Name" : usermodel["Name"],
+                                      "Post" : "Teachers",
+                                      "Muted" : false,
+                                      "Type" : "Personal"
+                                    };
+                                    Map<String,dynamic> map2 = {
+                                      "Active": false,
+                                      "Read_Count": 0,
+                                      "Last_Active" : DateTime.now(),
+                                      "Token": snapshot.data!.data()![message.sendBy.split("@")[0]]["Token"],
+                                      "Profile_URL" : snapshot.data!.data()![message.sendBy.split("@")[0]]["Profile_URL"],
+                                      "Name" : snapshot.data!.data()![message.sendBy.split("@")[0]]["Name"],
+                                      "Post" : snapshot.data!.data()![message.sendBy.split("@")[0]]["Post"],
+                                      "Muted" : false,
+                                      "Type" : "Personal"
+                                    };
+                                    DateTime stamp=DateTime.now();
+
+                                    await FirebaseFirestore.instance.collection("Messages").doc(
+                                        "${usermodel["Email"].toString().split("@")[0]}_${message.sendBy.split("@")[0]}"
+                                    ).set({
+                                      "Type" : "Personal",
+                                      "Messages" : [],
+                                      "Admins" : FieldValue.arrayUnion(["${usermodel["Email"]}"]),
+                                      "Members" : FieldValue.arrayUnion(["${usermodel["Email"]}",message.sendBy]),
+                                      usermodel["Email"].toString().split("@")[0] : map1,
+                                      message.sendBy.split("@")[0] : map2,
+                                      "CreatedOn": {"Date" : stamp, "Name": usermodel["Name"]}});
+
+
+                                    await FirebaseFirestore.instance.collection("Chat_Channels").doc("Channels").update({
+                                      "Channels": FieldValue.arrayUnion([
+                                        "${usermodel["Email"].toString().split("@")[0]}_${message.sendBy.split("@")[0]}"
+                                      ])
+                                    });
+
+                                    await FirebaseFirestore.instance.collection("Teachers").doc(usermodel["Email"]).update({
+                                      "Message_channels" : FieldValue.arrayUnion([
+                                        "${usermodel["Email"].toString().split("@")[0]}_${message.sendBy.split("@")[0]}"
+                                      ])
+                                    });
+
+                                    await FirebaseFirestore
+                                        .instance
+                                        .collection(snapshot.data!.data()![message.sendBy.split("@")[0]]['Post'])
+                                        .doc(message.sendBy)
+                                        .update(
+                                        {
+                                          "Message_channels" : FieldValue.arrayUnion(["${usermodel["Email"].toString().split("@")[0]}_${message.sendBy.split("@")[0]}"
+                                          ])
+                                        });
+                                    await database().fetchuser().whenComplete((){
+                                      Navigator.pushReplacement(context, MaterialPageRoute(builder:
+                                          (context) {
+                                        return ChatPage(channel: "${usermodel["Email"].toString().split("@")[0]}_${message.sendBy.split("@")[0]}",);
+                                      },
+                                      ));
+                                    });
+                                  }
+                                  else{
+                                    Navigator.pushReplacement(context, MaterialPageRoute(builder:
+                                        (context) {
+                                      return ChatPage(channel: "${usermodel["Email"].toString().split("@")[0]}_${message.sendBy.split("@")[0]}",);
+                                    },
+                                    ));
+                                  }
+                                },
+                                child: Text("Chat with ${snapshot.data!.data()![message.sendBy.split("@")[0]]['Name']} in private"))
+
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                   repliedMessageConfig: RepliedMessageConfiguration(
                     repliedMsgAutoScrollConfig: const RepliedMsgAutoScrollConfig(
                         enableHighlightRepliedMsg: true,
@@ -1543,6 +1742,29 @@ class _ChatPageState extends State<ChatPage> {
       "${usermodel["Email"].toString().split("@")[0]}.Active": false
     });
   }
+  deleteMSG(Message msg) async {
+    print(".................<<<<<<${msg.sendBy}");
+    try{
+      await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
+        "Messages" : FieldValue.arrayRemove([{
+          "ReplyBy": msg.replyMessage.replyBy,
+          "ReplyTo": msg.replyMessage.replyTo,
+          "ReplyMessage": msg.replyMessage.message,
+          "ReplyMessageId": msg.replyMessage.messageId,
+          "ReplyMessageType": msg.replyMessage.messageType.name,
+          "ReplyVoiceDuration": msg.replyMessage.voiceMessageDuration,
+          "Stamp" : DateTime.parse(msg.id),
+          'UID' : msg.sendBy,
+          'text' : msg.message
+
+
+        }])
+      });
+    }on FirebaseException catch(e){
+      print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>$e");
+    }
+    //chatController.initialMessageList.remove(msg);
+  }
   develered(AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) async {
     print(" ..............here");
     int lastcount = snapshot.data!.data()?[usermodel["Email"].toString().split("@")[0]]["Read_Count"];
@@ -1649,7 +1871,6 @@ class _ChatPageState extends State<ChatPage> {
         "Messages": FieldValue
             .arrayUnion([
           {
-            "Name": usermodel["Name"].toString(),
             "UID": usermodel["Email"].toString(),
             "text": message,
             "Stamp": stamp,

@@ -1,11 +1,8 @@
-import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../Constraints.dart';
 import '../../Registration/database.dart';
 
@@ -57,7 +54,7 @@ class _Background_imageState extends State<Background_image> {
           TextButton(
               onPressed: () async {
                 await FirebaseFirestore.instance
-                    .collection("Students")
+                    .collection("Teachers")
                     .doc(usermodel["Email"])
                     .update({"bg": "bg-${index1 + 1}.jpg"}).whenComplete(
                         () => print("...Saved"));
@@ -225,7 +222,7 @@ class _Background_imageState extends State<Background_image> {
                       decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius:
-                              const BorderRadius.all(Radius.circular(15)),
+                          const BorderRadius.all(Radius.circular(15)),
                           image: DecorationImage(
                               image: AssetImage(
                                   "assets/images/bg-${index + 1}.jpg"),
