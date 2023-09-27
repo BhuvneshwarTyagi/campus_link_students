@@ -1888,13 +1888,13 @@ class _ChatPageState extends State<ChatPage> {
       for (var member in members) {
         print("Sending to element");
         try {
-          Map<String,dynamic> user =  channelDoc.data()?[member["Email"].toString().split("@")[0]];
+          Map<String,dynamic> user =  channelDoc.data()?[member.toString().split("@")[0]];
           print("............member $user");
           List<dynamic> tokens =  user["Token"];
           print("............error1");
-          if(member["Email"]!= usermodel["Email"] && !channelDoc.data()?[member["Email"].toString().split("@")[0]]["Active"] && channelDoc.data()?[member["Email"].toString().split("@")[0]]["Mute Notification"] != false){
+          if(member["Email"]!= usermodel["Email"] && !channelDoc.data()?[member.toString().split("@")[0]]["Active"] && channelDoc.data()?[member.toString().split("@")[0]]["Mute Notification"] != false){
             for (var token in tokens) {
-              print("${member["Email"]}");
+              print("${member}");
               database().sendPushMessage(
                   token,
                   message,
