@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:chat_bubbles/date_chips/date_chip.dart';
 import 'package:chatview/chatview.dart';
@@ -9,6 +11,7 @@ import '../../Registration/database.dart';
 import '../loadingscreen.dart';
 import 'chat_info.dart';
 import 'chat_list.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key, required this.channel}) : super(key: key);
@@ -51,6 +54,18 @@ class _ChatPageState extends State<ChatPage> {
               String Name='',profileUrl="";
               print(">>>>>>>>>>>>>>>>>>>Chat");
               if(snapshot.hasData){
+                final plainText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
+                final key = encrypt.Key.fromUtf8('my 32 length key................');
+                final iv = encrypt.IV.fromLength(16);
+
+                final encrypter = encrypt.Encrypter(encrypt.AES(key));
+
+                final encrypted = encrypter.encrypt(plainText, iv: iv);
+                final decrypted = encrypter.decrypt(encrypted, iv: iv);
+
+                print("......................${decrypted}"); // Lorem ipsum dolor sit amet, consectetur adipiscing elit
+                print(">>>>>>>>>>>>>>>>>>>>>>>>>>>${encrypted.base64}");
+                print(">>>>>>>>>>>>>>>>>>>>>>>>>>>${encrypted.base64}");
                 if(!snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]["Active"]){
                   markActive();
                 }
@@ -436,7 +451,7 @@ class _ChatPageState extends State<ChatPage> {
                                       ])
                                     });
 
-                                    await FirebaseFirestore.instance.collection("Teachers").doc(usermodel["Email"]).update({
+                                    await FirebaseFirestore.instance.collection(snapshot.data!.data()![message.sendBy.split("@")[0]]["Post"]).doc(usermodel["Email"]).update({
                                       "Message_channels" : FieldValue.arrayUnion([
                                         "${usermodel["Email"].toString().split("@")[0]}_${message.sendBy.split("@")[0]}"
                                       ])

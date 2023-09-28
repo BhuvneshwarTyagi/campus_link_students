@@ -6,6 +6,7 @@ import 'package:campus_link_student/Registration/registration.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -357,6 +358,25 @@ class _navigationState extends State<navigation> {
                 leading: const Icon(Icons.logout,color: Colors.black),
                 title: const Text("Logout"),
                 onTap: () async {
+                  final token = await FirebaseMessaging.instance.getToken();
+                  String? userId = FirebaseAuth.instance.currentUser?.email;
+
+
+
+
+                  List<dynamic> channels= usermodel["Message_channels"];
+
+                  for(var channel in channels){
+                    await FirebaseFirestore.instance.collection("Messages")
+                        .doc(channel).update(
+                        {
+                          "${usermodel["Email"].toString().split("@")[0]}.Token" : FieldValue.arrayRemove([token])
+                        }
+                    );
+                  }
+                  await FirebaseFirestore.instance.collection("Students").doc(usermodel["Email"]).update({
+                    "Token" : ""
+                  });
                   await FirebaseAuth.instance.signOut();
                 },
               ),

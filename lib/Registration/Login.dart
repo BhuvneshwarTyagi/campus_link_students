@@ -3,11 +3,11 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Registration/signUp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
-import '../Screens/loadingscreen.dart';
 import '/Constraints.dart';
 import '../Screens/Main_page.dart';
 import 'forgot_password.dart';
@@ -274,6 +274,24 @@ class _SignInScreenState extends State<SignInScreen> {
                               childCurrent: const SignInScreen(),
                             ),
                           );
+                          final token = await FirebaseMessaging.instance.getToken();
+                          String? userId = FirebaseAuth.instance.currentUser?.email;
+                          final userdoc= await FirebaseFirestore.instance.collection("Students").doc(userId).get();
+
+
+
+                          List<dynamic> channels= userdoc.data()?["Message_channels"];
+
+                          for(var channel in channels){
+                            await FirebaseFirestore.instance.collection("Messages")
+                                .doc(channel).update(
+                                {
+                                  "${userdoc["Email"].toString().split("@")[0]}.Token" : FieldValue.arrayUnion([token])
+                                }
+                            );
+                          }
+
+
                         }
                         else {
                           InAppNotifications.instance

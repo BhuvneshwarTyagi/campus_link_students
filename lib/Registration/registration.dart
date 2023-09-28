@@ -740,6 +740,7 @@ class _StudentDetailsState extends State<StudentDetails> {
                             "Token": FieldValue.arrayUnion([usermodel["Token"]]),
                             "Profile_URL" : usermodel["Profile_URL"],
                             "Name" : usermodel["Name"],
+                            "Muted" : false,
                             "Post" : "Students"
                           };
                           List<dynamic> channelList = await FirebaseFirestore.instance.collection("Chat_Channels").doc("Channels").get().then((value){

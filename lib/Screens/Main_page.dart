@@ -69,27 +69,22 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> fetchuser() async{
     if(!loaded){
-      await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
-        setState(() {
-          usermodel=value.data()!;
-        });
-      }).whenComplete(() async {
-        await FirebaseMessaging.instance.getToken().then((token) async {
-          await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
-            'Token' : token,
-          }).whenComplete(() {
+      await FirebaseMessaging.instance.getToken().then((token) async {
+        await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
+          'Token' : token,
+        }).whenComplete(() async {
+          await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
             setState(() {
+              usermodel=value.data()!;
               if (kDebugMode) {
                 print(usermodel);
               }
               loaded=true;
             });
           });
-
         });
 
-      }
-      );
+      });
     }
   }
 }
