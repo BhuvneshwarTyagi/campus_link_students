@@ -54,7 +54,7 @@ class _ChatPageState extends State<ChatPage> {
               String Name='',profileUrl="";
               print(">>>>>>>>>>>>>>>>>>>Chat");
               if(snapshot.hasData){
-                final plainText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
+                const plainText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
                 final key = encrypt.Key.fromUtf8('my 32 length key................');
                 final iv = encrypt.IV.fromLength(16);
 
@@ -76,7 +76,7 @@ class _ChatPageState extends State<ChatPage> {
                     ?
                 channel=snapshot.data!.data()![snapshot.data!.data()!['Members'][1].toString().split("@")[0]]["Name"]
                     :
-                channel=usermodel["Name"]
+                channel=snapshot.data!.data()![snapshot.data!.data()!['Members'][0].toString().split("@")[0]]["Name"]
                     :
                 channel=widget.channel;
                 if(loadChat){
@@ -258,6 +258,7 @@ class _ChatPageState extends State<ChatPage> {
                   profileCircleConfig: ProfileCircleConfiguration(
                     circleRadius: size.width*0.035,
                     profileImageUrl: usermodel["Profile_URL"],
+
                   ),
                   chatBackgroundConfig: const ChatBackgroundConfiguration(backgroundColor: Colors.black38),
                   currentUser: currentUser,

@@ -276,7 +276,7 @@ class _chatsystemState extends State<chatsystem> {
                                       child: AutoSizeText("${
                                           snapshot.data?.data()!["Messages"].length >0
                                               ?
-                                          snapshot.data?.data()!["Messages"][snapshot.data?.data()!["Messages"].length-1]["Name"]
+                                          snapshot.data!.data()![snapshot.data?.data()!["Messages"][snapshot.data?.data()!["Messages"].length-1]["UID"].toString().split("@")[0]]["Name"]
                                               :
                                           ""
                                       } : ${
