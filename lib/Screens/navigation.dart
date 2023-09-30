@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
+import 'QuizScreen.dart';
 import 'assignment.dart';
 import 'attendance.dart';
 import 'Chat_tiles/chat_list.dart';
@@ -342,6 +343,21 @@ class _navigationState extends State<navigation> {
                     ),
                   );
 
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.feedback_outlined,color: Colors.black,),
+                title: const Text("Feedback"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      child: const QuizScreen(),
+                      type: PageTransitionType.rightToLeftJoined,
+                      duration: const Duration(milliseconds: 350),
+                      childCurrent: const navigation(),
+                    ),
+                  );
                 },
               ),
               ListTile(
