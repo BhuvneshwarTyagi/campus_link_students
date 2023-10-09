@@ -12,10 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
-import 'QuizScreen.dart';
 import 'assignment.dart';
 import 'attendance.dart';
 import 'Chat_tiles/chat_list.dart';
+import 'feedbackScreen.dart';
 import 'marks.dart';
 import 'notes.dart';
 import 'performance.dart';
@@ -263,46 +263,51 @@ class _navigationState extends State<navigation> {
                             XFile? file=await imagePicker.pickImage(source: ImageSource.gallery);
                             print(file?.path);
 
-                            setState(() {
-                              profile_update=true;
-                            });
-                            // Create reference of Firebase Storage
-
-                            Reference reference=FirebaseStorage.instance.ref();
-
-                            // Create Directory into Firebase Storage
-
-                            Reference image_directory=reference.child("User_profile");
-
-
-                            Reference image_folder=image_directory.child("${usermodel["Email"]}");
-
-                            await image_folder.putFile(File(file!.path)).whenComplete(() async {
-
-
-                              String download_url=await image_folder.getDownloadURL();
-                              print("uploaded");
-                              print(download_url);
-                              await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).update({
-                                "Profile_URL":download_url,
-                              }).whenComplete(() async {
-                              await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
-
+                            if(file!.path.isNotEmpty)
+                              {
                                 setState(() {
-                                   usermodel=value.data()!;
+                                  profile_update=true;
                                 });
-                              }).whenComplete(() {
-                                setState(() {
-                                  profile_update=false;
-                                });
-                              });
+                                // Create reference of Firebase Storage
 
-                            });
-                              setState(() {
-                                profile_update=false;
-                              });
-                          },
-                            );}))
+                                Reference reference=FirebaseStorage.instance.ref();
+
+                                // Create Directory into Firebase Storage
+
+                                Reference image_directory=reference.child("User_profile");
+
+
+                                Reference image_folder=image_directory.child("${usermodel["Email"]}");
+
+                                await image_folder.putFile(File(file!.path)).whenComplete(() async {
+
+
+                                  String download_url=await image_folder.getDownloadURL();
+                                  print("uploaded");
+                                  print(download_url);
+                                  await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).update({
+                                    "Profile_URL":download_url,
+                                  }).whenComplete(() async {
+                                    await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
+
+                                      setState(() {
+                                        usermodel=value.data()!;
+                                      });
+                                    }).whenComplete(() {
+                                      setState(() {
+                                        profile_update=false;
+                                      });
+                                    });
+
+                                  });
+                                  setState(() {
+                                    profile_update=false;
+                                  });
+                                },
+                                );
+                              }
+
+                           }))
                     ],
                   )
               ),
@@ -352,7 +357,7 @@ class _navigationState extends State<navigation> {
                   Navigator.push(
                     context,
                     PageTransition(
-                      child: const QuizScreen(),
+                      child: const feedbackQuiz(),
                       type: PageTransitionType.rightToLeftJoined,
                       duration: const Duration(milliseconds: 350),
                       childCurrent: const navigation(),

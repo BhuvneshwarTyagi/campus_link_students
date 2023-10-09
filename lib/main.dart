@@ -264,9 +264,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
           NotificationServices().setUserState(status: "Offline");
           break;
 
-        case AppLifecycleState.hidden:
+        /*case AppLifecycleState.hidden:
           // TODO: Handle this case.
-          break;
+          break;*/
       }
     } catch (e) {
       if (kDebugMode) {

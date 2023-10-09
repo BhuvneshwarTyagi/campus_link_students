@@ -7,13 +7,13 @@ import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
-class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key,});
+class feedbackQuiz extends StatefulWidget {
+  const feedbackQuiz({super.key,});
   @override
-  State<QuizScreen> createState() => _QuizScreenState();
+  State<feedbackQuiz> createState() => _feedbackQuizState();
 }
 
-class _QuizScreenState extends State<QuizScreen> {
+class _feedbackQuizState extends State<feedbackQuiz> {
   var count=1;
   List<dynamic> options = ['Are parallel','Perpendicular','Intersect at two points','Intersect at one point'];
   List<String> currentChoice= [];
@@ -389,7 +389,7 @@ class _QuizScreenState extends State<QuizScreen> {
                               PageTransition(
                                   child: const loading(text: "Please wait...\n We are submiting your feedback."),
                                   type: PageTransitionType.bottomToTopJoined,
-                                  childCurrent: const QuizScreen(),
+                                  childCurrent: const feedbackQuiz(),
                                 duration: const Duration(milliseconds: 200)
                               ),
                           );
