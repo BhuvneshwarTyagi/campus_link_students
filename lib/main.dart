@@ -231,12 +231,11 @@ enum LocationStatus { UNKNOWN, INITIALIZED, RUNNING, STOPPED }
 
 
 
-class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
+class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     NotificationServices.initialize(context);
 
     FirebaseMessaging.onMessage.listen(firebaseMessagingonmessageHandler);
@@ -246,35 +245,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver{
 
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    try {
-      //super.didChangeAppLifecycleState(state);
-      switch (state) {
-        case AppLifecycleState.resumed:
-          setState(() {});
-          break;
-        case AppLifecycleState.inactive:
-          NotificationServices().setUserState(status: "Offline");
-          break;
-        case AppLifecycleState.paused:
-          NotificationServices().setUserState(status: "Waiting");
-          break;
-        case AppLifecycleState.detached:
-          NotificationServices().setUserState(status: "Offline");
-          break;
 
-        /*case AppLifecycleState.hidden:
-          // TODO: Handle this case.
-          break;*/
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('inside catch statement');
-      }
-      debugPrint(e.toString());
-    }
-  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

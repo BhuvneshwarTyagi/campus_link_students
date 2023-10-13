@@ -15,7 +15,7 @@ import 'package:pdfx/pdfx.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 import '../Constraints.dart';
-import '../QuizScreen.dart';
+import 'QuizScreen.dart';
 import '../push_notification/Storage_permission.dart';
 import 'Chat_tiles/PdfViewer.dart';
 

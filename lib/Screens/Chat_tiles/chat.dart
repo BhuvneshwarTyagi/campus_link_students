@@ -4,10 +4,12 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:chat_bubbles/date_chips/date_chip.dart';
 import 'package:chatview/chatview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../Constraints.dart';
 import '../../Registration/database.dart';
+import '../../push_notification/helper_notification.dart';
 import '../loadingscreen.dart';
 import 'chat_info.dart';
 import 'chat_list.dart';
@@ -20,7 +22,7 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
   final chatController = ChatController(
     initialMessageList: [],
     scrollController: ScrollController(),
@@ -31,7 +33,40 @@ class _ChatPageState extends State<ChatPage> {
     name: '${usermodel["Name"]}',
     profilePhoto: usermodel["Profile_URL"],
   );
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
   bool loadChat=true;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    try {
+      //super.didChangeAppLifecycleState(state);
+      switch (state) {
+        case AppLifecycleState.resumed:
+          setState(() {});
+          break;
+        case AppLifecycleState.inactive:
+          NotificationServices().setUserState(status: "Offline");
+          break;
+        case AppLifecycleState.paused:
+          NotificationServices().setUserState(status: "Waiting");
+          break;
+        case AppLifecycleState.detached:
+          NotificationServices().setUserState(status: "Offline");
+          break;
+        case AppLifecycleState.hidden:
+        // TODO: Handle this case.
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('inside catch statement');
+      }
+      debugPrint(e.toString());
+    }
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
