@@ -1,6 +1,7 @@
 
 
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pdfx/pdfx.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 import '../Constraints.dart';
@@ -32,7 +34,7 @@ class _NotesState extends State<Notes> {
   Directory? directory;
   bool fileAlreadyExists=false;
 
-  List<String> Subject = ['DBMS','ML','DAA'];
+
   int ind=0;
   bool a=true;
 
@@ -53,6 +55,9 @@ class _NotesState extends State<Notes> {
   List<dynamic> subjects = usermodel["Subject"];
   String selectedSubject = usermodel["Subject"][0];
 
+
+  List<PdfController> pdfControllers=[];
+  List<Uint8List> imageBytes=[];
   @override
   void initState() {
     // TODO: implement initState
@@ -176,7 +181,6 @@ class _NotesState extends State<Notes> {
                           itemBuilder: (context, index) {
 
                             String? dir=directory?.path.toString().substring(0,19);
-                            print("////////////////////$dir");
                             String path="$dir/Campus Link/${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $selectedSubject/Notes/";
 
                             File newPath=File("${path}${snapshot.data["Notes-${index+1}"]["File_Name"]}");
@@ -184,15 +188,20 @@ class _NotesState extends State<Notes> {
                               if(!value)
                               {
 
-                                setState(() {
-                                  isDownloaded[index]=false;
-                                });
+                                  setState(() {
+                                    isDownloaded[index]=false;
+                                  });
                               }
                               else{
-
                                 setState(() {
                                   isDownloaded[index]=true;
                                 });
+                                /*pdfControllers.add(PdfController(document: PdfDocument.openFile("$path${snapshot.data["Notes-${index+1}"]["File_Name"]}")));
+                                PdfDocument doc = await pdfControllers[index].document;
+                                  print("..........index---- ${doc}");
+                                PdfPage page = await doc.getPage(1);
+*/
+
                               }
                             });
                             return Padding(
@@ -445,6 +454,50 @@ class _NotesState extends State<Notes> {
                                                       )),
                                                 )
                                                     :
+                                                snapshot.data["Notes-${index+1}"]["Quiz_Created"]==true
+                                                    ?
+                                              Container(
+                                                  height: size.height * 0.05,
+                                                  width: size.width * 0.45,
+                                                  decoration: BoxDecoration(
+                                                      gradient: const LinearGradient(
+                                                        begin: Alignment.topLeft,
+                                                        end: Alignment.bottomRight,
+                                                        colors: [
+                                                          Colors.blue,
+                                                          Colors.purpleAccent,
+                                                        ],
+                                                      ),
+                                                      borderRadius: BorderRadius.all(Radius.circular(size.width*0.035)),
+                                                      border: Border.all(color: Colors.black, width: 2)
+                                                  ),
+                                                  child: ElevatedButton(
+                                                      style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Colors.transparent,
+                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(size.width*0.035)))
+                                                      ),
+
+                                                      onPressed: (){
+                                                        Navigator.push(context,
+                                                            PageTransition(
+                                                                child:  QuizScreen(subject: selectedSubject, notesId: index+1),
+                                                                type: PageTransitionType.bottomToTopJoined,
+                                                                childCurrent: const Notes(),
+                                                                duration: const Duration(milliseconds: 300)
+                                                            )
+                                                        );
+                                                      },
+                                                      child: AutoSizeText(
+                                                        "Take Quiz",
+                                                        style: GoogleFonts.openSans(
+                                                            fontSize: size.height * 0.022,
+                                                            color: Colors.white
+                                                        ),
+
+
+                                                      )),
+                                                )
+                                                    :
                                                 Container(
                                                   height: size.height * 0.05,
                                                   width: size.width * 0.45,
@@ -467,17 +520,10 @@ class _NotesState extends State<Notes> {
                                                       ),
 
                                                       onPressed: (){
-                                                        Navigator.pushReplacement(context,
-                                                            PageTransition(
-                                                                child:  QuizScreen(subject: selectedSubject, notesId: index+1),
-                                                                type: PageTransitionType.bottomToTopJoined,
-                                                                childCurrent: const Notes(),
-                                                                duration: const Duration(milliseconds: 300)
-                                                            )
-                                                        );
+
                                                       },
                                                       child: AutoSizeText(
-                                                        "Take Quiz",
+                                                        "Unavailable",
                                                         style: GoogleFonts.openSans(
                                                             fontSize: size.height * 0.022,
                                                             color: Colors.white
@@ -532,17 +578,15 @@ class _NotesState extends State<Notes> {
           " ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $selectedSubject/Notes/";
       Directory(path).exists().then((value) async {
         if (!value) {
-          await Directory(path).create(recursive: true).then((value) =>
-              print("........................Created File ${value.path}"));
+          await Directory(path).create(recursive: true);
         }
       });
       setState(() {
         permissionGranted = true;
-        print("........................Permission Granted");
       });
     }
     else {
-      print("........................$permission");
+
     }
   }
 

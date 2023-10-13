@@ -142,7 +142,8 @@ class _QuizScreenState extends State<QuizScreen> {
                             child: ElevatedButton(
                               onPressed: (){
                                 setState(() {
-                                 // Navigator.pop(context);
+                                  _timer.cancel();
+                                 Navigator.pop(context);
                                   Navigator.pop(context);
                                 });
 
@@ -278,6 +279,8 @@ class _QuizScreenState extends State<QuizScreen> {
                                         onPressed: (){
                                           setState(() {
                                            // Navigator.pop(context);
+                                            _timer.cancel();
+                                            Navigator.pop(context);
                                             Navigator.pop(context);
                                           });
 
@@ -308,7 +311,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   color: Colors.white70,
                 )),
             title: AutoSizeText(
-              'DBMS Quiz',
+              '${widget.subject} Quiz',
               style: GoogleFonts.poppins(
                   fontSize: size.width * 0.055,
                   color: Colors.white70,
@@ -431,6 +434,8 @@ class _QuizScreenState extends State<QuizScreen> {
                                           onPressed: (){
                                             setState(() {
                                             //Navigator.pop(context);
+                                              _timer.cancel();
+                                            Navigator.pop(context);
                                             Navigator.pop(context);
                                             });
 
@@ -759,12 +764,10 @@ class _QuizScreenState extends State<QuizScreen> {
                             "Notes-${widget.notesId}.Response.${usermodel["Email"].toString().split("@")[0]}":responseMap
                           }).whenComplete(() {
                             print(".......................Ho gaya upload");
+                            _timer.cancel();
+                            //super.dispose();
                             Navigator.pop(context);
                             Navigator.pop(context);
-                            setState(() {
-                              _timer.cancel();
-                              super.dispose();
-                            });
                           });
 
                         }
@@ -827,25 +830,19 @@ class _QuizScreenState extends State<QuizScreen> {
       oneSec,
           (Timer timer) async {
         if (_start == 60) {
-          setState(() {
             minute++;
             _start=0;
            // timer.cancel();
-          });
         }
         else{
-          setState(() {
             _start++;
-          });
         }
         if(minute==5)
           {
-            setState(() {
 
               timer.cancel();
               _timer.cancel();
-              super.dispose();
-            });
+            //super.dispose();
             Navigator.push(context,
               PageTransition(
                   child: const loading(text: "Data is uploading to the server Please wait."),
@@ -863,7 +860,7 @@ class _QuizScreenState extends State<QuizScreen> {
             }).whenComplete(() {
               print(".......................Ho gaya upload");
               Navigator.pop(context);
-              //Navigator.pop(context);
+              Navigator.pop(context);
             });
         }
       },
