@@ -188,14 +188,14 @@ class _NotesState extends State<Notes> {
                               if(!value)
                               {
 
-                                  setState(() {
+
                                     isDownloaded[index]=false;
-                                  });
+
                               }
                               else{
-                                setState(() {
+
                                   isDownloaded[index]=true;
-                                });
+
                                 /*pdfControllers.add(PdfController(document: PdfDocument.openFile("$path${snapshot.data["Notes-${index+1}"]["File_Name"]}")));
                                 PdfDocument doc = await pdfControllers[index].document;
                                   print("..........index---- ${doc}");
@@ -417,7 +417,7 @@ class _NotesState extends State<Notes> {
                                                 ?
                                             Padding(
                                                 padding: EdgeInsets.only(top: size.height*0.022),
-                                                child:  snapshot.data["Notes-${index+1}"]["Submitted by"]!=null &&  snapshot.data["Notes-${index+1}"]["Submitted by"].contains(usermodel["Email"])
+                                                child:  snapshot.data["Notes-${index+1}"]["Submitted by"]!=null &&  snapshot.data["Notes-${index+1}"]["Submitted by"].contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")
                                                     ?
                                                 Container(
                                                   height: size.height * 0.05,

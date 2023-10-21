@@ -70,7 +70,7 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
         case AppLifecycleState.detached:
 
           break;
-        case AppLifecycleState.hidden:
+       /* case AppLifecycleState.hidden:*/
         // TODO: Handle this case.
       }
     } catch (e) {
@@ -733,8 +733,8 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
                     .collection("Notes")
                     .doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.subject}")
                     .update({
-                  "Notes-${widget.notesId}.Submitted by":FieldValue.arrayUnion([usermodel["Email"]]),
-                  "Notes-${widget.notesId}.Response.${usermodel["Email"].toString().split("@")[0]}":responseMap
+                  "Notes-${widget.notesId}.Submitted by":FieldValue.arrayUnion(["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]),
+                  "Notes-${widget.notesId}.Response.${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}":responseMap
                 }).whenComplete(() {
                   print(".......................Ho gaya upload");
                   _timer.cancel();
@@ -833,8 +833,8 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
        .collection("Notes")
        .doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.subject}")
        .update({
-     "Notes-${widget.notesId}.Submitted by":FieldValue.arrayUnion([usermodel["Email"]]),
-     "Notes-${widget.notesId}.Response.${usermodel["Email"].toString().split("@")[0]}":responseMap
+     "Notes-${widget.notesId}.Submitted by":FieldValue.arrayUnion(["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]),
+     "Notes-${widget.notesId}.Response.${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}":responseMap
    }).whenComplete(() {
      print(".......................Ho gaya upload");
      Navigator.pop(context);

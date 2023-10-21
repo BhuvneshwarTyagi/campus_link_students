@@ -57,7 +57,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
         case AppLifecycleState.detached:
           NotificationServices().setUserState(status: "Offline");
           break;
-        case AppLifecycleState.hidden:
+       /* case AppLifecycleState.hidden:*/
         // TODO: Handle this case.
       }
     } catch (e) {
