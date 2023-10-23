@@ -15,6 +15,7 @@ import 'package:pdfx/pdfx.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 import '../Constraints.dart';
+import 'QuizScore.dart';
 import 'QuizScreen.dart';
 import '../push_notification/Storage_permission.dart';
 import 'Chat_tiles/PdfViewer.dart';
@@ -33,7 +34,7 @@ class _NotesState extends State<Notes> {
   bool docExists=false;
   Directory? directory;
   bool fileAlreadyExists=false;
-
+  DateTime currDate=DateTime.now();
 
   int ind=0;
   bool a=true;
@@ -179,7 +180,7 @@ class _NotesState extends State<Notes> {
                         child: ListView.builder(
                           itemCount: snapshot.data["Total_Notes"],
                           itemBuilder: (context, index) {
-
+                            Timestamp deadline=snapshot.data["Notes-${index+1}"]["Deadline"];
                             String? dir=directory?.path.toString().substring(0,19);
                             String path="$dir/Campus Link/${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $selectedSubject/Notes/";
 
@@ -187,20 +188,36 @@ class _NotesState extends State<Notes> {
                             newPath.exists().then((value) async  {
                               if(!value)
                               {
-
-
-                                    isDownloaded[index]=false;
+                                if(mounted)
+                                  {
+                                    setState(() {
+                                      isDownloaded[index]=false;
+                                    });
+                                  }
 
                               }
                               else{
 
-                                  isDownloaded[index]=true;
+                                  if(mounted)
+                                    {
+                                      setState(() {
 
-                                /*pdfControllers.add(PdfController(document: PdfDocument.openFile("$path${snapshot.data["Notes-${index+1}"]["File_Name"]}")));
+                                        isDownloaded[index]=true;
+                                      });
+                                    }
+
+                               /* pdfControllers.add(PdfController(document: PdfDocument.openFile("$path${snapshot.data["Notes-${index+1}"]["File_Name"]}")));
                                 PdfDocument doc = await pdfControllers[index].document;
-                                  print("..........index---- ${doc}");
-                                PdfPage page = await doc.getPage(1);
-*/
+                                  print("..........index---- ${index}");
+                                PdfPage page = await doc.getPage(1).whenComplete(() => print("..............Complettd}"));
+                                  PdfPageImage? image = await page.render(
+                                      width: 400,
+                                      height: 400,
+                                      format: PdfPageImageFormat.png,
+                                      backgroundColor: "#FFFFFF");
+                                  imageBytes.add(image!.bytes);
+                                  print("........${imageBytes.length}");
+                                  await page.close();*/
 
                               }
                             });
@@ -209,14 +226,14 @@ class _NotesState extends State<Notes> {
                               child: Container(
                                 width: size.width*0.85,
                                 decoration: BoxDecoration(
-                                  color:Colors.blue,
+                                  color: Colors.blueGrey.shade900,
                                   borderRadius: radiusGeomentry,
                                 ),
                                 child: Column(
 
                                   children: [
                                     SizedBox(
-                                      height: size.height*0.18,
+                                      height: size.height*0.15,
                                       width: size.width*0.93,
                                       child: Padding(
                                           padding:  EdgeInsets.only(top:size.height*0.01,left:size.height*0.01,right:size.height*0.01),
@@ -250,11 +267,11 @@ class _NotesState extends State<Notes> {
                                       ),
                                     ),
                                     AnimatedContainer(
-                                      height: isExpanded[index] ? size.height*0.22 :size.height*0.12,
+                                      height: isExpanded[index] ? size.height*0.24 :size.height*0.15,
                                       width:size.width*0.98,
                                       duration: const Duration(milliseconds: 1),
                                       decoration: BoxDecoration(
-                                          color: Colors.blue,
+                                          color: Colors.blueGrey.shade900,
                                           borderRadius: radiusGeomentry
 
                                       ),
@@ -270,28 +287,26 @@ class _NotesState extends State<Notes> {
                                                 borderRadius:BorderRadius.only(
                                                     bottomLeft: Radius.circular(size.width*0.1),
                                                     bottomRight: Radius.circular(size.width*0.12)),),
-                                              title: Container(
-                                                  height: size.height*0.07,
+                                              title: SizedBox(
+                                                  height: size.height*0.085,
                                                   width: size.width*0.45,
-                                                  //ssscolor: Colors.redAccent,
                                                   child: Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                      FittedBox(
-                                                        fit: BoxFit.contain,
-                                                        child: AutoSizeText(
-                                                          snapshot.data["Notes-${index+1}"]["File_Name"]!=null
-                                                              ?
-                                                          snapshot.data["Notes-${index+1}"]["File_Name"].toString()
-                                                              :
-                                                          "",
-                                                          style: GoogleFonts.exo(
-                                                              fontSize: size.height*0.02,
-                                                              color: Colors.black,
-                                                              fontWeight: FontWeight.w500),),
-                                                      ),
+                                                      AutoSizeText(
+                                                        snapshot.data["Notes-${index+1}"]["File_Name"]!=null
+                                                            ?
+                                                        snapshot.data["Notes-${index+1}"]["File_Name"].toString()
+                                                            :
+                                                        "",
+                                                        style: GoogleFonts.exo(
+                                                            fontSize: size.height*0.02,
+                                                            color: Colors.white70,
+                                                            fontWeight: FontWeight.w500
+                                                        ),
+                                                          maxLines: 1,),
                                                       SizedBox(
-                                                        height: size.height*0.01,
+                                                        height: size.height*0.008,
                                                       ),
                                                       Row(
                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -305,7 +320,7 @@ class _NotesState extends State<Notes> {
                                                             "",
                                                             style: GoogleFonts.exo(
                                                                 fontSize: size.height*0.016,
-                                                                color: Colors.black,
+                                                                color: Colors.white70,
                                                                 fontWeight: FontWeight.w500),),
                                                           AutoSizeText(
                                                             snapshot.data["Notes-${index+1}"]["Stamp"]!=null
@@ -315,7 +330,36 @@ class _NotesState extends State<Notes> {
                                                             "",
                                                             style: GoogleFonts.exo(
                                                                 fontSize: size.height*0.016,
-                                                                color: Colors.black,
+                                                                color: Colors.white70,
+                                                                fontWeight: FontWeight.w500),),
+                                                        ],
+                                                      ),
+                                                      SizedBox(
+                                                        height: size.height*0.008,
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          /*AutoSizeText(
+                                                            snapshot.data["Notes-${index+1}"]["Submitted by"]!=null &&  snapshot.data["Notes-${index+1}"]["Submitted by"].contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")
+                                                                ?
+                                                            "Status : Submit"
+                                                                :
+                                                            "Status : Panding",
+                                                            style: GoogleFonts.exo(
+                                                                fontSize: size.height*0.016,
+                                                                color: Colors.white70,
+                                                                fontWeight: FontWeight.w500),),*/
+                                                          AutoSizeText(
+                                                            snapshot.data["Notes-${index+1}"]["Stamp"]!=null
+                                                                ?
+                                                            "Deadline : ${(snapshot.data["Notes-${index+1}"]["Stamp"].toDate()).toString().split(" ")[0]} ${snapshot.data["Notes-${index+1}"]["Submitted by"]!=null &&  snapshot.data["Notes-${index+1}"]["Submitted by"].contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")?"( Submit )":"( Panding )"}"
+                                                                :
+                                                            "",
+                                                            style: GoogleFonts.exo(
+                                                                fontSize: size.height*0.016,
+                                                                color: Colors.white70,
                                                                 fontWeight: FontWeight.w500),),
                                                         ],
                                                       )
@@ -399,7 +443,18 @@ class _NotesState extends State<Notes> {
 
                                               // subtitle: AutoSizeText('DEADLIiNE',style: GoogleFonts.exo(fontSize: size.height*0.015,color: Colors.black,fontWeight: FontWeight.w400),),
                                               trailing:  FloatingActionButton(
-                                                backgroundColor: Colors.lightBlueAccent,
+                                                backgroundColor:
+                                                    (currDate.year>deadline.toDate().year ||
+                                                        currDate.month>deadline.toDate().month ||
+                                                        currDate.day>deadline.toDate().day ||
+                                                        currDate.hour>deadline.toDate().hour ||
+                                                        currDate.minute>deadline.toDate().minute ||
+                                                        currDate.second>deadline.toDate().second) &&
+                                                    (snapshot.data["Notes-${index+1}"]["Quiz_Created"]==true)
+                                                    ?
+                                                    Colors.red
+                                                    :
+                                                    Colors.lightBlueAccent,
                                                 elevation: 0,
                                                 onPressed: (){
                                                   setState(() {
@@ -416,87 +471,273 @@ class _NotesState extends State<Notes> {
                                             isExpanded[index]
                                                 ?
                                             Padding(
-                                                padding: EdgeInsets.only(top: size.height*0.022),
+                                                padding: EdgeInsets.only(top: size.height*0.014),
                                                 child:  snapshot.data["Notes-${index+1}"]["Submitted by"]!=null &&  snapshot.data["Notes-${index+1}"]["Submitted by"].contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")
                                                     ?
-                                                Container(
-                                                  height: size.height * 0.05,
-                                                  width: size.width * 0.45,
-                                                  decoration: BoxDecoration(
-                                                      gradient: const LinearGradient(
-                                                        begin: Alignment.topLeft,
-                                                        end: Alignment.bottomRight,
-                                                        colors: [
-                                                          Colors.blue,
-                                                          Colors.purpleAccent,
+                                                Column(
+                                                  children: [
+                                                    SizedBox(
+                                                      width: size.width*0.72,
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                        children: [
+                                                          AutoSizeText(
+                                                            "Score : 5/10",
+                                                            style: GoogleFonts.poppins(
+                                                              color: Colors.white70,
+                                                              fontSize: size.height*0.015
+                                                            ),
+                                                          ),
+                                                          LinearProgressIndicator(
+                                                            minHeight: size.height*0.01,
+                                                            backgroundColor: Colors.black,
+                                                            color: Colors.green,
+                                                            value: 5/10,
+                                                          ),
                                                         ],
-                                                      ),
-                                                      borderRadius: BorderRadius.all(Radius.circular(size.width*0.035)),
-                                                      border: Border.all(color: Colors.black, width: 2)
-                                                  ),
-                                                  child: ElevatedButton(
-                                                      style: ElevatedButton.styleFrom(
-                                                          backgroundColor: Colors.transparent,
-                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(size.width*0.035)))
-                                                      ),
+                                                      )
+                                                    ),
+                                                    SizedBox(height: size.height*0.015,),
+                                                    Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                      children: [
+                                                        Container(
+                                                          height: size.height * 0.046,
+                                                          width: size.width * 0.34,
+                                                          decoration: BoxDecoration(
+                                                              gradient: const LinearGradient(
+                                                                begin: Alignment.topLeft,
+                                                                end: Alignment.bottomRight,
+                                                                colors: [
+                                                                  Colors.blue,
+                                                                  Colors.purpleAccent,
+                                                                ],
+                                                              ),
+                                                              borderRadius: BorderRadius.all(Radius.circular(size.width*0.035)),
+                                                              border: Border.all(color: Colors.black, width: 2)
+                                                          ),
+                                                          child: ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                  backgroundColor: Colors.transparent,
+                                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(size.width*0.035)))
+                                                              ),
 
-                                                      onPressed: (){
+                                                              onPressed: (){
 
-                                                      },
-                                                      child: AutoSizeText(
-                                                        "Submitted",
-                                                        style: GoogleFonts.openSans(
-                                                            fontSize: size.height * 0.022,
-                                                            color: Colors.white
+                                                              },
+                                                              child: AutoSizeText(
+                                                                "Submitted",
+                                                                style: GoogleFonts.openSans(
+                                                                    fontSize: size.height * 0.022,
+                                                                    color: Colors.white
+                                                                ),
+
+
+                                                              )),
                                                         ),
+                                                        Container(
+                                                          height: size.height * 0.046,
+                                                          width: size.width * 0.34,
+                                                          decoration: BoxDecoration(
+                                                              gradient: const LinearGradient(
+                                                                begin: Alignment.topLeft,
+                                                                end: Alignment.bottomRight,
+                                                                colors: [
+                                                                  Colors.blue,
+                                                                  Colors.purpleAccent,
+                                                                ],
+                                                              ),
+                                                              borderRadius: BorderRadius.all(
+                                                                  Radius.circular(
+                                                                      size.width * 0.035)),
+                                                              border: Border.all(
+                                                                  color: Colors.black, width: 2)
+                                                          ),
+                                                          child: ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                  backgroundColor: Colors
+                                                                      .transparent,
+                                                                  shape: RoundedRectangleBorder(
+                                                                      borderRadius: BorderRadius
+                                                                          .all(
+                                                                          Radius.circular(size
+                                                                              .width * 0.035)))
+                                                              ),
+
+                                                              onPressed: () {
+                                                                Navigator.pushReplacement(context,
+                                                                    PageTransition(
+                                                                        child: Quizscore(
+                                                                          quizId: index + 1, selectedSubject: selectedSubject,),
+                                                                        type: PageTransitionType
+                                                                            .bottomToTopJoined,
+                                                                        childCurrent: const Notes(),
+                                                                        duration: const Duration(
+                                                                            milliseconds: 300)
+                                                                    )
+                                                                );
+                                                              },
+                                                              child: AutoSizeText(
+                                                                "Leaderboard",
+                                                                style: GoogleFonts.openSans(
+                                                                    fontSize: size.height * 0.022,
+                                                                    color: Colors.white
+                                                                ),
 
 
-                                                      )),
+                                                              )),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
                                                 )
                                                     :
                                                 snapshot.data["Notes-${index+1}"]["Quiz_Created"]==true
                                                     ?
-                                              Container(
-                                                  height: size.height * 0.05,
-                                                  width: size.width * 0.45,
-                                                  decoration: BoxDecoration(
-                                                      gradient: const LinearGradient(
-                                                        begin: Alignment.topLeft,
-                                                        end: Alignment.bottomRight,
-                                                        colors: [
-                                                          Colors.blue,
-                                                          Colors.purpleAccent,
-                                                        ],
-                                                      ),
-                                                      borderRadius: BorderRadius.all(Radius.circular(size.width*0.035)),
-                                                      border: Border.all(color: Colors.black, width: 2)
-                                                  ),
-                                                  child: ElevatedButton(
-                                                      style: ElevatedButton.styleFrom(
-                                                          backgroundColor: Colors.transparent,
-                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(size.width*0.035)))
-                                                      ),
-
-                                                      onPressed: (){
-                                                        Navigator.push(context,
-                                                            PageTransition(
-                                                                child:  QuizScreen(subject: selectedSubject, notesId: index+1),
-                                                                type: PageTransitionType.bottomToTopJoined,
-                                                                childCurrent: const Notes(),
-                                                                duration: const Duration(milliseconds: 300)
-                                                            )
-                                                        );
-                                                      },
-                                                      child: AutoSizeText(
-                                                        "Take Quiz",
-                                                        style: GoogleFonts.openSans(
-                                                            fontSize: size.height * 0.022,
-                                                            color: Colors.white
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                children: [
+                                                  snapshot.data["Notes-${index+1}"]["Submitted by"]!=null &&
+                                                      snapshot.data["Notes-${index+1}"]["Submitted by"]
+                                                          .contains("${usermodel["Email"]
+                                                          .toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")
+                                                      ?
+                                                  Container(
+                                                    height: size.height * 0.046,
+                                                    width: size.width * 0.34,
+                                                    decoration: BoxDecoration(
+                                                        gradient: const LinearGradient(
+                                                          begin: Alignment.topLeft,
+                                                          end: Alignment.bottomRight,
+                                                          colors: [
+                                                            Colors.blue,
+                                                            Colors.purpleAccent,
+                                                          ],
+                                                        ),
+                                                        borderRadius: BorderRadius.all(Radius.circular(size.width*0.035)),
+                                                        border: Border.all(color: Colors.black, width: 2)
+                                                    ),
+                                                    child: ElevatedButton(
+                                                        style: ElevatedButton.styleFrom(
+                                                            backgroundColor: Colors.transparent,
+                                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(size.width*0.035)))
                                                         ),
 
+                                                        onPressed: (){
 
-                                                      )),
-                                                )
+                                                        },
+                                                        child: AutoSizeText(
+                                                          
+                                                          "Submitted",
+                                                          style: GoogleFonts.openSans(
+                                                              fontSize: size.height * 0.022,
+                                                              color: Colors.white
+                                                          ),
+
+
+                                                        )),
+                                                  )
+                                                  :
+                                                  Container(
+                                                    height: size.height * 0.046,
+                                                    width: size.width * 0.34,
+                                                    decoration: BoxDecoration(
+                                                        gradient: const LinearGradient(
+                                                          begin: Alignment.topLeft,
+                                                          end: Alignment.bottomRight,
+                                                          colors: [
+                                                            Colors.blue,
+                                                            Colors.purpleAccent,
+                                                          ],
+                                                        ),
+                                                        borderRadius: BorderRadius.all(Radius.circular(size.width*0.035)),
+                                                        border: Border.all(color: Colors.black, width: 2)
+                                                    ),
+                                                    child: ElevatedButton(
+                                                        style: ElevatedButton.styleFrom(
+                                                            backgroundColor: Colors.transparent,
+                                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(size.width*0.035)))
+                                                        ),
+
+                                                        onPressed: (){
+                                                          Navigator.pushReplacement(context,
+                                                              PageTransition(
+                                                                  child: QuizScreen(subject: selectedSubject, notesId: index+1,
+                                                                    ),
+                                                                  type: PageTransitionType
+                                                                      .bottomToTopJoined,
+                                                                  childCurrent: const Notes(),
+                                                                  duration: const Duration(
+                                                                      milliseconds: 300)
+                                                              )
+                                                          );
+                                                        },
+                                                        child: AutoSizeText(
+
+                                                          "Take Quiz",
+                                                          style: GoogleFonts.openSans(
+                                                              fontSize: size.height * 0.022,
+                                                              color: Colors.white
+                                                          ),
+
+
+                                                        )),
+                                                  ), 
+                                                  Container(
+                                                    height: size.height * 0.046,
+                                                    width: size.width * 0.34,
+                                                    decoration: BoxDecoration(
+                                                        gradient: const LinearGradient(
+                                                          begin: Alignment.topLeft,
+                                                          end: Alignment.bottomRight,
+                                                          colors: [
+                                                            Colors.blue,
+                                                            Colors.purpleAccent,
+                                                          ],
+                                                        ),
+                                                        borderRadius: BorderRadius.all(
+                                                            Radius.circular(
+                                                                size.width * 0.035)),
+                                                        border: Border.all(
+                                                            color: Colors.black, width: 2)
+                                                    ),
+                                                    child: ElevatedButton(
+                                                        style: ElevatedButton.styleFrom(
+                                                            backgroundColor: Colors
+                                                                .transparent,
+                                                            shape: RoundedRectangleBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(
+                                                                    Radius.circular(size
+                                                                        .width * 0.035)))
+                                                        ),
+
+                                                        onPressed: () {
+                                                          Navigator.push(context,
+                                                              PageTransition(
+                                                                  child: Quizscore(
+                                                                    quizId: index + 1, selectedSubject: selectedSubject,),
+                                                                  type: PageTransitionType
+                                                                      .bottomToTopJoined,
+                                                                  childCurrent: const Notes(),
+                                                                  duration: const Duration(
+                                                                      milliseconds: 300)
+                                                              )
+                                                          );
+                                                        },
+                                                        child: AutoSizeText(
+                                                          "Leaderboard",
+                                                          style: GoogleFonts.openSans(
+                                                              fontSize: size.height * 0.022,
+                                                              color: Colors.white
+                                                          ),
+
+
+                                                        )),
+                                                  ),
+                                                ],
+                                              )
                                                     :
                                                 Container(
                                                   height: size.height * 0.05,

@@ -24,17 +24,19 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
   late Timer _timer;
   int _start = 0;
   int minute=0;
-
+  int milliSecond=0;
   var count = 0;
-  List<String> selectedChoice = [
-  ];
+  List<String> selectedChoice = [];
   List<dynamic>options=[];
+  List<String>selectedOption=["A","B","C","D"];
+  late int optionIndex;
   var CurrentChoice = '';
   late DocumentSnapshot<Map<String, dynamic>> snap;
   PageController pageQuestionController = PageController();
   bool loaded = false;
   bool skip=false;
   Map<String,dynamic>responseMap={};
+  int score=0;
   @override
   initState() {
     // TODO: implement initState
@@ -538,7 +540,7 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
                               color: Colors.white60),
                         ),
                         SizedBox(
-                          width: size.width*0.17,
+                          width: size.width*0.16,
                         ),
                         AutoSizeText("$minute : $_start",
                           style: GoogleFonts.poppins(
@@ -669,12 +671,14 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
                                                         onChanged: (value) {
                                                           setState(() {
                                                             selectedChoice[index] =options[index1];
+                                                            optionIndex=index1;
                                                           });
                                                         },
                                                       ),
                                                       onTap: () {
                                                         setState(() {
                                                           selectedChoice[index] =options[index1];
+                                                          optionIndex=index1;
                                                         });
                                                       },
                                                     ),
@@ -703,11 +707,16 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
                 ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: loaded && (count< snap.data()?["Notes-${widget.notesId}"]["Total_Question"]-1)
-                ? (){
+                ?
+                (){
               setState(() {
                 if(selectedChoice[count]!="")
                 {
-                  responseMap["${snap.data()?["Notes-${widget.notesId}"]["Question-${count + 1}"]["Question"]}"]=selectedChoice[count];
+                  if(snap.data()?["Notes-${widget.notesId}"]["Question-${count + 1}"]["Answer"]==selectedOption[optionIndex])
+                    {
+                      score+=1;
+                    }
+                  responseMap["${snap.data()?["Notes-${widget.notesId}"]["Question-${count + 1}"]["Question"]}"]=selectedOption[optionIndex];
                   count<snap.data()?["Notes-${widget.notesId}"]["Total_Question"]-1?count++:null;
                   pageQuestionController.animateToPage(count,
                       duration: const Duration(milliseconds: 100),
@@ -715,12 +724,22 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
                 }
               });
 
-            } : () async {
+            }
+                 :
+                () async {
 
               if(selectedChoice[count]!="")
               {
-                responseMap["${snap.data()?["Notes-${widget.notesId}"]["Question-${count + 1}"]["Question"]}"]=selectedChoice[count];
-                responseMap["TimeStamp"]="${DateTime.now()}";
+                var totalMinutes=minute+(_start/60)+((milliSecond/1000)/60);
+                print(".............total Minutes:${totalMinutes}");
+                if(snap.data()?["Notes-${widget.notesId}"]["Question-${count + 1}"]["Answer"]==selectedOption[optionIndex])
+                {
+                  score+=1;
+                }
+                responseMap["${snap.data()?["Notes-${widget.notesId}"]["Question-${count + 1}"]["Question"]}"]=selectedOption[optionIndex];
+                responseMap["TimeStamp"]=totalMinutes;
+                  responseMap["Score"]=score;
+                  print("Score is:$score");
                 Navigator.push(context,
                   PageTransition(
                       child: const loading(text: "Data is uploading to the server Please wait."),
@@ -733,6 +752,7 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
                     .collection("Notes")
                     .doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.subject}")
                     .update({
+                  "${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}":FieldValue.increment(score),
                   "Notes-${widget.notesId}.Submitted by":FieldValue.arrayUnion(["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]),
                   "Notes-${widget.notesId}.Response.${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}":responseMap
                 }).whenComplete(() {
@@ -792,7 +812,7 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
   }
 
   void startTimer() {
-    const oneSec = Duration(seconds: 1);
+    const oneSec = Duration(milliseconds: 0);
     _timer = Timer.periodic(
       oneSec,
           (Timer timer) async {
@@ -803,12 +823,17 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
             });
            // timer.cancel();
         }
+        else if(milliSecond==1000)
+          {
+            setState(() {
+              _start++;
+              milliSecond=0;
+            });
+
+          }
         else{
-           if(mounted){
-             setState(() {
-               _start++;
-             });
-           }
+
+          milliSecond++;
         }
         if(minute==5)
           {

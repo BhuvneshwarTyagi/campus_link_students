@@ -15,7 +15,7 @@ class feedbackQuiz extends StatefulWidget {
 
 class _feedbackQuizState extends State<feedbackQuiz> {
   var count=1;
-  List<dynamic> options = ['Are parallel','Perpendicular','Intersect at two points','Intersect at one point'];
+
   List<String> currentChoice= [];
   var currentSubject='';
   late DocumentSnapshot<Map<String, dynamic>> snapshot;
@@ -23,6 +23,7 @@ class _feedbackQuizState extends State<feedbackQuiz> {
   PageController pageController = PageController();
   PageController pageQuestionController = PageController();
   int weekNumber=0;
+  List<String>options=[];
   bool loaded=false;
   @override
   void initState() {
