@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Constraints.dart';
 import 'package:campus_link_student/Registration/registration.dart';
+import 'package:campus_link_student/Screens/psycoTest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -40,23 +41,23 @@ class _navigationState extends State<navigation> {
   Widget build(BuildContext context) {
     Size size=MediaQuery.of(context).size;
     return Container(
-      decoration: BoxDecoration(
-        // image: DecorationImage(image: AssetImage("assets/images/bg-image.png"),fit: BoxFit.fill
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            // Colors.black,
-            // Colors.deepPurple,
-            // Colors.purpleAccent
-            const Color.fromRGBO(86, 149, 178, 1),
+        decoration: BoxDecoration(
+          // image: DecorationImage(image: AssetImage("assets/images/bg-image.png"),fit: BoxFit.fill
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              // Colors.black,
+              // Colors.deepPurple,
+              // Colors.purpleAccent
+              const Color.fromRGBO(86, 149, 178, 1),
 
-            const Color.fromRGBO(68, 174, 218, 1),
-            //Color.fromRGBO(118, 78, 232, 1),
-            Colors.deepPurple.shade300
-          ],
+              const Color.fromRGBO(68, 174, 218, 1),
+              //Color.fromRGBO(118, 78, 232, 1),
+              Colors.deepPurple.shade300
+            ],
+          ),
         ),
-      ),
       child: Scaffold(
 
         backgroundColor: Colors.transparent,
@@ -366,6 +367,24 @@ class _navigationState extends State<navigation> {
                 },
               ),
               ListTile(
+                leading: SizedBox(
+                  width: size.width*0.10,
+                    child: Image.asset("assets/images/psychometric.png",fit: BoxFit.contain,)
+                ),
+                title: const Text("Psychometric"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      child: const PsychometricTest(),
+                      type: PageTransitionType.rightToLeftJoined,
+                      duration: const Duration(milliseconds: 350),
+                      childCurrent: const navigation(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.settings,color: Colors.black),
                 title: const Text("Settings"),
                 onTap: () {},
@@ -401,6 +420,7 @@ class _navigationState extends State<navigation> {
                   await FirebaseAuth.instance.signOut();
                 },
               ),
+
             ],
           ),
         ),

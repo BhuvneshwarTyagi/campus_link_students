@@ -72,6 +72,8 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
         case AppLifecycleState.detached:
 
           break;
+        default:
+          break;
        /* case AppLifecycleState.hidden:*/
         // TODO: Handle this case.
       }

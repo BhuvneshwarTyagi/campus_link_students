@@ -74,94 +74,116 @@ class _NotesState extends State<Notes> {
     BorderRadiusGeometry radiusGeomentry=BorderRadius.circular(size.width*0.09);
     return Scaffold(
         backgroundColor: Colors.transparent,
-        body:Container(
-          height: size.height,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          toolbarHeight: size.height*0.11,
+          flexibleSpace: SizedBox(
+            height: size.height * 0.11,
+            width: size.width * 1,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: subjects.length,
+              padding: EdgeInsets.only(top: size.height*0.01),
+              itemBuilder: (context, index) {
+                return Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: size.width * 0.016,
+                          right: size.width * 0.016),
+                      child: Column(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              var preIndex = index;
+
+                              setState(() {
+                                docExists=false;
+                                selected =
+                                    List.filled(subjects.length, false);
+                                selected[index] = true;
+                                // previousIndex = index;
+                                print(subjects[index]);
+                                selectedSubject = subjects[index];
+                                checkExists();
+
+                              });
+                            },
+                            child: Container(
+                              height: size.height * 0.068,
+                              width: size.width * 0.2,
+                              decoration: BoxDecoration(
+                                color: Colors.black87,
+                                  // gradient: const LinearGradient(
+                                  //   begin: Alignment.centerLeft,
+                                  //   end: Alignment.centerRight,
+                                  //   colors: [
+                                  //     Color.fromRGBO(169, 169, 207, 1),
+                                  //     // Color.fromRGBO(86, 149, 178, 1),
+                                  //     Color.fromRGBO(189, 201, 214, 1),
+                                  //     //Color.fromRGBO(118, 78, 232, 1),
+                                  //     Color.fromRGBO(175, 207, 240, 1),
+                                  //
+                                  //     // Color.fromRGBO(86, 149, 178, 1),
+                                  //     Color.fromRGBO(189, 201, 214, 1),
+                                  //     Color.fromRGBO(169, 169, 207, 1),
+                                  //   ],
+                                  // ),
+                                  shape: BoxShape.circle,
+                                  border: selected[index]
+                                      ? Border.all(
+                                      color: Colors.greenAccent, width: 2)
+                                      : Border.all(
+                                      color: Colors.white,
+                                      width: 1)),
+                              child: Center(
+                                child: AutoSizeText(
+                                  "${subjects[index][0]}",
+                                  style: GoogleFonts.openSans(
+                                    fontSize: 23,
+                                      fontWeight: FontWeight.w600,
+                                      color: selected[index]
+                                          ? Colors.greenAccent
+                                          : Colors.white),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: size.height * 0.008,
+                          ),
+                          AutoSizeText(
+                            "${subjects[index]}",
+                            style: GoogleFonts.openSans(
+                              fontWeight: FontWeight.w600,
+                                color: selected[index]
+                                    ? Colors.greenAccent
+                                    : Colors.black),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+        body: SizedBox(
+          height: size.height*0.7,
           width: size.width,
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
               children: [
-                SizedBox(
-                  height: size.height * 0.12,
-                  width: size.width * 1,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: subjects.length,
-                    itemBuilder: (context, index) {
-                      return Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                                left: size.width * 0.016,
-                                right: size.width * 0.016),
-                            child: Column(
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    var preIndex = index;
 
-                                    setState(() {
-                                      docExists=false;
-                                      selected =
-                                          List.filled(subjects.length, false);
-                                      selected[index] = true;
-                                      // previousIndex = index;
-                                      print(subjects[index]);
-                                      selectedSubject = subjects[index];
-                                      checkExists();
-
-                                    });
-                                  },
-                                  child: Container(
-                                    height: size.height * 0.068,
-                                    width: size.width * 0.2,
-                                    decoration: BoxDecoration(
-                                        gradient: const LinearGradient(
-                                          begin: Alignment.centerLeft,
-                                          end: Alignment.centerRight,
-                                          colors: [
-                                            Color.fromRGBO(169, 169, 207, 1),
-                                            // Color.fromRGBO(86, 149, 178, 1),
-                                            Color.fromRGBO(189, 201, 214, 1),
-                                            //Color.fromRGBO(118, 78, 232, 1),
-                                            Color.fromRGBO(175, 207, 240, 1),
-
-                                            // Color.fromRGBO(86, 149, 178, 1),
-                                            Color.fromRGBO(189, 201, 214, 1),
-                                            Color.fromRGBO(169, 169, 207, 1),
-                                          ],
-                                        ),
-                                        shape: BoxShape.circle,
-                                        border: selected[index]
-                                            ? Border.all(
-                                            color: Colors.white, width: 2)
-                                            : Border.all(
-                                            color: Colors.blueAccent,
-                                            width: 1)),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: size.height * 0.008,
-                                ),
-                                AutoSizeText(
-                                  "${subjects[index]}",
-                                  style: GoogleFonts.openSans(
-                                      color: selected[index]
-                                          ? Colors.white
-                                          : Colors.black87),
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
                 Divider(
                   color: Colors.black,
                   height: MediaQuery.of(context).size.height * 0.03,
-                  thickness: MediaQuery.of(context).size.height * 0.001,
+                  thickness: MediaQuery.of(context).size.height * 0.003,
+                  endIndent: 8,
+                  indent: 8,
                 ),
                 docExists
                     ?
@@ -226,7 +248,7 @@ class _NotesState extends State<Notes> {
                               child: Container(
                                 width: size.width*0.85,
                                 decoration: BoxDecoration(
-                                  color: Colors.blueGrey.shade900,
+                                  color: const Color.fromRGBO(56, 33, 101,1),
                                   borderRadius: radiusGeomentry,
                                 ),
                                 child: Column(
@@ -271,7 +293,7 @@ class _NotesState extends State<Notes> {
                                       width:size.width*0.98,
                                       duration: const Duration(milliseconds: 1),
                                       decoration: BoxDecoration(
-                                          color: Colors.blueGrey.shade900,
+                                          color: const Color.fromRGBO(56, 33, 101,1),
                                           borderRadius: radiusGeomentry
 
                                       ),
@@ -402,8 +424,8 @@ class _NotesState extends State<Notes> {
                                                     ),
                                                   )
                                                       :
-                                                  IconButton(
-                                                      onPressed: ()
+                                                  InkWell(
+                                                      onTap: ()
                                                       async {
                                                         setState(() {
                                                           isDownloading[index]=true;
@@ -437,7 +459,7 @@ class _NotesState extends State<Notes> {
                                                         });
 
                                                       },
-                                                      icon: Icon(Icons.download,color: Colors.black87,size:size.width*0.1))
+                                                      child: Icon(Icons.download,color: Colors.black87,size:size.width*0.1))
 
                                               ),
 
@@ -493,6 +515,7 @@ class _NotesState extends State<Notes> {
                                                             minHeight: size.height*0.01,
                                                             backgroundColor: Colors.black,
                                                             color: Colors.green,
+                                                            borderRadius: const BorderRadius.all(Radius.circular(20)),
                                                             value: 5/10,
                                                           ),
                                                         ],
