@@ -20,11 +20,15 @@ class _QuizscoreState extends State<Quizscore> {
   List<Map<String,dynamic>>result=[];
   late DocumentSnapshot<Map<String, dynamic>> snapshot;
   bool load=false;
+  Map<String,dynamic>allEmailsWithLink={};
+  late QuerySnapshot<Map<String, dynamic>> allStudentsData;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    fetchtData();
+    fetchEmail().whenComplete(() {
+      fetchtData();
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -36,7 +40,7 @@ class _QuizscoreState extends State<Quizscore> {
           elevation: 0,
           title:  Center(
             child: AutoSizeText(
-              '${subject_filter} Leaderboard Quiz ${widget.quizId}',
+              '$subject_filter Leaderboard Quiz ${widget.quizId}',
               style: const TextStyle(
                   color: Colors.black,
                   fontSize: 25,
@@ -47,11 +51,20 @@ class _QuizscoreState extends State<Quizscore> {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(Icons.arrow_back,color: Colors.black,),
+            icon: const Icon(Icons.arrow_back,color: Colors.black,),
           ),
         ),
         body: Container(
-          color: Colors.white,
+          decoration:  const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.blue,
+                Colors.purpleAccent,
+              ],
+            ),
+          ),
           child:load
             ?
           Column(
@@ -75,10 +88,15 @@ class _QuizscoreState extends State<Quizscore> {
                                     child: CircleAvatar(
                                       backgroundColor: Colors.black,
                                       radius: size.width * 0.107,
-                                      child: CircleAvatar(
+                                      child: allEmailsWithLink[result[1]["Email"]]!="null"
+                                      ?
+                                      CircleAvatar(
                                         radius: size.width * 0.1,
-                                        backgroundImage: const NetworkImage(
-                                            'https://wallpapercave.com/wp/wp8974363.jpg'),
+                                        backgroundImage: NetworkImage("${allEmailsWithLink[result[1]["Email"]]}"),
+                                      ):
+                                      AutoSizeText(
+                                        "${result[1]["Name-Rollnumber"].toString().split("-")[0]}\n ${result[1]["Name-Rollnumber"].toString().split("-")[1]}",
+                                        textAlign: TextAlign.center,
                                       ),
                                     )),
                                 Positioned(
@@ -101,7 +119,7 @@ class _QuizscoreState extends State<Quizscore> {
                               child: SizedBox(
                                   width: size.width * 0.2,
                                   child: AutoSizeText(
-                                    result[1]["Name-Rollnumber"].toString().split("-")[0],
+                                    "${result[1]["Name-Rollnumber"].toString().split("-")[0]}\n ${result[1]["Name-Rollnumber"].toString().split("-")[1]}",
                                     style: TextStyle(
                                         fontSize: size.width * 0.04,
                                         fontWeight: FontWeight.bold),
@@ -130,11 +148,16 @@ class _QuizscoreState extends State<Quizscore> {
                                     child: CircleAvatar(
                                         radius: size.width * 0.147,
                                         backgroundColor: Colors.black,
-                                        child: CircleAvatar(
-                                          radius: size.width * 0.14,
-                                          backgroundImage: const NetworkImage(
-                                              'https://images.wallpapersden.com/image/download/iron-man-digital-fan-art_bGllZ22UmZqaraWkpJRsa21lrWloZ2U.jpg'),
-                                        ))),
+                                        child:  allEmailsWithLink[result[0]["Email"]]!="null"
+                                            ?
+                                        CircleAvatar(
+                                          radius: size.width * 0.147,
+                                          backgroundImage: NetworkImage("${allEmailsWithLink[result[0]["Email"]]}"),
+                                        ):
+                                        AutoSizeText(
+                                          "${result[0]["Name-Rollnumber"].toString().split("-")[0]}\n ${result[0]["Name-Rollnumber"].toString().split("-")[1]}",
+                                          textAlign: TextAlign.center,
+                                        ),)),
                                 Positioned(
                                     top: ((size.height * 0.05) -
                                         (size.width * 0.03)),
@@ -155,7 +178,7 @@ class _QuizscoreState extends State<Quizscore> {
                               child: SizedBox(
                                   width: size.width * 0.24,
                                   child: AutoSizeText(
-                                    result[0]["Name-Rollnumber"].toString().split("-")[0],
+                                    "${result[0]["Name-Rollnumber"].toString().split("-")[0]}\n ${result[0]["Name-Rollnumber"].toString().split("-")[1]}",
                                     style: TextStyle(
                                         fontSize: size.width * 0.04,
                                         fontWeight: FontWeight.bold),
@@ -183,11 +206,16 @@ class _QuizscoreState extends State<Quizscore> {
                                   child: CircleAvatar(
                                       backgroundColor: Colors.black,
                                       radius: size.width * 0.107,
-                                      child: CircleAvatar(
+                                      child:  allEmailsWithLink[result[2]["Email"]]!="null"
+                                          ?
+                                      CircleAvatar(
                                         radius: size.width * 0.1,
-                                        backgroundImage: const NetworkImage(
-                                            'https://wallpaperaccess.com/full/4791232.jpg'),
-                                      ))),
+                                        backgroundImage: NetworkImage("${allEmailsWithLink[result[2]["Email"]]}"),
+                                      ):
+                                      AutoSizeText(
+                                        result[2]["Name-Rollnumber"].toString().split("-")[0],
+                                        textAlign: TextAlign.center,
+                                      ),)),
                               Positioned(
                                   top: ((size.height * 0.12) -
                                       (size.width * 0.03)),
@@ -208,7 +236,7 @@ class _QuizscoreState extends State<Quizscore> {
                           SizedBox(
                               width: size.width * 0.2,
                               child: AutoSizeText(
-                                result[2]["Name-Rollnumber"].toString().split("-")[0],
+                                "${result[2]["Name-Rollnumber"].toString().split("-")[0]}\n ${result[2]["Name-Rollnumber"].toString().split("-")[1]}",
                                 style: TextStyle(
                                     fontSize: size.width * 0.04,
                                     fontWeight: FontWeight.bold),
@@ -235,15 +263,15 @@ class _QuizscoreState extends State<Quizscore> {
 
                             return Padding(
                               padding: EdgeInsets.all(size.height * 0.008),
-                              child: Container(
+                              child: SizedBox(
                                 height: size.height * 0.08,
                                 child: Row(
                                   children: [
-                                    Container(
+                                    SizedBox(
                                       width: size.width * 0.1,
                                       child: Center(
                                           child: AutoSizeText(
-                                              "${index+3}"
+                                              "${index+4}"
                                           )),
                                     ),
                                     Container(
@@ -255,28 +283,47 @@ class _QuizscoreState extends State<Quizscore> {
                                               Radius.circular(size.width * 0.08)),
                                           color: const Color.fromARGB(255, 228, 243, 247),
                                         ),
-                                        child: Row(children: [
+                                        child: Row(
+                                            children: [
                                           Padding(
                                             padding:
                                             EdgeInsets.all(size.height * 0.006),
                                             child: CircleAvatar(
                                                 radius: size.width * 0.06,
                                                 backgroundColor: Colors.black,
-                                                child: CircleAvatar(
-                                                  radius: size.width * 0.053,
-                                                  backgroundColor: const Color.fromARGB(
-                                                      255, 128, 193, 246),
-                                                )),
+                                                child:  allEmailsWithLink[result[index+3]["Email"]]!="null"
+                                                    ?
+                                                CircleAvatar(
+                                                  radius: size.width * 0.1,
+                                                  backgroundImage: NetworkImage("${allEmailsWithLink[result[index+3]["Email"]]}"),
+                                                ):
+                                                AutoSizeText(
+                                                  result[index+3]["Name-Rollnumber"].toString().split("-")[0][0],
+                                                  textAlign: TextAlign.center,
+                                                ),),
                                           ),
                                           SizedBox(
-                                              width: size.width * 0.5,
-                                              child: AutoSizeText(
-                                                result[index+3]["Name-Rollnumber"].toString().split("-")[0],
-                                                style: TextStyle(
-                                                    fontSize: size.width * 0.045),
-                                                maxLines: 1,
-                                                textAlign: TextAlign.left,
-                                              )),
+                                              width: size.width * 0.45,
+                                              child:Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  AutoSizeText(
+                                                    result[index+3]["Name-Rollnumber"].toString().split("-")[0],
+                                                    style: TextStyle(
+                                                        fontSize: size.width * 0.045),
+                                                    maxLines: 1,
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                  AutoSizeText(
+                                                    result[index+3]["Name-Rollnumber"].toString().split("-")[1],
+                                                    style: TextStyle(
+                                                        fontSize: size.width * 0.036),
+                                                    maxLines: 1,
+                                                    textAlign: TextAlign.left,
+                                                  )
+                                                ],
+                                              )
+                                          ),
                                            AutoSizeText("${result[index+3]["Score"].toString()} / 10",
                                               style: const TextStyle(
                                                   color:Color.fromARGB(255, 10, 52, 84),
@@ -405,6 +452,7 @@ class _QuizscoreState extends State<Quizscore> {
        data["Name-Rollnumber"]="${email.toString().split("-")[1]}-${email.toString().split("-")[2]}";
        data["Score"]=snapshot.data()?["Notes-${widget.quizId}"]["Response"][email]["Score"];
        data["Quiz-Time"]=snapshot.data()?["Notes-${widget.quizId}"]["Response"][email]["TimeStamp"];
+       data["Email"]="${email.toString().split("-")[0]}@gmail.com";
        result.add(data);
      }
 
@@ -430,7 +478,38 @@ class _QuizscoreState extends State<Quizscore> {
         e--;
       }
       load=true;
-   print("....................After${result}");
+   print("....................After$result");
    return true;
   }
+
+  Future<void> fetchEmail()
+  async {
+    await FirebaseFirestore.instance.collection("Students")
+        .where("University",isEqualTo: usermodel["University"])
+        .where("College",isEqualTo: usermodel["College"])
+        .where("Branch",isEqualTo: usermodel["Branch"])
+        .where("Course",isEqualTo: usermodel["Course"])
+        .where("Year",isEqualTo: usermodel["Year"])
+        .where("Section",isEqualTo: usermodel["Section"])
+        .where("Subject",arrayContains: widget.selectedSubject).get().then((value) {
+
+      setState(() {
+        allStudentsData=value;
+        print("$allStudentsData");
+      });
+    }).whenComplete(() {
+      setState(() {
+       // allEmails=List.generate(allStudentsData.docs.length, (index) => allStudentsData.docs[index]["Email"]);
+        print(".Length ${allStudentsData.docs.length}");
+        for(int i=0;i<allStudentsData.docs.length;i++)
+          {
+            //print("    $i-----${allStudentsData.docs[i]["Profile_URL"]}");
+            allEmailsWithLink["${allStudentsData.docs[i]["Email"]}"]=allStudentsData.docs[i]["Profile_URL"]!=null?"${allStudentsData.docs[i]["Profile_URL"]}":"null";
+          }
+      });
+      print("......... Amp is: ${allEmailsWithLink}");
+    });
+
+  }
+
 }

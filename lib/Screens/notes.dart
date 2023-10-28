@@ -59,10 +59,12 @@ class _NotesState extends State<Notes> {
 
   List<PdfController> pdfControllers=[];
   List<Uint8List> imageBytes=[];
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    checkAndRequestPermissions();
     checkExists();
     setState(() {
       selected[0]=true;
@@ -151,7 +153,7 @@ class _NotesState extends State<Notes> {
                             ),
                           ),
                           SizedBox(
-                            height: size.height * 0.008,
+                            height: size.height * 0.006,
                           ),
                           AutoSizeText(
                             "${subjects[index]}",
@@ -177,7 +179,6 @@ class _NotesState extends State<Notes> {
             scrollDirection: Axis.vertical,
             child: Column(
               children: [
-
                 Divider(
                   color: Colors.black,
                   height: MediaQuery.of(context).size.height * 0.03,
@@ -376,7 +377,7 @@ class _NotesState extends State<Notes> {
                                                           AutoSizeText(
                                                             snapshot.data["Notes-${index+1}"]["Stamp"]!=null
                                                                 ?
-                                                            "Deadline : ${(snapshot.data["Notes-${index+1}"]["Stamp"].toDate()).toString().split(" ")[0]} ${snapshot.data["Notes-${index+1}"]["Submitted by"]!=null &&  snapshot.data["Notes-${index+1}"]["Submitted by"].contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")?"( Submit )":"( Panding )"}"
+                                                            "Deadline : ${(snapshot.data["Notes-${index+1}"]["Stamp"].toDate()).toString().split(" ")[0]} ${snapshot.data["Notes-${index+1}"]["Submitted by"]!=null &&  snapshot.data["Notes-${index+1}"]["Submitted by"].contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")?"( Submit )":"( Pending )"}"
                                                                 :
                                                             "",
                                                             style: GoogleFonts.exo(
@@ -505,7 +506,7 @@ class _NotesState extends State<Notes> {
                                                         mainAxisAlignment: MainAxisAlignment.start,
                                                         children: [
                                                           AutoSizeText(
-                                                            "Score : 5/10",
+                                                            "Score :${snapshot.data["Notes-${index+1}"]["Response"]["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]["Score"].toString()}/10",
                                                             style: GoogleFonts.poppins(
                                                               color: Colors.white70,
                                                               fontSize: size.height*0.015
@@ -515,8 +516,8 @@ class _NotesState extends State<Notes> {
                                                             minHeight: size.height*0.01,
                                                             backgroundColor: Colors.black,
                                                             color: Colors.green,
-                                                            borderRadius: const BorderRadius.all(Radius.circular(20)),
-                                                            value: 5/10,
+                                                            //borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                                            value: snapshot.data["Notes-${index+1}"]["Response"]["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]["Score"]/10,
                                                           ),
                                                         ],
                                                       )
@@ -589,7 +590,7 @@ class _NotesState extends State<Notes> {
                                                               ),
 
                                                               onPressed: () {
-                                                                Navigator.pushReplacement(context,
+                                                                Navigator.push(context,
                                                                     PageTransition(
                                                                         child: Quizscore(
                                                                           quizId: index + 1, selectedSubject: selectedSubject,),
@@ -860,13 +861,12 @@ class _NotesState extends State<Notes> {
         .get().then((value) {
       if(value.exists)
       {
-        setState(() {
-          isExpanded=List.generate(value.data()?["Total_Notes"], (index) =>  false);
-          isDownloaded=List.generate(value.data()?["Total_Notes"], (index) =>  false);
-          isDownloading=List.generate(value.data()?["Total_Notes"], (index) =>  false);
-          docExists=true;
-        });
-        checkAndRequestPermissions();
+          setState(() {
+            isExpanded=List.generate(value.data()?["Total_Notes"], (index) =>  false);
+            isDownloaded=List.generate(value.data()?["Total_Notes"], (index) =>  false);
+            isDownloading=List.generate(value.data()?["Total_Notes"], (index) =>  false);
+            docExists=true;
+          });
       }
       else{
         setState(() {
@@ -876,5 +876,6 @@ class _NotesState extends State<Notes> {
 
     });
   }
+
 }
 

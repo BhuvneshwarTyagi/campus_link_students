@@ -404,20 +404,26 @@ class _navigationState extends State<navigation> {
 
 
 
-                  List<dynamic> channels= usermodel["Message_channels"];
+                 if(usermodel["Message_channels"]!=null)
+                   {
+                     List<dynamic> channels= usermodel["Message_channels"];
 
-                  for(var channel in channels){
-                    await FirebaseFirestore.instance.collection("Messages")
-                        .doc(channel).update(
-                        {
-                          "${usermodel["Email"].toString().split("@")[0]}.Token" : FieldValue.arrayRemove([token])
-                        }
-                    );
-                  }
-                  await FirebaseFirestore.instance.collection("Students").doc(usermodel["Email"]).update({
-                    "Token" : ""
-                  });
-                  await FirebaseAuth.instance.signOut();
+                     for(var channel in channels){
+                       await FirebaseFirestore.instance.collection("Messages")
+                           .doc(channel).update(
+                           {
+                             "${usermodel["Email"].toString().split("@")[0]}.Token" : FieldValue.arrayRemove([token])
+                           }
+                       );
+                     }
+                     await FirebaseFirestore.instance.collection("Students").doc(usermodel["Email"]).update({
+                       "Token" : ""
+                     });
+                     await FirebaseAuth.instance.signOut();
+                   }
+                 else{
+                   await FirebaseAuth.instance.signOut();
+                 }
                 },
               ),
 
