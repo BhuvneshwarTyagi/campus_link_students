@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:campus_link_student/Registration/database.dart';
 import 'package:campus_link_student/push_notification/helper_notification.dart';
 import 'package:campus_link_student/push_notification/temp.dart';
@@ -100,16 +101,16 @@ callbackDispatcherforreminder() async {
     await Firebase.initializeApp();
     Workmanager().executeTask((taskName, inputData) async {
       try{
-        int hours=8,minutes=0 ;
+        int hours=0,minutes=0 ;
         try{
 
 
           await FirebaseFirestore.instance.collection('Students').doc(FirebaseAuth.instance.currentUser?.email).get().then((value){
             hours= value.data()?['Study_hours'];
             minutes=value.data()?['Study_minute'];
-            if(value.data()?['Study_section'] == "pm"){
-              hours+=12;
-            }
+            // if(value.data()?['Study_section'] == "pm"){
+            //   hours+=12;
+            // }
           });
         }catch (e) {
           minutes = inputData?['Minute'];
@@ -118,7 +119,36 @@ callbackDispatcherforreminder() async {
         }
         print("taskname .........: $taskName");
         try{
-          FlutterAlarmClock.createAlarm(hour: hours, minutes: minutes,title: "Complete $taskName");
+          bool send=false;
+          final now= DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,DateTime.now().hour,DateTime.now().minute,DateTime.now().second,DateTime.now().millisecond,DateTime.now().microsecond);
+          final study= DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,hours,minutes,0,0,0);
+          send = now.difference(study).isNegative ? true : false ;
+          print("Difference : ${now.difference(study).isNegative}");
+          if(send){
+            await AndroidAlarmManager.initialize();
+            print("Alarm initialized");
+            print(DateTime.now().hour);
+            await AndroidAlarmManager.oneShotAt(
+                DateTime(
+                    DateTime.now().year,
+                    DateTime.now().month,
+                    DateTime.now().day,
+                    hours,
+                    minutes,
+                    0,0,0
+
+                ),
+                2,
+                firealarm,
+                rescheduleOnReboot: true,
+                wakeup: true,
+                exact: true,
+                allowWhileIdle: true,
+                alarmClock: true
+
+            );
+            print("Alarm one shot ready");
+          }
         }catch (e){
           print("error from best  : $e");
         }
@@ -136,6 +166,16 @@ callbackDispatcherforreminder() async {
   }
 }
 
+@pragma('vm:entry-point')
+void firealarm(){
+  print("Alarm fired");
+  NotificationServices.display(RemoteMessage(data: {
+    "title" : "Peniding Assignments",
+    "body" : "You have some pending assignments please check and complete them",
+    "route" : ""
+  }));
+
+}
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (kDebugMode) {
@@ -181,7 +221,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       await Workmanager().registerPeriodicTask(
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
-          frequency: const Duration(minutes: 15),
+          frequency: const Duration(days: 1 ),
         inputData: {
             "Hour" : hours,
           "Minute" : minutes
@@ -256,7 +296,7 @@ Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
       await Workmanager().registerPeriodicTask(
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
-          frequency: const Duration(minutes: 15),
+          frequency: const Duration(days: 1),
           inputData: {
             "Hour" : hours,
             "Minute" : minutes
@@ -327,7 +367,7 @@ Future<void> firebaseMessagingonmessageOpenedAppHandler(RemoteMessage message) a
       await Workmanager().registerPeriodicTask(
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
-          frequency: const Duration(minutes: 15),
+          frequency: const Duration(days: 1),
           inputData: {
             "Hour" : hours,
             "Minute" : minutes
@@ -355,11 +395,11 @@ Future<void> firebaseMessagingonmessageOpenedAppHandler(RemoteMessage message) a
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  Workmanager().initialize(
-        callbackDispatcher,
-      );
-  Permission.ignoreBatteryOptimizations.request();
-  Permission.reminders.request();
+  // Workmanager().initialize(
+  //       callbackDispatcher,
+  //     );
+  // Permission.ignoreBatteryOptimizations.request();
+  // Permission.reminders.request();
 
   // await Alarm.init();
   runApp(const MyApp());

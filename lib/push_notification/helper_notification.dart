@@ -53,7 +53,7 @@ class NotificationServices{
             importance: Importance.max,
             priority: Priority.high,
             onlyAlertOnce: true,
-
+            sound: UriAndroidNotificationSound("assets/ringtones/male version.mp3")
           ),
           iOS: DarwinNotificationDetails());
 
