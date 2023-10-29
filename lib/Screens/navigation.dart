@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Constraints.dart';
+import 'package:campus_link_student/Registration/database.dart';
 import 'package:campus_link_student/Registration/registration.dart';
 import 'package:campus_link_student/Screens/psycoTest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_alarm_clock/flutter_alarm_clock.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
@@ -385,6 +387,30 @@ class _navigationState extends State<navigation> {
                 },
               ),
               ListTile(
+                leading: SizedBox(
+                  width: size.width*0.10,
+                    child: Image.asset("assets/images/psychometric.png",fit: BoxFit.contain,)
+                ),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Study Time'),
+                    Text('${usermodel['Study_hours']} : ${usermodel['Study_minute']} ${usermodel['Study_section']}',style: const TextStyle(color: Colors.black45,)),
+                  ],
+                ),
+                onTap: () async{
+                  var studyTime= (await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.now(),
+                  ))!;
+                  final user= FirebaseAuth.instance.currentUser?.uid;
+                  await FirebaseFirestore.instance.collection('Students').doc(usermodel['Email']).update({'Study_hours': studyTime.hour,'Study_minute':studyTime.minute,'Study_section' : studyTime.period.toString().split('.')[1]});
+                  await database().fetchuser().whenComplete(() => setState(() {
+                  }));
+
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.settings,color: Colors.black),
                 title: const Text("Settings"),
                 onTap: () {},
@@ -424,6 +450,14 @@ class _navigationState extends State<navigation> {
                  else{
                    await FirebaseAuth.instance.signOut();
                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout,color: Colors.black),
+                title: const Text("Alarm"),
+                onTap:  () {
+                  FlutterAlarmClock.createAlarm(
+                      title: 'Assignment', hour: 5, minutes: 0);
                 },
               ),
 

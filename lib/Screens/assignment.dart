@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../Constraints.dart';
 import '../push_notification/Storage_permission.dart';
@@ -159,26 +160,17 @@ class _AssignmentState extends State<Assignment> {
                   ? Padding(
                 padding: EdgeInsets.all(size.height * 0.01),
                 child: SizedBox(
-                  height: size.height * 0.6,
+                  height: size.height * 0.63,
                   width: size.width,
                   child: ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: snapshot.data()?["Total_Assignment"],
                     itemBuilder: (context, index) {
                       String newpath = "${path}Assignment-${index + 1}.${snapshot.data()?["Assignment-${index + 1}"]["Document-type"]}";
-
+                      print("isuht aisf ghasfdh ");
                       File(newpath).exists().then((value) {
                         if (value) {
-
-                          if(mounted){
-                            setState(() {
-                              isdownloaded[index] = true;
-                            });
-                          }
-
+                          isdownloaded[index] = true;
                         } else {
-
-
                           isdownloaded[index] = false;
                         }
                       });
@@ -514,6 +506,7 @@ class _AssignmentState extends State<Assignment> {
     )
         .get()
         .then((value) {
+
       if (value.data() == null) {
         setState(() {
           nodata = true;
@@ -545,6 +538,16 @@ class _AssignmentState extends State<Assignment> {
     directory = await getExternalStorageDirectory();
 
     var permission = await checkALLPermissions.isStoragePermission();
+    if(!permission){
+      if(await Permission.manageExternalStorage.request().isGranted){
+        permission=true;
+      }else{
+        await Permission.manageExternalStorage.request().then((value) {
+          bool check=value.isGranted;
+          if(check){permission=true;}});
+      }
+
+    }
     if (permission) {
       String? dir = directory?.path.toString().substring(0, 19);
       path = "$dir/Campus Link/$selectedSubject/Assignment/";

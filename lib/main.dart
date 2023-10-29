@@ -2,14 +2,15 @@ import 'dart:async';
 import 'package:campus_link_student/Registration/database.dart';
 import 'package:campus_link_student/push_notification/helper_notification.dart';
 import 'package:campus_link_student/push_notification/temp.dart';
-import 'package:campus_link_student/push_notification/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_alarm_clock/flutter_alarm_clock.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:workmanager/workmanager.dart';
 import 'Connection.dart';
 
@@ -91,7 +92,49 @@ callbackDispatcherfordelevery() async {
     print("..........error.........\n.........$e........");
   }
 }
+@pragma('vm:entry-point')
+callbackDispatcherforreminder() async {
+  try{
+    print(".......Starting workmanager executeTask   3.....");
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp();
+    Workmanager().executeTask((taskName, inputData) async {
+      try{
+        int hours=8,minutes=0 ;
+        try{
 
+
+          await FirebaseFirestore.instance.collection('Students').doc(FirebaseAuth.instance.currentUser?.email).get().then((value){
+            hours= value.data()?['Study_hours'];
+            minutes=value.data()?['Study_minute'];
+            if(value.data()?['Study_section'] == "pm"){
+              hours+=12;
+            }
+          });
+        }catch (e) {
+          minutes = inputData?['Minute'];
+          hours = inputData?['Hour'];
+          print('error on -> reminder -> try -> try');
+        }
+        print("taskname .........: $taskName");
+        try{
+          FlutterAlarmClock.createAlarm(hour: hours, minutes: minutes,title: "Complete $taskName");
+        }catch (e){
+          print("error from best  : $e");
+        }
+        print("...........>>>>>>>>>> alarm set");
+      }
+      catch (e){
+        print("fucking error from alarm............................. $e ");
+        return Future.value(false);
+      }
+      return Future.value(true);
+    });
+
+  }catch (e){
+    print("..........error.........\n.........$e........");
+  }
+}
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -112,6 +155,39 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       String stamp=DateTime.now().toString();
       await Workmanager().registerOneOffTask(stamp, "Attendance",inputData: {"Stamp":stamp});
 
+    }catch(e){
+      print("........Error from background handler.........");
+    }
+  }
+  if(message.data['body'].toString().split(' ')[0] == "Assignment"){
+    try{
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp();
+      print("...........>>>>>>>>>> inside firebaseMessagingBackgroundHandler assignment condition");
+      Workmanager().initialize(
+        callbackDispatcherforreminder,
+      );
+      print("...........>>>>>>>>>> workmanager initialize");
+      int hours=8,minutes=0 ;
+      await FirebaseFirestore.instance.collection('Students').doc(FirebaseAuth.instance.currentUser?.email).get().then((value){
+        hours= value.data()?['Study_hours'];
+        minutes=value.data()?['Study_minute'];
+        if(value.data()?['Study_section'] == "pm"){
+          hours+=12;
+        }
+      });
+      print("...........>>>>>>>>>> hours and titme loaded for input data");
+      print("...........>>>>>>>>>> registring perioding task");
+      await Workmanager().registerPeriodicTask(
+          "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
+          "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
+          frequency: const Duration(minutes: 15),
+        inputData: {
+            "Hour" : hours,
+          "Minute" : minutes
+        }
+      );
+      print("...........>>>>>>>>>> perioding task registered");
     }catch(e){
       print("........Error from background handler.........");
     }
@@ -158,6 +234,39 @@ Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
       print("........Error from onmessage handler.........");
     }
   }
+  if(message.data['body'].toString().split(' ')[0] == "Assignment"){
+    try{
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp();
+      print("...........>>>>>>>>>> inside firebaseMessagingBackgroundHandler assignment condition");
+      Workmanager().initialize(
+        callbackDispatcherforreminder,
+      );
+      print("...........>>>>>>>>>> workmanager initialize");
+      int hours=8,minutes=0 ;
+      await FirebaseFirestore.instance.collection('Students').doc(FirebaseAuth.instance.currentUser?.email).get().then((value){
+        hours= value.data()?['Study_hours'];
+        minutes=value.data()?['Study_minute'];
+        if(value.data()?['Study_section'] == "pm"){
+          hours+=12;
+        }
+      });
+      print("...........>>>>>>>>>> hours and titme loaded for input data");
+      print("...........>>>>>>>>>> registring perioding task");
+      await Workmanager().registerPeriodicTask(
+          "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
+          "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
+          frequency: const Duration(minutes: 15),
+          inputData: {
+            "Hour" : hours,
+            "Minute" : minutes
+          }
+      );
+      print("...........>>>>>>>>>> perioding task registered");
+    }catch(e){
+      print("........Error from background handler.........");
+    }
+  }
   if(message.data["msg"]=="true"){
     await FirebaseFirestore.instance.collection("Messages").doc(message.data["channel"]).collection("Messages_Detail").doc("Messages_Detail").update(
         {
@@ -196,6 +305,39 @@ Future<void> firebaseMessagingonmessageOpenedAppHandler(RemoteMessage message) a
       print("........Error from onmessage handler.........");
     }
   }
+  if(message.data['body'].toString().split(' ')[0] == "Assignment"){
+    try{
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp();
+      print("...........>>>>>>>>>> inside firebaseMessagingBackgroundHandler assignment condition");
+      Workmanager().initialize(
+        callbackDispatcherforreminder,
+      );
+      print("...........>>>>>>>>>> workmanager initialize");
+      int hours=8,minutes=0 ;
+      await FirebaseFirestore.instance.collection('Students').doc(FirebaseAuth.instance.currentUser?.email).get().then((value){
+        hours= value.data()?['Study_hours'];
+        minutes=value.data()?['Study_minute'];
+        if(value.data()?['Study_section'] == "pm"){
+          hours+=12;
+        }
+      });
+      print("...........>>>>>>>>>> hours and titme loaded for input data");
+      print("...........>>>>>>>>>> registring perioding task");
+      await Workmanager().registerPeriodicTask(
+          "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
+          "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
+          frequency: const Duration(minutes: 15),
+          inputData: {
+            "Hour" : hours,
+            "Minute" : minutes
+          }
+      );
+      print("...........>>>>>>>>>> perioding task registered");
+    }catch(e){
+      print("........Error from background handler.........");
+    }
+  }
   if(message.data["msg"]=="true"){
     await FirebaseFirestore.instance.collection("Messages").doc(message.data["channel"]).collection("Messages_Detail").doc("Messages_Detail").update(
         {
@@ -216,6 +358,10 @@ void main() async{
   Workmanager().initialize(
         callbackDispatcher,
       );
+  Permission.ignoreBatteryOptimizations.request();
+  Permission.reminders.request();
+
+  // await Alarm.init();
   runApp(const MyApp());
 }
 
