@@ -5,6 +5,7 @@ import 'package:campus_link_student/Constraints.dart';
 import 'package:campus_link_student/Registration/database.dart';
 import 'package:campus_link_student/Registration/registration.dart';
 import 'package:campus_link_student/Screens/psycoTest.dart';
+import 'package:campus_link_student/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_alarm_clock/flutter_alarm_clock.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:workmanager/workmanager.dart';
 import 'assignment.dart';
 import 'attendance.dart';
 import 'Chat_tiles/chat_list.dart';
@@ -403,7 +405,25 @@ class _navigationState extends State<navigation> {
                     context: context,
                     initialTime: TimeOfDay.now(),
                   ))!;
-                  final user= FirebaseAuth.instance.currentUser?.uid;
+
+                 //
+                 //  print("Work-manager initializing");
+                 //  Workmanager().initialize(callbackDispatcherforreminder);
+                 //  print("Work-manager initialized");
+                 //  print("Canceling task 404");
+                 // // Workmanager().cancelByUniqueName("404");
+                 //  print("Canceled task 404");
+                 //  print("Work-manager initializing periodic task 405");
+                 //  await Workmanager().registerPeriodicTask(
+                 //      "405",
+                 //      "405",
+                 //      frequency: const Duration(days: 1),
+                 //      inputData: {
+                 //        "Hour" : studyTime.hour,
+                 //        "Minute" : studyTime.minute
+                 //      }
+                 //  );
+                 //  print("Work-manager initialized periodic task 405");
                   await FirebaseFirestore.instance.collection('Students').doc(usermodel['Email']).update({'Study_hours': studyTime.hour,'Study_minute':studyTime.minute,'Study_section' : studyTime.period.toString().split('.')[1]});
                   await database().fetchuser().whenComplete(() => setState(() {
                   }));

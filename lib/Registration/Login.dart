@@ -280,7 +280,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
 
 
-                          List<dynamic> channels= userdoc.data()?["Message_channels"];
+                          List<dynamic> channels= userdoc.data()?["Message_channels"] ?? [];
 
                           for(var channel in channels){
                             await FirebaseFirestore.instance.collection("Messages")

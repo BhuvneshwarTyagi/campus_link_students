@@ -167,7 +167,7 @@ callbackDispatcherforreminder() async {
 }
 
 @pragma('vm:entry-point')
-void firealarm(){
+void firealarm()  {
   print("Alarm fired");
   NotificationServices.display(RemoteMessage(data: {
     "title" : "Peniding Assignments",
