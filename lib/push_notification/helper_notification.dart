@@ -39,10 +39,10 @@ class NotificationServices{
     _notificationsPlugin.initialize(initializationSettings,);
   }
 
-  static void display(RemoteMessage message, {String channelId="campuslink"}) async {
+  static void display(RemoteMessage message, String channelId) async {
     try {
       print("display");
-      final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      final id = int.parse(channelId);
 
       NotificationDetails notificationDetails = NotificationDetails(
           android: AndroidNotificationDetails(

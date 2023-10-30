@@ -9,9 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_alarm_clock/flutter_alarm_clock.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:workmanager/workmanager.dart';
 import 'Connection.dart';
 
@@ -179,16 +177,19 @@ Future<void> firealarm()  async {
      print("Notifications:  $notifications");
   });
   for(int i=0;i<notifications.length;i++){
-    NotificationServices.display(
-        RemoteMessage(
-            data: {
-              "title" : notifications[i]['title'],
-              "body" : notifications[i]['body'],
-              "route" : ""
-            }
-        ),
-        channelId: '$i'
-    );
+
+   await Future.delayed(const Duration(milliseconds: 800),() {
+      NotificationServices.display(
+          RemoteMessage(
+              data: {
+                "title" : notifications[i]['title'],
+                "body" : notifications[i]['body'],
+                "route" : ""
+              }
+          ),
+        '$i'
+      );
+    },);
   }
 }
 @pragma('vm:entry-point')
@@ -272,7 +273,7 @@ Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
 
   print(".............From onmessage.............");
 
-  NotificationServices.display(message);
+  NotificationServices.display(message,"campuslink");
 
   if(message.data["body"]=="Attendance Initialized"){
     print("error before enter");
@@ -343,7 +344,7 @@ Future<void> firebaseMessagingonmessageOpenedAppHandler(RemoteMessage message) a
 
   print(".............From onmessage.............");
 
-  NotificationServices.display(message);
+  NotificationServices.display(message,"campuslink");
 
   if(message.data["body"]=="Attendance Initialized"){
     print("error before enter");
