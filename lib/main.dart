@@ -167,14 +167,29 @@ callbackDispatcherforreminder() async {
 }
 
 @pragma('vm:entry-point')
-void firealarm()  {
+Future<void> firealarm()  async {
   print("Alarm fired");
-  NotificationServices.display(RemoteMessage(data: {
-    "title" : "Peniding Assignments",
-    "body" : "You have some pending assignments please check and complete them",
-    "route" : ""
-  }));
-
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  List<dynamic> notifications=[];
+  await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email)
+      .get().then((value){
+        notifications=value
+        .data()?['Notifications'];
+     print("Notifications:  $notifications");
+  });
+  for(int i=0;i<notifications.length;i++){
+    NotificationServices.display(
+        RemoteMessage(
+            data: {
+              "title" : notifications[i]['title'],
+              "body" : notifications[i]['body'],
+              "route" : ""
+            }
+        ),
+        channelId: '$i'
+    );
+  }
 }
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -221,7 +236,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       await Workmanager().registerPeriodicTask(
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
-          frequency: const Duration(days: 1 ),
+          frequency: const Duration(minutes: 15 ),
         inputData: {
             "Hour" : hours,
           "Minute" : minutes
@@ -296,7 +311,7 @@ Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
       await Workmanager().registerPeriodicTask(
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
-          frequency: const Duration(days: 1),
+          frequency: const Duration(minutes: 15),
           inputData: {
             "Hour" : hours,
             "Minute" : minutes
@@ -367,7 +382,7 @@ Future<void> firebaseMessagingonmessageOpenedAppHandler(RemoteMessage message) a
       await Workmanager().registerPeriodicTask(
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
-          frequency: const Duration(days: 1),
+          frequency: const Duration(minutes: 15),
           inputData: {
             "Hour" : hours,
             "Minute" : minutes

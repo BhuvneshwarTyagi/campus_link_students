@@ -24,8 +24,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
-    <permission
-        android:name="${applicationId}.permission.C2D_MESSAGE"
+    <permission android:name="${applicationId}.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
     <application
@@ -34,8 +33,8 @@
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">
-
-
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_launcher" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -70,9 +69,7 @@
             </intent-filter>
         </activity>
 
-        <meta-data
-            android:name="flutterEmbedding"
-            android:value="2" />
+
         <receiver android:name="yukams.app.background_locator_2.BootBroadcastReceiver"
             android:enabled="true"
             android:exported="true">
@@ -103,6 +100,8 @@
         </receiver>
 
        <!--for alarm end-->
-
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
     </application>
 </manifest>

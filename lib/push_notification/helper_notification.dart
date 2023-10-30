@@ -1,10 +1,8 @@
-import 'package:campus_link_student/push_notification/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class NotificationServices{
@@ -33,7 +31,7 @@ class NotificationServices{
 
     const InitializationSettings initializationSettings =
     InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        android: AndroidInitializationSettings('@drawable/ic_launcher'),
         iOS: DarwinInitializationSettings());
 
     await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
@@ -41,21 +39,25 @@ class NotificationServices{
     _notificationsPlugin.initialize(initializationSettings,);
   }
 
-  static void display(RemoteMessage message) async {
+  static void display(RemoteMessage message, {String channelId="campuslink"}) async {
     try {
       print("display");
       final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
-      NotificationDetails notificationDetails = const NotificationDetails(
+      NotificationDetails notificationDetails = NotificationDetails(
           android: AndroidNotificationDetails(
-            "campuslink",
+            channelId,
             "campuslink channel",
             importance: Importance.max,
             priority: Priority.high,
             onlyAlertOnce: true,
-            sound: UriAndroidNotificationSound("assets/ringtones/male version.mp3")
+            icon: '@drawable/ic_launcher',
+            enableLights: true,
+            playSound: true,
+            fullScreenIntent: true,
+            sound: const UriAndroidNotificationSound("assets/ringtones/male version.mp3")
           ),
-          iOS: DarwinNotificationDetails());
+          iOS: const DarwinNotificationDetails());
 
       await _notificationsPlugin.show(
         id,
@@ -76,7 +78,7 @@ class NotificationServices{
           "campuslink channel",
           importance: Importance.max,
           priority: Priority.high,
-          icon: '@mipmap/ic_launcher'
+          icon: '@drawable/ic_launcher'
         ),
         iOS: DarwinNotificationDetails());
   }
