@@ -55,103 +55,113 @@ class _AssignmentState extends State<Assignment> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            const Color.fromRGBO(86, 149, 178, 1),
-            // Color.fromRGBO(86, 149, 178, 1),
-            const Color.fromRGBO(68, 174, 218, 1),
-            //Color.fromRGBO(118, 78, 232, 1),
-            Colors.deepPurple.shade300
-          ],
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        toolbarHeight: size.height*0.11,
+        flexibleSpace: SizedBox(
+          height: size.height * 0.11,
+          width: size.width * 1,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: subjects.length,
+            padding: EdgeInsets.only(top: size.height*0.01),
+            itemBuilder: (context, index) {
+              return Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: size.width * 0.016,
+                        right: size.width * 0.016),
+                    child: Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              selected =
+                                  List.filled(subjects.length, false);
+                              selected[index] = true;
+
+                              selectedSubject = subjects[index];
+                              checkAndRequestPermissions();
+                              getdata();
+                              print(selectedSubject);
+                            });
+                          },
+                          child: Container(
+                            height: size.height * 0.068,
+                            width: size.width * 0.2,
+                            decoration: BoxDecoration(
+                                color: Colors.black87,
+                                // gradient: const LinearGradient(
+                                //   begin: Alignment.centerLeft,
+                                //   end: Alignment.centerRight,
+                                //   colors: [
+                                //     Color.fromRGBO(169, 169, 207, 1),
+                                //     // Color.fromRGBO(86, 149, 178, 1),
+                                //     Color.fromRGBO(189, 201, 214, 1),
+                                //     //Color.fromRGBO(118, 78, 232, 1),
+                                //     Color.fromRGBO(175, 207, 240, 1),
+                                //
+                                //     // Color.fromRGBO(86, 149, 178, 1),
+                                //     Color.fromRGBO(189, 201, 214, 1),
+                                //     Color.fromRGBO(169, 169, 207, 1),
+                                //   ],
+                                // ),
+                                shape: BoxShape.circle,
+                                border: selected[index]
+                                    ? Border.all(
+                                    color: Colors.greenAccent, width: 2)
+                                    : Border.all(
+                                    color: Colors.white,
+                                    width: 1)),
+                            child: Center(
+                              child: AutoSizeText(
+                                "${subjects[index][0]}",
+                                style: GoogleFonts.openSans(
+                                    fontSize: 23,
+                                    fontWeight: FontWeight.w600,
+                                    color: selected[index]
+                                        ? Colors.greenAccent
+                                        : Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: size.height * 0.006,
+                        ),
+                        AutoSizeText(
+                          "${subjects[index]}",
+                          style: GoogleFonts.openSans(
+                              fontWeight: FontWeight.w600,
+                              color: selected[index]
+                                  ? Colors.greenAccent
+                                  : Colors.black),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
-      child: SizedBox(
+      body: SizedBox(
         height: size.height,
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-              SizedBox(
-                height: size.height * 0.02,
-              ),
-              SizedBox(
-                height: size.height * 0.11,
-                width: size.width * 1,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: subjects.length,
-                  itemBuilder: (context, index) {
-                    return Row(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(
-                              left: size.width * 0.016,
-                              right: size.width * 0.016),
-                          child: Column(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    selected =
-                                        List.filled(subjects.length, false);
-                                    selected[index] = true;
-
-                                    selectedSubject = subjects[index];
-                                    checkAndRequestPermissions();
-                                    getdata();
-                                    print(selectedSubject);
-                                  });
-                                },
-                                child: Container(
-                                  height: size.height * 0.068,
-                                  width: size.width * 0.2,
-                                  decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        begin: Alignment.centerLeft,
-                                        end: Alignment.centerRight,
-                                        colors: [
-                                          Color.fromRGBO(169, 169, 207, 1),
-                                          Color.fromRGBO(189, 201, 214, 1),
-                                          Color.fromRGBO(175, 207, 240, 1),
-                                          Color.fromRGBO(189, 201, 214, 1),
-                                          Color.fromRGBO(169, 169, 207, 1),
-                                        ],
-                                      ),
-                                      shape: BoxShape.circle,
-                                      border: selected[index]
-                                          ? Border.all(
-                                          color: Colors.white, width: 2)
-                                          : Border.all(
-                                          color: Colors.blueAccent,
-                                          width: 1)),
-                                ),
-                              ),
-                              SizedBox(
-                                height: size.height * 0.008,
-                              ),
-                              AutoSizeText(
-                                "${subjects[index]}",
-                                style: GoogleFonts.openSans(
-                                    color: selected[index]
-                                        ? Colors.white
-                                        : Colors.black87),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
               Divider(
                 color: Colors.black,
-                height: MediaQuery.of(context).size.height * 0.02,
-                thickness: MediaQuery.of(context).size.height * 0.001,
+                height: MediaQuery.of(context).size.height * 0.03,
+                thickness: MediaQuery.of(context).size.height * 0.003,
+                endIndent: 8,
+                indent: 8,
               ),
               SizedBox(
                 height: size.height * 0.015,

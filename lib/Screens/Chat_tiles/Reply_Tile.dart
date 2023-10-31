@@ -21,27 +21,27 @@ class ReplyTile extends StatelessWidget {
       },
       child: Column(
         children: [
-          SizedBox(height: size.height*0.01,),
           Container(
             width: double.maxFinite,
             padding: EdgeInsets.all(size.height * 0.01),
+            margin: EdgeInsets.fromLTRB(size.width*0.02,0,size.width*0.02,size.width*0.02),
             decoration: BoxDecoration(
-              gradient: sender ?
-              const LinearGradient(colors: [
-                Color.fromRGBO(85, 184, 205, 1),
-                Color.fromRGBO(199, 84, 205, 1),
+                gradient: sender ?
+                const LinearGradient(colors: [
+                  Color.fromRGBO(85, 184, 205, 1),
+                  Color.fromRGBO(199, 84, 205, 1),
 
-              ])
-                  :
-              const LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  Color.fromRGBO(0, 0, 130, 1),
-                  Color.fromRGBO(28, 180, 224, 1)
-                ],
-              ),
-              // borderRadius: BorderRadius.all(Radius.circular(10)),
+                ])
+                    :
+                const LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Color.fromRGBO(0, 0, 130, 1),
+                    Color.fromRGBO(28, 180, 224, 1)
+                  ],
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(14)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

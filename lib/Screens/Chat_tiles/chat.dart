@@ -1,19 +1,17 @@
-import 'dart:typed_data';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:chat_bubbles/date_chips/date_chip.dart';
 import 'package:chatview/chatview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import '../../Constraints.dart';
+import '../../Database/database.dart';
 import '../../Registration/database.dart';
-import '../../push_notification/helper_notification.dart';
 import '../loadingscreen.dart';
+import 'Sending_Media.dart';
 import 'chat_info.dart';
 import 'chat_list.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key, required this.channel}) : super(key: key);
@@ -22,7 +20,7 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
+class _ChatPageState extends State<ChatPage> {
   final chatController = ChatController(
     initialMessageList: [],
     scrollController: ScrollController(),
@@ -33,42 +31,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
     name: '${usermodel["Name"]}',
     profilePhoto: usermodel["Profile_URL"],
   );
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
   bool loadChat=true;
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    try {
-      //super.didChangeAppLifecycleState(state);
-      switch (state) {
-        case AppLifecycleState.resumed:
-          setState(() {});
-          break;
-        case AppLifecycleState.inactive:
-          NotificationServices().setUserState(status: "Offline");
-          break;
-        case AppLifecycleState.paused:
-          NotificationServices().setUserState(status: "Waiting");
-          break;
-        case AppLifecycleState.detached:
-          NotificationServices().setUserState(status: "Offline");
-          break;
-        default:
-          break;
-       /* case AppLifecycleState.hidden:*/
-        // TODO: Handle this case.
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('inside catch statement');
-      }
-      debugPrint(e.toString());
-    }
-  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -88,21 +51,8 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
             builder: (context, snapshot) {
               String channel='';
               int activeCount=0;
-              String Name='',profileUrl="";
               print(">>>>>>>>>>>>>>>>>>>Chat");
               if(snapshot.hasData){
-                const plainText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
-                final key = encrypt.Key.fromUtf8('my 32 length key................');
-                final iv = encrypt.IV.fromLength(16);
-
-                final encrypter = encrypt.Encrypter(encrypt.AES(key));
-
-                final encrypted = encrypter.encrypt(plainText, iv: iv);
-                final decrypted = encrypter.decrypt(encrypted, iv: iv);
-
-                print("......................${decrypted}"); // Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                print(">>>>>>>>>>>>>>>>>>>>>>>>>>>${encrypted.base64}");
-                print(">>>>>>>>>>>>>>>>>>>>>>>>>>>${encrypted.base64}");
                 if(!snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]["Active"]){
                   markActive();
                 }
@@ -113,7 +63,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
                     ?
                 channel=snapshot.data!.data()![snapshot.data!.data()!['Members'][1].toString().split("@")[0]]["Name"]
                     :
-                channel=snapshot.data!.data()![snapshot.data!.data()!['Members'][0].toString().split("@")[0]]["Name"]
+                channel=usermodel["Name"]
                     :
                 channel=widget.channel;
                 if(loadChat){
@@ -130,17 +80,35 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
                   }
 
                   for (var msg in snapshot.data!.data()!["Messages"]) {
+                    List<String> emojiList=[];
+                    List<String> reactedByList = [];
+
+                    List reactionList;
+                    print(":::::::::::::::::::::::::::::::::::::::::::::::::::::::${msg["Stamp"].toDate().toString().split(".")[0]}");
+                    if(snapshot.data!.data()![msg["Stamp"].toDate().toString().split(".")[0]] !=null){
+                      reactionList=snapshot.data!.data()![msg["Stamp"].toDate().toString().split(".")[0]];
+                      for (var map in reactionList) {
+                        if (map["Emoji"] != null) {
+                          emojiList.add(map['Emoji']);
+                          reactedByList.add(map['ReactionBy']);
+                        }
+                      }
+                    }
                     final message1 = Message(
+
                         id: msg['Stamp'].toDate().toString(),
                         message: msg['text'],
                         createdAt: msg['Stamp'].toDate(),
                         sendBy: msg['UID'],
+                        messageType: MessageType.text,
+                        reaction: Reaction(reactions: emojiList, reactedUserIds: reactedByList),
                         replyMessage: ReplyMessage(
                           message: msg['ReplyMessage'],
                           messageId: msg["ReplyMessageId"],
                           messageType: MessageType.text,
                           replyTo: msg['ReplyTo'],
                           replyBy: msg['ReplyBy'],
+                          voiceMessageDuration: Duration(seconds: msg['ReplyVoiceDuration'] ?? 0),
                         )
                     );
                     chatController.initialMessageList.add(message1);
@@ -163,33 +131,36 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
                   chatController.initialMessageList.clear();
                   for (var msg in snapshot.data!.data()!["Messages"]) {
                     print("...................i: $msg");
+                    List<String> emojiList=[];
+                    List<String> reactedByList = [];
+
+                    List<dynamic> reactionList= snapshot.data!.data()![msg["Stamp"].toDate().toString().split(".")[0]] ?? [];
+                    print(":::::::::::::::::::::::::::::::::::::::::::::::::::::::${msg["Stamp"].toDate().toString().split(".")[0]}");
+                    for(var map in reactionList){
+                      emojiList.add(map['Emoji']);
+                      reactedByList.add(map['ReactionBy']);
+
+                    }
 
                     final message1 = Message (
                         id: msg['Stamp'].toDate().toString(),
                         message: msg['text'],
                         createdAt: msg['Stamp'].toDate(),
                         sendBy: msg["UID"],
+                        reaction: Reaction(reactions: emojiList, reactedUserIds: reactedByList),
+
                         replyMessage: ReplyMessage(
                           message: msg['ReplyMessage'],
                           messageId: msg["ReplyMessageId"],
                           messageType: MessageType.text,
                           replyTo: msg['ReplyTo'],
                           replyBy: msg['ReplyBy'],
+                          voiceMessageDuration: msg['ReplyVoiceDuration'],
                         )
                     );
                     chatController.initialMessageList.add(message1);
                   }
                   countUpdate(snapshot.data!.data()!["Messages"].length);
-                }
-                if(snapshot.data!.data()!["Type"] == "Personal"){
-                  if(snapshot.data!.data()!["Members"][0]==usermodel["Email"]){
-                    Name=snapshot.data!.data()![snapshot.data!.data()!["Members"][1].toString().split("@")[0]]["Name"];
-                    profileUrl=snapshot.data!.data()![snapshot.data!.data()!["Members"][1].toString().split("@")[0]]["Profile_URL"].toString();
-                  }
-                  else{
-                    Name=snapshot.data!.data()![snapshot.data!.data()!["Members"][0].toString().split("@")[0]]["Name"];
-                    profileUrl=snapshot.data!.data()![snapshot.data!.data()!["Members"][0].toString().split("@")[0]]["Profile_URL"].toString();
-                  }
                 }
               }
 
@@ -203,6 +174,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
                         fit: BoxFit.fill)),
                 width: size.width,
                 child: ChatView(
+
                   appBar: AppBar(
                     backgroundColor: Colors.black87,
 
@@ -212,71 +184,91 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
                         snapshot.data!.data()!["Type"]!="Personal"
                             ?
                         CircleAvatar(
-                          backgroundColor: Colors.white54,
+                          backgroundColor: const Color.fromRGBO(3, 178, 183, 1).withOpacity(0.5),
                           backgroundImage: snapshot.data!.data()!["image_URL"] == "null" ? null : NetworkImage(snapshot.data!.data()!["image_URL"]),
                           child: snapshot.data!.data()!["image_URL"] != "null"
                               ?
                           const SizedBox()
                               :
                           Text(widget.channel.split(" ")[6].substring(0,1),
-                            style: GoogleFonts.exo(
-                                color: Colors.black,
-                                fontSize: size.width*0.045,
-                                fontWeight: FontWeight.w600
+                            style: GoogleFonts.aBeeZee(
+                                color: Colors.white,
+                              fontSize: size.width*0.045,
+                              fontWeight: FontWeight.w600
                             ),
                           ),
                         ):
                         CircleAvatar(
-                          backgroundColor: const Color.fromRGBO(86, 149, 178, 1),
-                          backgroundImage: profileUrl != "null" ? NetworkImage(profileUrl) : null,
-                          child: profileUrl == "null"
+                          backgroundColor: const Color.fromRGBO(3, 178, 183, 1).withOpacity(0.5),
+
+                          backgroundImage: snapshot.data!.data()!["Members"][0] == usermodel['Email']
                               ?
-                          AutoSizeText(
-                            Name.substring(0,1),
-                            style: GoogleFonts.exo(
-                                color: Colors.black,
-                                fontSize: size.height * 0.035,
-                                fontWeight: FontWeight.w600),
-                          )
-                          : null,
-                    ),
+                          NetworkImage(snapshot.data!.data()![snapshot.data!.data()!["Members"][1].toString().split("@")[0]]["Profile_URL"] ?? "")
+                              :
+                          NetworkImage(snapshot.data!.data()![snapshot.data!.data()!["Members"][0].toString().split("@")[0]]["Profile_URL"] ?? "" ),
+
+                          child:
+                          snapshot.data!.data()!["Members"][0] == usermodel['Email']
+                              ?
+                          snapshot.data!.data()![snapshot.data!.data()!["Members"][1].toString().split("@")[0]]["Profile_URL"]==null || snapshot.data!.data()![snapshot.data!.data()!["Members"][1].toString().split("@")[0]]["Profile_URL"]=="null" || snapshot.data!.data()![snapshot.data!.data()!["Members"][1].toString().split("@")[0]]["Profile_URL"]==""
+                              ?
+                          Text(channel.substring(0,1),style: GoogleFonts.tiltNeon(
+                            color: Colors.black,
+                            //const Color.fromRGBO(150, 150, 150, 1),
+                            fontWeight: FontWeight.w500,
+                            fontSize: size.width*0.8,),)
+                              :
+                          const SizedBox()
+                              :
+                          snapshot.data!.data()![snapshot.data!.data()!["Members"][0].toString().split("@")[0]]["Profile_URL"]==null || snapshot.data!.data()![snapshot.data!.data()!["Members"][0].toString().split("@")[0]]["Profile_URL"]== "null" || snapshot.data!.data()![snapshot.data!.data()!["Members"][0].toString().split("@")[0]]["Profile_URL"]==""
+                              ?
+                          Text(channel.substring(0,1),style: GoogleFonts.tiltNeon(
+                            color: Colors.black,
+                            //const Color.fromRGBO(150, 150, 150, 1),
+                            fontWeight: FontWeight.w500,
+                            fontSize: size.width*0.08,),)
+                              :
+                          const SizedBox(),
+
+
+                        ),
                         SizedBox(width: size.width*0.02,),
                         InkWell(
                           onTap: () async {
                             Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) {
-                                return  Chat_Info(channel: widget.channel, membersCount: snapshot.data!.data()!["Members"].length, url: snapshot.data!.data()!["image_URL"], muted: snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]["Mute Notification"] ?? false,);
-                              },
-                              ),
+                                context,
+                                MaterialPageRoute(builder: (context) {
+                                  return  Chat_Info(channel: widget.channel, membersCount: snapshot.data!.data()!["Members"].length, url: snapshot.data!.data()!["image_URL"], muted: snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]["Mute Notification"] ?? false,);
+                                      },
+                                ),
                             );
-                          },
+                            },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AutoSizeText(
                                 channel,
-                                style: GoogleFonts.exo(
+                                style: GoogleFonts.aBeeZee(
                                   fontSize: size.width*0.04,
-                                  color: Colors.white,
+                                  color: const Color.fromRGBO(3, 178, 183, 1),
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
                               activeCount > 0
-                                  ?
-                              AutoSizeText(
-                                "$activeCount Online",
-                                style: GoogleFonts.exo(
-                                    color: Colors
-                                        .green,
-                                    fontSize:
-                                    size.width *
-                                        0.028),
-                                minFontSize: 1,
-                                maxLines: 1,
-                              )
-                                  :
-                              const SizedBox(),
+                                                          ?
+                                                      AutoSizeText(
+                                                        "$activeCount Online",
+                                                        style: GoogleFonts.aBeeZee(
+                                                            color: Colors
+                                                                .green,
+                                                            fontSize:
+                                                            size.width *
+                                                                0.028),
+                                                        minFontSize: 1,
+                                                        maxLines: 1,
+                                                      )
+                                                          :
+                                                      const SizedBox(),
                             ],
                           ),
                         ),
@@ -284,97 +276,148 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
                     ),
                     elevation: 0,
                     leading: IconButton(
-                      onPressed: (){
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                          return chatsystem();
-                        },));
-                      },
-                      icon: const Icon(Icons.arrow_back_ios_new),
+                        onPressed: (){
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                            return const chatsystem();
+                          },));
+                        },
+                        icon: const Icon(Icons.arrow_back_ios_new),
                     ),
                   ),
                   profileCircleConfig: ProfileCircleConfiguration(
                     circleRadius: size.width*0.035,
                     profileImageUrl: usermodel["Profile_URL"],
-
                   ),
-                  chatBackgroundConfig: const ChatBackgroundConfiguration(backgroundColor: Colors.black38),
+                  chatBackgroundConfig: ChatBackgroundConfiguration(
+                      backgroundColor: Colors.black38,
+                    defaultGroupSeparatorConfig: DefaultGroupSeparatorConfiguration(
+                      textStyle: GoogleFonts.tiltNeon(
+                          color: const Color.fromRGBO(211, 211, 211, 1),
+                          //const Color.fromRGBO(150, 150, 150, 1),
+                          fontWeight: FontWeight.w500,
+                          fontSize: size.width*0.035,
+                      )
+                    )
+                  ),
                   currentUser: currentUser,
                   chatController: chatController,
                   onSendTap: onSendTap,
                   featureActiveConfig: FeatureActiveConfig(
+                    lastSeenAgoBuilderVisibility: true,
                       enableOtherUserProfileAvatar: true,
                       enablePagination: true,
                       enableSwipeToSeeTime: true,
                       enableCurrentUserProfileAvatar: true,
                       enableDoubleTapToLike: true,
                       receiptsBuilderVisibility: true,
+                      enableChatSeparator: true,
+                      enableReactionPopup: true,
+                      enableReplySnackBar: true,
                       enableTextField: !snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]['Muted'] != true ? false : true
                   ),
+                  loadingWidget:  const loading(text: "Syncronizing with the server please wait..."),
+                  reactionPopupConfig: ReactionPopupConfiguration(
+                    backgroundColor: Colors.black54,
+                    showGlassMorphismEffect: true,
+                    glassMorphismConfig: const GlassMorphismConfiguration(
+                      borderColor: Color.fromRGBO(3, 178, 183, 1),
+                      backgroundColor: Colors.black54,
+                      strokeWidth: 4,
+                    ),
+                    userReactionCallback: (message, emoji) {
+                      reaction(message,emoji);
+                    },
+                  ),
                   sendMessageConfig: SendMessageConfiguration(
+                    closeIconColor: const Color.fromRGBO(3, 178, 183, 1),
+                    imagePickerConfiguration: ImagePickerConfiguration(),
+                    imagePickerIconsConfig: const ImagePickerIconsConfiguration(
+                      cameraIconColor: Color.fromRGBO(3, 178, 183, 1),
+                      galleryIconColor: Color.fromRGBO(3, 178, 183, 1),
+                    ),
+                    enableGalleryImagePicker: false,
+                    enableCameraImagePicker: false,
+                    allowRecordingVoice: false,
+                    defaultSendButtonColor: const Color.fromRGBO(3, 178, 183, 1),
+                    textFieldConfig: TextFieldConfiguration(
+                      textStyle: GoogleFonts.aBeeZee(
+                        fontSize: size.width*0.04,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 3,
+                      borderRadius: const BorderRadius.all(Radius.circular(50)),
+                      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                      contentPadding: EdgeInsets.all(size.width*0.04),
 
-                      textFieldConfig: TextFieldConfiguration(
-                          textStyle: GoogleFonts.exo(
-                            fontSize: size.width*0.04,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          maxLines: 3,
-                          borderRadius: const BorderRadius.all(Radius.circular(10)),
-                          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom)
-                      )
+                    )
                   ),
                   chatViewState: ChatViewState.hasMessages,
                   chatBubbleConfig:  ChatBubbleConfiguration(
                     maxWidth: size.width*0.6,
-                    outgoingChatBubbleConfig: ChatBubble(
-                        senderNameTextStyle: GoogleFonts.exo(
-                          fontSize: size.width*0.04,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        ),// demonstrates as current user chat bubble
-                        margin: EdgeInsets.symmetric(horizontal: size.width*0.02, vertical: size.height*0.005),
-                        linkPreviewConfig: const LinkPreviewConfiguration(
-                          proxyUrl: "Proxy URL", // Need for web
-                          backgroundColor: Color(0xff272336),
-                          bodyStyle: TextStyle(color: Colors.white),
-                          titleStyle: TextStyle(color: Colors.white),
-                        ),
-                        color: Colors.deepPurple,
-                        borderRadius: const BorderRadius.only(
-                          bottomRight: Radius.circular(0),
-                          bottomLeft: Radius.circular(15),
-                          topRight: Radius.circular(15),
-                          topLeft: Radius.circular(0),
-                        ),
-                        textStyle: GoogleFonts.exo(
-                          fontSize: size.width*0.04,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        )
+                    receiptsWidgetConfig: const ReceiptsWidgetConfig(
+                       showReceiptsIn: ShowReceiptsIn.all,
+
                     ),
-                    inComingChatBubbleConfig: ChatBubble( // demonstrates as current user chat bubble
+                    outgoingChatBubbleConfig: ChatBubble(
+                      senderNameTextStyle: GoogleFonts.aBeeZee(
+                        fontSize: size.width*0.04,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),// demonstrates as current user chat bubble
+                      margin: EdgeInsets.symmetric(horizontal: size.width*0.02, vertical: size.height*0.005),
+                      linkPreviewConfig: LinkPreviewConfiguration(
+                        loadingColor: Colors.grey,
+                        linkStyle: GoogleFonts.exo(
+                          color: Colors.deepPurple,
+                          decoration: TextDecoration.underline,
+                        ),
+                        //proxyUrl: "Proxy URL", // Need for web
+                        backgroundColor: Color(0xff272336),
+                        bodyStyle: TextStyle(color: Colors.white),
+                        titleStyle: TextStyle(color: Colors.white),
+                      ),
+                      color: const Color.fromRGBO(3, 178, 183, 1),
+                      borderRadius: const BorderRadius.only(
+                        bottomRight: Radius.circular(3),
+                        bottomLeft: Radius.circular(15),
+                        topRight: Radius.circular(15),
+                        topLeft: Radius.circular(15),
+                      ),
+                      textStyle: GoogleFonts.aBeeZee(
+                        fontSize: size.width*0.035,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      )
+                    ),
+                    inComingChatBubbleConfig: ChatBubble(// demonstrates as current user chat bubble
                         margin: EdgeInsets.symmetric(horizontal: size.width*0.02, vertical: size.height*0.005),
-                        linkPreviewConfig: const LinkPreviewConfiguration(
+                        linkPreviewConfig: LinkPreviewConfiguration(
+                          loadingColor: Colors.grey,
+                          linkStyle: GoogleFonts.exo(
+                            color: Colors.deepPurple,
+                            decoration: TextDecoration.underline,
+                          ),
                           proxyUrl: "Proxy URL", // Need for web
                           backgroundColor: Color(0xff272336),
                           bodyStyle: TextStyle(color: Colors.white),
                           titleStyle: TextStyle(color: Colors.white),
                         ),
-                        color: Colors.deepPurple,
-                        senderNameTextStyle: GoogleFonts.exo(
-                            color: Colors.deepPurple,
-                            fontWeight: FontWeight.w500,
-                            fontSize: size.width*0.03
+                        color: const Color.fromRGBO(221, 227, 239, 1),
+                        senderNameTextStyle: GoogleFonts.aBeeZee(
+                          color: const Color.fromRGBO(3, 178, 183, 1),
+                          fontWeight: FontWeight.w500,
+                          fontSize: size.width*0.03
                         ),
                         borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(0),
+                          bottomLeft: Radius.circular(3),
                           bottomRight: Radius.circular(15),
                           topLeft: Radius.circular(15),
-                          topRight: Radius.circular(0),
+                          topRight: Radius.circular(15),
                         ),
-                        textStyle: GoogleFonts.exo(
-                          fontSize: size.width*0.04,
-                          color: Colors.white,
+                        textStyle: GoogleFonts.aBeeZee(
+                          fontSize: size.width*0.035,
+                          color: Colors.black87,
                           fontWeight: FontWeight.w500,
                         )
                     ),
@@ -384,63 +427,63 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
                     onUnsendTap: (message) {
                       deleteMSG(message);
                     },
-                    topBorderColor: Colors.green,
+                      topBorderColor: Colors.green,
                     backgroundColor: Colors.transparent,
                     replyPopupBuilder: (message, sendByCurrentUser) {
                       return Container(
                         decoration: BoxDecoration(
-                            color: Colors.black87,
-                            borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(size.width*0.1)
-                            )
+                          color: Colors.black87,
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(size.width*0.1)
+                          )
                         ),
                         child: Column(
                           children: [
                             snapshot.data!.data()!["Admins"].contains(usermodel["Email"])
-                                ?
-                            snapshot.data!.data()!["Admins"].contains(message.sendBy)
-                                ?
-                            snapshot.data!.data()!["Admins"].length>1
-                                ?
-                            ElevatedButton(
-                                onPressed: () async {
-                                  await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
-                                    "Admins" : FieldValue.arrayRemove([message.sendBy])
-                                  });
-                                },
-                                child: Text("Remove ${snapshot.data!.data()![message.sendBy.split("@")[0]]['Name']} from admin"))
-                                :
-                            const SizedBox()
-                                :
-                            ElevatedButton(
-                                onPressed: () async {
-                                  await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
-                                    "Admins" : FieldValue.arrayUnion([message.sendBy])
-                                  });
-                                },
-                                child: Text("Make ${snapshot.data!.data()![message.sendBy.split("@")[0]]['Name']} admin"))
-                                :
+                            ?
+                              snapshot.data!.data()!["Admins"].contains(message.sendBy)
+                                  ?
+                              snapshot.data!.data()!["Admins"].length>1
+                                  ?
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
+                                      "Admins" : FieldValue.arrayRemove([message.sendBy])
+                                    });
+                                  },
+                                  child: Text("Remove ${snapshot.data!.data()![message.sendBy.split("@")[0]]['Name']} from admin"))
+                              :
+                                  const SizedBox()
+                                  :
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
+                                      "Admins" : FieldValue.arrayUnion([message.sendBy])
+                                    });
+                                  },
+                                  child: Text("Make ${snapshot.data!.data()![message.sendBy.split("@")[0]]['Name']} admin"))
+                            :
                             const SizedBox(),
                             snapshot.data!.data()!["Admins"].contains(usermodel["Email"])
                                 ?
-                            snapshot.data!.data()![message.sendBy.split("@")[0]]['Muted'] != true
-                                ?
-                            ElevatedButton(
-                                onPressed: () async {
-                                  await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
-                                    "${message.sendBy.split("@")[0]}.Muted" : true
-                                  });
-                                },
-                                child: Text("Mute ${snapshot.data!.data()![message.sendBy.split("@")[0]]['Name']}"))
-                                :
-                            ElevatedButton(
-                                onPressed: () async {
-                                  await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
-                                    "${message.sendBy.split("@")[0]}.Muted" : false
-                                  });
-                                },
-                                child: Text("Unmute ${snapshot.data!.data()![message.sendBy.split("@")[0]]['Name']}"))
-                                :
+                              snapshot.data!.data()![message.sendBy.split("@")[0]]['Muted'] != true
+                                  ?
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
+                                      "${message.sendBy.split("@")[0]}.Muted" : true
+                                    });
+                                  },
+                                  child: Text("Mute ${snapshot.data!.data()![message.sendBy.split("@")[0]]['Name']}"))
+                                  :
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
+                                      "${message.sendBy.split("@")[0]}.Muted" : false
+                                    });
+                                  },
+                                  child: Text("Unmute ${snapshot.data!.data()![message.sendBy.split("@")[0]]['Name']}"))
+                            :
                             const SizedBox(),
 
                             ElevatedButton(
@@ -489,7 +532,7 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
                                       ])
                                     });
 
-                                    await FirebaseFirestore.instance.collection(snapshot.data!.data()![message.sendBy.split("@")[0]]["Post"]).doc(usermodel["Email"]).update({
+                                    await FirebaseFirestore.instance.collection("Teachers").doc(usermodel["Email"]).update({
                                       "Message_channels" : FieldValue.arrayUnion([
                                         "${usermodel["Email"].toString().split("@")[0]}_${message.sendBy.split("@")[0]}"
                                       ])
@@ -527,25 +570,48 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
                       );
                     },
                   ),
+                  messageConfig:  MessageConfiguration(
+                    messageReactionConfig: MessageReactionConfiguration(
+                      backgroundColor: Colors.black54,
+
+                      borderColor: const Color.fromRGBO(3, 178, 183, 1),
+                      borderWidth: 1.5,
+                      reactionsBottomSheetConfig: ReactionsBottomSheetConfiguration(
+                        backgroundColor: Colors.black87,
+                        reactedUserTextStyle: GoogleFonts.tiltNeon(
+                            color: Colors.black,
+                            //const Color.fromRGBO(150, 150, 150, 1),
+                            fontWeight: FontWeight.w500,
+                            fontSize: size.width*0.04,
+                        ),
+                        reactionWidgetDecoration: const BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.all(Radius.circular(15))
+                        ),
+                        reactionSize: size.width*0.06
+                      ),
+                      margin: EdgeInsets.only(top: size.height*0.01,left: size.width*0.04)
+                    ),
+                  ),
                   repliedMessageConfig: RepliedMessageConfiguration(
                     repliedMsgAutoScrollConfig: const RepliedMsgAutoScrollConfig(
-                        enableHighlightRepliedMsg: true,
-                        enableScrollToRepliedMsg: true,
-                        highlightScrollCurve: accelerateEasing,
-                        highlightColor: Colors.green,
-                        highlightScrollDuration: Duration(milliseconds: 100)
+                      enableHighlightRepliedMsg: true,
+                      enableScrollToRepliedMsg: true,
+                      highlightScrollCurve: accelerateEasing,
+                      highlightColor: Colors.green,
+                      highlightScrollDuration: Duration(milliseconds: 100),
                     ),
-                    textStyle: GoogleFonts.exo(
+                    textStyle: GoogleFonts.aBeeZee(
                       fontSize: size.width*0.03,
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
                     ),
-                    verticalBarColor: Colors.green,
-                    backgroundColor: Colors.white12,
+                    verticalBarColor: const Color.fromRGBO(3, 178, 183, 1).withOpacity(0.5),
+                    backgroundColor: const Color.fromRGBO(3, 178, 183, 1).withOpacity(0.5),
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    replyTitleTextStyle: GoogleFonts.exo(
+                    replyTitleTextStyle: GoogleFonts.aBeeZee(
                       fontSize: size.width*0.032,
-                      color: Colors.green,
+                      color: const Color.fromRGBO(3, 178, 183, 1),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -1785,6 +1851,14 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
     return count;
   }
 
+  reaction(Message msg,emoji,) async {
+    await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
+      msg.createdAt.toString().split(".")[0] : FieldValue.arrayUnion([
+        {"ReactionBy": usermodel['Email'], 'Emoji': emoji}
+      ])
+    });
+  }
+
   markActive() async {
     await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
       "${usermodel["Email"].toString().split("@")[0]}.Active": true
@@ -1876,45 +1950,43 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
 
   Future<void> onSendTap(String message, ReplyMessage replyMessage,MessageType messageType) async {
     print("..........onsendtap reply : ${replyMessage.messageId}  ....Type: $messageType");
-    // chatController.addMessage(message1);
     DateTime stamp = DateTime.now();
-    //int l=message.length+1;
     final channelDoc= await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).get();
     final doc=await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").get();
 
     !doc.exists
         ?
     await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").set({
-      "${usermodel["Email"].toString().split("@")[0]}_${stamp.toString().split(".")[0]}_Delevered" : FieldValue.arrayUnion([{
-        "Email" : usermodel["Email"],
-        "Stamp" : stamp
-      }]),
-      "${usermodel["Email"].toString().split("@")[0]}_${stamp.toString().split(".")[0]}_Seen" : FieldValue.arrayUnion([{
-        "Email" : usermodel["Email"],
-        "Stamp" : stamp
-      }]),
-    }).whenComplete(() async {
-      await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").update({
-        "${usermodel["Email"].toString().split('@')[0]}_${stamp}_Seened": FieldValue.arrayUnion([usermodel["Email"]]),
+                          "${usermodel["Email"].toString().split("@")[0]}_${stamp.toString().split(".")[0]}_Delevered" : FieldValue.arrayUnion([{
+                            "Email" : usermodel["Email"],
+                            "Stamp" : stamp
+                          }]),
+                          "${usermodel["Email"].toString().split("@")[0]}_${stamp.toString().split(".")[0]}_Seen" : FieldValue.arrayUnion([{
+                            "Email" : usermodel["Email"],
+                            "Stamp" : stamp
+                          }]),
+                        }).whenComplete(() async {
+                          await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").update({
+                            "${usermodel["Email"].toString().split('@')[0]}_${stamp}_Seened": FieldValue.arrayUnion([usermodel["Email"]]),
 
-      });
-    })
+                          });
+                        })
         :
     await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").update({
-      "${usermodel["Email"].toString().split("@")[0]}_${stamp.toString().split(".")[0]}_Delevered" : FieldValue.arrayUnion([{
-        "Email" : usermodel["Email"],
-        "Stamp" : stamp
-      }]),
-      "${usermodel["Email"].toString().split("@")[0]}_${stamp.toString().split(".")[0]}_Seen" : FieldValue.arrayUnion([{
-        "Email" : usermodel["Email"],
-        "Stamp" : stamp
-      }]),
-    }).whenComplete(() async {
-      await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").update({
-        "${usermodel["Email"].toString().split('@')[0]}_${stamp.toString().split(".")[0]}_Seened": FieldValue.arrayUnion([usermodel["Email"]]),
+                          "${usermodel["Email"].toString().split("@")[0]}_${stamp.toString().split(".")[0]}_Delevered" : FieldValue.arrayUnion([{
+                            "Email" : usermodel["Email"],
+                            "Stamp" : stamp
+                          }]),
+                          "${usermodel["Email"].toString().split("@")[0]}_${stamp.toString().split(".")[0]}_Seen" : FieldValue.arrayUnion([{
+                            "Email" : usermodel["Email"],
+                            "Stamp" : stamp
+                          }]),
+                        }).whenComplete(() async {
+                          await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).collection("Messages_Detail").doc("Messages_Detail").update({
+                            "${usermodel["Email"].toString().split('@')[0]}_${stamp.toString().split(".")[0]}_Seened": FieldValue.arrayUnion([usermodel["Email"]]),
 
-      });
-    });
+                          });
+                        });
     await FirebaseFirestore
         .instance
         .collection("Messages")
@@ -1923,46 +1995,47 @@ class _ChatPageState extends State<ChatPage> with WidgetsBindingObserver{
       {
         "Messages": FieldValue
             .arrayUnion([
-          {
-            "UID": usermodel["Email"].toString(),
-            "text": message,
-            "Stamp": stamp,
-            "ReplyMessage" : replyMessage.message,
-            "ReplyMessageId" : replyMessage.messageId,
-            "ReplyMessageType" : replyMessage.messageType.name,
-            "ReplyTo" : replyMessage.replyTo,
-            "ReplyBy" : replyMessage.replyBy,
-            "ReplyVoiceDuration" : replyMessage.voiceMessageDuration,
-          }
-        ]),
+              {
+                "UID": usermodel["Email"].toString(),
+                "text": message,
+                "Stamp": stamp,
+                "Type": messageType.name,
+                "ReplyMessage" : replyMessage.message,
+                "ReplyMessageId" : replyMessage.messageId,
+                "ReplyMessageType" : replyMessage.messageType.name,
+                "ReplyTo" : replyMessage.replyTo,
+                "ReplyBy" : replyMessage.replyBy,
+                "ReplyVoiceDuration" : replyMessage.voiceMessageDuration?.inSeconds,
+              }
+              ]),
       },
     ).whenComplete(() async {
-      List<dynamic> members = channelDoc.data()!["Members"];
-      for (var member in members) {
-        print("Sending to element");
-        try {
-          Map<String,dynamic> user =  channelDoc.data()?[member.toString().split("@")[0]];
-          print("............member $user");
-          List<dynamic> tokens =  user["Token"];
-          print("............error1");
-          if(member["Email"]!= usermodel["Email"] && !channelDoc.data()?[member.toString().split("@")[0]]["Active"] && channelDoc.data()?[member.toString().split("@")[0]]["Mute Notification"] != false){
-            for (var token in tokens) {
-              print("${member}");
-              database().sendPushMessage(
-                  token,
-                  message,
-                  widget.channel,
-                  true,
-                  widget.channel,
-                  stamp);
+            List<dynamic> members = channelDoc.data()!["Members"];
+            print(">>>>>>>>>>>>>>>>>>Members $members}");
+            for (var member in members) {
+              print("Sending to element");
+               {
+                Map<String,dynamic> user =  channelDoc.data()?[member.toString().split("@")[0]];
+                print("............member $user");
+                List<dynamic> tokens =  user["Token"];
+                print("............error1");
+                if(member != usermodel["Email"] && !user["Active"] && user["Mute Notification"] != false){
+                  for (var token in tokens) {
+                    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${token}");
+                    database().sendPushMessage(
+                        token,
+                        message,
+                        widget.channel,
+                        true,
+                        widget.channel,
+                        stamp);
 
+                  }
+                  print("<>>>>>>>>>>>>>>>>>>>sent");
+                }
+              }
             }
-          }
-        } catch (e) {
-          print(e);
-        }
-      }
-    },
+            },
     );
   }
 }

@@ -178,18 +178,16 @@ Future<void> firealarm()  async {
   });
   for(int i=0;i<notifications.length;i++){
 
-   await Future.delayed(const Duration(milliseconds: 800),() {
-      NotificationServices.display(
-          RemoteMessage(
-              data: {
-                "title" : notifications[i]['title'],
-                "body" : notifications[i]['body'],
-                "route" : ""
-              }
-          ),
+    NotificationServices.display(
+        RemoteMessage(
+            data: {
+              "title" : notifications[i]['title'],
+              "body" : notifications[i]['body'],
+              "route" : ""
+            }
+        ),
         '$i'
-      );
-    },);
+    );
   }
 }
 @pragma('vm:entry-point')
@@ -237,7 +235,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       await Workmanager().registerPeriodicTask(
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
-          frequency: const Duration(minutes: 15 ),
+          frequency: const Duration(days: 1 ),
         inputData: {
             "Hour" : hours,
           "Minute" : minutes
@@ -312,7 +310,7 @@ Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
       await Workmanager().registerPeriodicTask(
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
-          frequency: const Duration(minutes: 15),
+          frequency: const Duration(days: 1),
           inputData: {
             "Hour" : hours,
             "Minute" : minutes
@@ -383,7 +381,7 @@ Future<void> firebaseMessagingonmessageOpenedAppHandler(RemoteMessage message) a
       await Workmanager().registerPeriodicTask(
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
-          frequency: const Duration(minutes: 15),
+          frequency: const Duration(days: 1),
           inputData: {
             "Hour" : hours,
             "Minute" : minutes

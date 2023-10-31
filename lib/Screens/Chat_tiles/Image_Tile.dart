@@ -11,10 +11,10 @@ import 'Image_viewer.dart';
 class ImageTile extends StatefulWidget {
   const ImageTile(
       {super.key,
-        required this.channel,
-        required this.imageURL,
-        required this.compressedURL,
-        required this.stamp,});
+      required this.channel,
+      required this.imageURL,
+      required this.compressedURL,
+      required this.stamp,});
   final String channel;
   final String imageURL;
   final String compressedURL;
@@ -38,10 +38,10 @@ class _ImageTileState extends State<ImageTile> {
   void initState() {
     super.initState();
     _downloaded
-        ?
-    null
-        :
-    check();
+    ?
+        null
+    :
+        check();
   }
 
   @override
@@ -74,65 +74,65 @@ class _ImageTileState extends State<ImageTile> {
             }
 
           },
-          child: ClipRect(
-            child: Container(
-              width: size.width*0.55,
-              height: size.height*0.3,
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: const BorderRadius.only(
-                  bottomRight: Radius.circular(20),
-                  bottomLeft: Radius.circular(20),
-                ),
-                image: DecorationImage(
-                  image: FileImage(_imagePath),
-                  fit: BoxFit.contain,
-                ),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: x, sigmaY: y),
+              child: ClipRect(
                 child: Container(
-                  width: size.width*0.55,
-                  height: size.height*0.35,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
+                  width: size.width*0.7,
+                  height: size.height*0.3,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: const BorderRadius.only(
                       bottomRight: Radius.circular(20),
                       bottomLeft: Radius.circular(20),
                     ),
+                    image: DecorationImage(
+                      image: FileImage(_imagePath),
+                      fit: BoxFit.contain,
+                    ),
                   ),
-                  child: downloaded
-                      ?
-                  const SizedBox()
-                      :
-                  isDownloading
-                      ?
-                  CircularPercentIndicator(
-                    percent: percent,
-                    radius: size.width*0.08,
-                    animation: true,
-                    animateFromLastPercent: true,
-                    curve: accelerateEasing,
-                    progressColor: Colors.green,
-                    center: Text("${(percent*100).toDouble().toStringAsFixed(2)}%"),
-                    footer: const Text("Downloading"),
-                    backgroundColor: Colors.transparent,
-                  )
-                      :
-                  IconButton(
-                      onPressed: (){
-                        downloadImage();
-                        setState(() {
-                          isDownloading=true;
-                        });
-                      },
-                      icon: const Icon(Icons.download)
-                  )
-                  ,
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: x, sigmaY: y),
+                    child: Container(
+                      width: size.width*0.55,
+                      height: size.height*0.35,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(20),
+                          bottomLeft: Radius.circular(20),
+                        ),
+                      ),
+                      child: downloaded
+                          ?
+                      const SizedBox()
+                          :
+                      isDownloading
+                          ?
+                      CircularPercentIndicator(
+                        percent: percent,
+                        radius: size.width*0.08,
+                        animation: true,
+                        animateFromLastPercent: true,
+                        curve: accelerateEasing,
+                        progressColor: Colors.green,
+                        center: Text("${(percent*100).toDouble().toStringAsFixed(2)}%"),
+                        footer: const Text("Downloading"),
+                        backgroundColor: Colors.transparent,
+                      )
+                          :
+                      IconButton(
+                          onPressed: (){
+                            downloadImage();
+                            setState(() {
+                              isDownloading=true;
+                            });
+                          },
+                          icon: const Icon(Icons.download)
+                      )
+                      ,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
       ],
     )
         :
@@ -219,20 +219,20 @@ class _ImageTileState extends State<ImageTile> {
 
 
     await dio.download(widget.imageURL,imagePath.path,onReceiveProgress: (count, total) {
-      if(count==total){
-        setState(() {
-          _imagePath=imagePath;
-          x=0;
-          y=0;
-          downloaded=true;
-        });
-      }
-      else{
-        setState(() {
-          isDownloading=true;
-          percent = (count/total);
-        });
-      }
+    if(count==total){
+    setState(() {
+      _imagePath=imagePath;
+      x=0;
+      y=0;
+      downloaded=true;
+    });
+    }
+    else{
+      setState(() {
+        isDownloading=true;
+        percent = (count/total);
+      });
+    }
     },);
 
   }
