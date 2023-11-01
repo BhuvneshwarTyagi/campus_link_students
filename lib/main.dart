@@ -122,8 +122,9 @@ callbackDispatcherforreminder() async {
           final study= DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,hours,minutes,0,0,0);
           send = now.difference(study).isNegative ? true : false ;
           print("Difference : ${now.difference(study).isNegative}");
+          await AndroidAlarmManager.initialize();
           if(send){
-            await AndroidAlarmManager.initialize();
+
             print("Alarm initialized");
             print(DateTime.now().hour);
             await AndroidAlarmManager.oneShotAt(
@@ -146,6 +147,39 @@ callbackDispatcherforreminder() async {
 
             );
             print("Alarm one shot ready");
+          }
+          else{
+            int day=DateTime.now().day ;
+            int year=DateTime.now().year;
+            int month=DateTime.now().month;
+            if(database().getDaysInMonth(DateTime.now().year, DateTime.now().month) == day){
+              day=1;
+              if(month==12){
+                month=1;
+                year++;
+              }
+
+            }
+            await AndroidAlarmManager.oneShotAt(
+                DateTime(
+                    year,
+                   month,
+                   day,
+                    hours,
+                    minutes,
+                    0,0,0
+
+                ),
+                2,
+                firealarm,
+                rescheduleOnReboot: true,
+                wakeup: true,
+                exact: true,
+                allowWhileIdle: true,
+                alarmClock: true
+
+            );
+
           }
         }catch (e){
           print("error from best  : $e");

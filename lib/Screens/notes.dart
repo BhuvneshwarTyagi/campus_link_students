@@ -173,7 +173,7 @@ class _NotesState extends State<Notes> {
           ),
         ),
         body: SizedBox(
-          height: size.height*0.7,
+          height: size.height*0.75,
           width: size.width,
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -181,7 +181,7 @@ class _NotesState extends State<Notes> {
               children: [
                 Divider(
                   color: Colors.black,
-                  height: MediaQuery.of(context).size.height * 0.03,
+                  height: MediaQuery.of(context).size.height * 0.01,
                   thickness: MediaQuery.of(context).size.height * 0.003,
                   endIndent: 8,
                   indent: 8,
@@ -199,7 +199,7 @@ class _NotesState extends State<Notes> {
                       return  snapshot.hasData
                           ?
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: ListView.builder(
                           itemCount: snapshot.data["Total_Notes"],
                           itemBuilder: (context, index) {

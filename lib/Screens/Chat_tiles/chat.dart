@@ -2024,7 +2024,7 @@ class _ChatPageState extends State<ChatPage> {
                     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>${token}");
                     database().sendPushMessage(
                         token,
-                        message,
+                        "${usermodel['Name']}: $message",
                         widget.channel,
                         true,
                         widget.channel,

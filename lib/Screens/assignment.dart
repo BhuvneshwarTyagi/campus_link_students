@@ -47,7 +47,11 @@ class _AssignmentState extends State<Assignment> {
     // TODO: implement initState
 
     super.initState();
-    selectedSubject = usermodel["Subject"][0];
+    setState(() {
+      selectedSubject = usermodel["Subject"][0];
+      selected[0]=true;
+      getdata();
+    });
 
     checkAndRequestPermissions();
   }
@@ -80,8 +84,7 @@ class _AssignmentState extends State<Assignment> {
                         InkWell(
                           onTap: () {
                             setState(() {
-                              selected =
-                                  List.filled(subjects.length, false);
+                              selected = List.filled(subjects.length, false);
                               selected[index] = true;
 
                               selectedSubject = subjects[index];
@@ -158,25 +161,24 @@ class _AssignmentState extends State<Assignment> {
             children: [
               Divider(
                 color: Colors.black,
-                height: MediaQuery.of(context).size.height * 0.03,
+                height: MediaQuery.of(context).size.height * 0.01,
                 thickness: MediaQuery.of(context).size.height * 0.003,
                 endIndent: 8,
                 indent: 8,
               ),
               SizedBox(
-                height: size.height * 0.015,
+                height: size.height * 0.005,
               ),
               loaded && !nodata && permissionGranted
                   ? Padding(
-                padding: EdgeInsets.all(size.height * 0.01),
+                padding: EdgeInsets.symmetric(horizontal: size.height * 0.01),
                 child: SizedBox(
-                  height: size.height * 0.63,
+                  height: size.height * 0.7,
                   width: size.width,
                   child: ListView.builder(
                     itemCount: snapshot.data()?["Total_Assignment"],
                     itemBuilder: (context, index) {
                       String newpath = "${path}Assignment-${index + 1}.${snapshot.data()?["Assignment-${index + 1}"]["Document-type"]}";
-                      print("isuht aisf ghasfdh ");
                       File(newpath).exists().then((value) {
                         if (value) {
 
@@ -596,10 +598,10 @@ class _AssignmentState extends State<Assignment> {
                                                       context,
                                                       PageTransition(
                                                         child: AssigmentQuestion(
-                                                            selectedSubject:
-                                                            selectedSubject,
-                                                            assignmentNumber:
-                                                            index + 1),
+                                                            selectedSubject: selectedSubject,
+                                                            assignmentNumber: index + 1,
+                                                          deadline: "${snapshot.data()?["Assignment-${index + 1}"]["Last Date"]}",
+                                                        ),
                                                         type: PageTransitionType
                                                             .bottomToTopJoined,
                                                         duration: const Duration(

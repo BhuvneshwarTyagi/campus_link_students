@@ -13,9 +13,10 @@ class AssigmentQuestion extends StatefulWidget {
   AssigmentQuestion(
       {super.key,
         required this.selectedSubject,
-        required this.assignmentNumber});
+        required this.assignmentNumber, required this.deadline});
   String selectedSubject;
   int assignmentNumber;
+  final String deadline;
 
   @override
   State<AssigmentQuestion> createState() => _AssigmentQuestionState();
@@ -195,9 +196,16 @@ class _AssigmentQuestionState extends State<AssigmentQuestion> {
                             "Time": stamp,
                             "Status":" ",
                           }
-                        }).whenComplete(() {
+                        }).whenComplete(() async {
                           print("Completed");
-                          Navigator.pop(context);
+                          print("subject: ${widget.selectedSubject}\n assignment number: ${widget.assignmentNumber}\n dealine: ${widget.deadline}");
+                          await FirebaseFirestore.instance.collection("Students").doc(usermodel["Email"]).update({
+                            'Notifications' : FieldValue.arrayRemove([{
+                              'body' : "Your ${widget.selectedSubject} assignment ${widget.assignmentNumber} is pending. Please complete your assignment as soon as possible.Deadline: ${widget.deadline}",
+                              'title' : "${widget.selectedSubject} assignment pending."
+                            }])
+                          }).whenComplete(() => Navigator.pop(context));
+
 
                         }
 
