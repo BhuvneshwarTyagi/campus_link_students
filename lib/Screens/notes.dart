@@ -18,6 +18,7 @@ import 'QuizScore.dart';
 import 'QuizScreen.dart';
 import '../push_notification/Storage_permission.dart';
 import 'Chat_tiles/PdfViewer.dart';
+import 'SubjectQuizScore.dart';
 
 class Notes extends StatefulWidget {
   const Notes({Key? key}) : super(key: key);
@@ -589,6 +590,7 @@ class _NotesState extends State<Notes> {
                                                               ),
 
                                                               onPressed: () {
+
                                                                 Navigator.push(context,
                                                                     PageTransition(
                                                                         child: Quizscore(
@@ -825,7 +827,62 @@ class _NotesState extends State<Notes> {
               ],
             ),
           ),
-        )
+        ),
+      floatingActionButton: docExists
+      ?
+      Container(
+        height: size.height * 0.046,
+        width: size.width * 0.34,
+        decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.blue,
+                Colors.purpleAccent,
+              ],
+            ),
+            borderRadius: BorderRadius.all(
+                Radius.circular(
+                    size.width * 0.035)),
+            border: Border.all(
+                color: Colors.black, width: 2)
+        ),
+        child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors
+                    .transparent,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius
+                        .all(
+                        Radius.circular(size
+                            .width * 0.035)))
+            ),
+
+            onPressed: () {
+              Navigator.push(context,
+                  PageTransition(
+                      child:  subjectQuizScore(subject: selectedSubject,),
+                      type: PageTransitionType
+                          .bottomToTopJoined,
+                      childCurrent: const Notes(),
+                      duration: const Duration(
+                          milliseconds: 300)
+                  )
+              );
+            },
+            child: AutoSizeText(
+              "Leaderboard",
+              style: GoogleFonts.openSans(
+                  fontSize: size.height * 0.022,
+                  color: Colors.white
+              ),
+
+
+            )),
+      )
+      :
+      const SizedBox()
 
 
     );

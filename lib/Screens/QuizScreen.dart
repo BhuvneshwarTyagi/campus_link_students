@@ -26,6 +26,7 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
   int minute=0;
   int milliSecond=0;
   var count = 0;
+  var totalMinutes;
   List<String> selectedChoice = [];
   List<dynamic>options=[];
   List<String>selectedOption=["A","B","C","D"];
@@ -732,8 +733,7 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
 
               if(selectedChoice[count]!="")
               {
-                var totalMinutes=minute+(_start/60)+((milliSecond/1000)/60);
-                print(".............total Minutes:${totalMinutes}");
+                 totalMinutes=minute+(_start/60)+((milliSecond/1000)/60);
                 if(snap.data()?["Notes-${widget.notesId}"]["Question-${count + 1}"]["Answer"]==selectedOption[optionIndex])
                 {
                   score+=1;
@@ -754,7 +754,7 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
                     .collection("Notes")
                     .doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.subject}")
                     .update({
-                  "${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}":FieldValue.increment(score),
+                  "${usermodel["Email"]}":{"Score":FieldValue.increment(score),"Time":FieldValue.increment(totalMinutes)},
                   "Notes-${widget.notesId}.Submitted by":FieldValue.arrayUnion(["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]),
                   "Notes-${widget.notesId}.Response.${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}":responseMap
                 }).whenComplete(() {
@@ -827,10 +827,15 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
         }
         else if(milliSecond==1000)
           {
-            setState(() {
-              _start++;
-              milliSecond=0;
-            });
+
+            if(mounted)
+              {
+                setState(() {
+                  _start++;
+                  milliSecond=0;
+                });
+              }
+
 
           }
         else{
@@ -860,6 +865,7 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
        .collection("Notes")
        .doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.subject}")
        .update({
+     "${usermodel["Email"]}":{"Score":FieldValue.increment(score),"Time":FieldValue.increment(totalMinutes)},
      "Notes-${widget.notesId}.Submitted by":FieldValue.arrayUnion(["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]),
      "Notes-${widget.notesId}.Response.${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}":responseMap
    }).whenComplete(() {

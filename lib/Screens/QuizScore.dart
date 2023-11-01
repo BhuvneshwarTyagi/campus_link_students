@@ -67,7 +67,7 @@ class _QuizscoreState extends State<Quizscore> {
               ],
             ),
           ),
-          child:load
+          child:load && snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"]!=null
             ?
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -458,96 +458,14 @@ class _QuizscoreState extends State<Quizscore> {
                           )
                       )
                     ])
-                /*StreamBuilder(
-                  stream: FirebaseFirestore.instance.collection("Notes").doc("${university_filter.split(" ")[0]} ${college_filter.split(" ")[0]} ${course_filter.split(" ")[0]} ${branch_filter.split(" ")[0]} $year_filter $section_filter $subject_filter").snapshots(),
-                  builder: (context, snapshot) {
-                    bool loaded=false;
-                    if(snapshot.hasData)
-                    {
-                      //calculateResult(snapshot);
-                    }
-                    return  snapshot.hasData
-                        ?
-                    Column(
-                        children: [
-                          SizedBox(
-                              height: size.height * 0.371,
-                              child: ListView.builder(
-                                itemCount:studentNames.length,
-                                itemBuilder: (context, index) {
 
-                                  return Padding(
-                                    padding: EdgeInsets.all(size.height * 0.008),
-                                    child: Container(
-                                      height: size.height * 0.08,
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            width: size.width * 0.1,
-                                            child: Center(child: Text('${index + 1}')),
-                                          ),
-                                          Container(
-                                              height: size.height * 0.07,
-                                              width: size.width * 0.8,
-                                              decoration: BoxDecoration(
-                                                border: Border.all(),
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(size.width * 0.08)),
-                                                color: Color.fromARGB(255, 228, 243, 247),
-                                              ),
-                                              child: Row(children: [
-                                                Padding(
-                                                  padding:
-                                                  EdgeInsets.all(size.height * 0.006),
-                                                  child: CircleAvatar(
-                                                      radius: size.width * 0.06,
-                                                      backgroundColor: Colors.black,
-                                                      child: CircleAvatar(
-                                                        radius: size.width * 0.053,
-                                                        backgroundColor: const Color.fromARGB(
-                                                            255, 128, 193, 246),
-                                                      )),
-                                                ),
-                                                SizedBox(
-                                                    width: size.width * 0.5,
-                                                    child: AutoSizeText(
-                                                      studentNames[index],
-                                                      style: TextStyle(
-                                                          fontSize: size.width * 0.045),
-                                                      maxLines: 1,
-                                                      textAlign: TextAlign.left,
-                                                    )),
-                                                const Text('Score',
-                                                    style: TextStyle(
-                                                        color:
-                                                        Color.fromARGB(255, 10, 52, 84),
-                                                        fontWeight: FontWeight.w500)),
-                                              ])),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-
-                              ))
-                        ])
-                        :
-                    SizedBox(
-                      child: AutoSizeText(
-                        "Data is Retrieving Please Wait",
-                        style: GoogleFonts.poppins(
-                            fontSize: size.height*0.035,
-                            color: Colors.white70
-                        ),
-                      ),
-                    );
-                  },
-                ),*/
               ],
             ),
           )
               :
-              const loading(text: "Please Wait Data is Loading")
+              const SizedBox(
+                child: Center(child: Text("No Data Fount")),
+              )
         ));
   }
 
@@ -556,11 +474,14 @@ class _QuizscoreState extends State<Quizscore> {
     FirebaseFirestore.instance.collection("Notes").doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.selectedSubject}").get().then((value) {
       snapshot=value;
     }).whenComplete(() {
-      calculateResult().whenComplete(() {
-        setState(() {
-          load=true;
-        });
-      });
+      if(snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"]!=null)
+        {
+          calculateResult().whenComplete(() {
+            setState(() {
+              load=true;
+            });
+          });
+        }
     });
 
   }
@@ -570,21 +491,13 @@ class _QuizscoreState extends State<Quizscore> {
    for(var email in  snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"])
      {
        Map<String,dynamic>data={};
-       Map<String,String>removableMap={
-         "Name":email.toString().split("-")[1],
-         "Roll-number":email.toString().split("-")[2],
-         "Email":"${email.toString().split("-")[0]}@gmail.com"
-       };
 
        data["Name-Rollnumber"]="${email.toString().split("-")[1]}-${email.toString().split("-")[2]}";
        data["Score"]=snapshot.data()?["Notes-${widget.quizId}"]["Response"][email]["Score"];
        data["Quiz-Time"]=snapshot.data()?["Notes-${widget.quizId}"]["Response"][email]["TimeStamp"];
        data["Email"]="${email.toString().split("-")[0]}@gmail.com";
        result.add(data);
-       unattemptedStudents.remove(
-          removableMap
-       );
-
+       unattemptedStudents.removeWhere((element) => element["Email"]=="${email.toString().split("-")[0]}@gmail.com");
      }
       print("Email is present : $unattemptedStudents");
    // Sort the map based on timeStamp and Quiz Sore ....
