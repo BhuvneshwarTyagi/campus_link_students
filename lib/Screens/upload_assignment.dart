@@ -193,6 +193,7 @@ class _AssigmentQuestionState extends State<AssigmentQuestion> {
                             "Document_Type": filePath?.files[0].extension,
                             "File_Size": filePath?.files[0].size,
                             "Time": stamp,
+                            "Status":" ",
                           }
                         }).whenComplete(() {
                           print("Completed");
