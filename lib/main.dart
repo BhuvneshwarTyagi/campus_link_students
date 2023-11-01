@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:alarm/alarm.dart';
+import 'package:alarm/service/notification.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:campus_link_student/Registration/database.dart';
 import 'package:campus_link_student/push_notification/helper_notification.dart';
@@ -158,6 +160,9 @@ callbackDispatcherforreminder() async {
                 month=1;
                 year++;
               }
+              else{
+                month++;
+              }
 
             }
             await AndroidAlarmManager.oneShotAt(
@@ -223,6 +228,28 @@ Future<void> firealarm()  async {
         '$i'
     );
   }
+  // print("initializing alarm");
+  // await Alarm.init(showDebugLogs: true);
+  //
+  // print("Alarm initialized");
+  // print("setting alarm");
+  // final alarmSettings = AlarmSettings(
+  //   id: 42,
+  //   dateTime: DateTime.now(),
+  //   assetAudioPath: 'assets/ringtones/male version.mp3',
+  //   loopAudio: true,
+  //   vibrate: true,
+  //   volumeMax: true,
+  //   fadeDuration: 3.0,
+  //   stopOnNotificationOpen: true,
+  //   androidFullScreenIntent: true,
+  //   notificationTitle: 'This is the title',
+  //   notificationBody: 'This is the body',
+  //   enableNotificationOnKill: true,
+  //
+  // );
+  // print("launching alarm");
+  // Future(()=> Alarm.set(alarmSettings: alarmSettings));
 }
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
