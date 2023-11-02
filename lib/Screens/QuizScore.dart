@@ -67,7 +67,7 @@ class _QuizscoreState extends State<Quizscore> {
               ],
             ),
           ),
-          child:load && snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"]!=null
+          child:load && snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"]!=null && snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"].length>=3
             ?
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -464,7 +464,7 @@ class _QuizscoreState extends State<Quizscore> {
           )
               :
               const SizedBox(
-                child: Center(child: Text("No Data Fount")),
+                child: Center(child: Text("Less then three Submissions Please Wait..")),
               )
         ));
   }
