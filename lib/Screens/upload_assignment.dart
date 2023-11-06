@@ -6,7 +6,9 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import '../Constraints.dart';
 
 class AssigmentQuestion extends StatefulWidget {
@@ -165,7 +167,9 @@ class _AssigmentQuestionState extends State<AssigmentQuestion> {
                       backgroundColor: Colors.transparent),
                   onPressed: () async {
                     if (fileSelected) {
-                      const loading(text: 'Please wait Data is Uploading',);
+                      Navigator.push(context, PageTransition(
+                          child: const loading(text: "Please Wait Data is Uploading...."),
+                          type: PageTransitionType.bottomToTop),);
                       Reference ref = FirebaseStorage.instance
                           .ref("Student_Assignment")
                           .child(
@@ -186,17 +190,21 @@ class _AssigmentQuestionState extends State<AssigmentQuestion> {
                             .update({
                           "Assignment-${widget.assignmentNumber}.Submitted-by":
                           FieldValue.arrayUnion([
-                            "${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"
+                            "${usermodel["Email"]}"
                           ]),
-                          "Assignment-${widget.assignmentNumber}.submitted-Assignment.${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}":
+                          "Assignment-${widget.assignmentNumber}.submitted-Assignment.${usermodel["Email"].toString().split("@")[0]}":
                           {
                             "Document_Type": filePath?.files[0].extension,
                             "File_Size": filePath?.files[0].size,
                             "Time": stamp,
                             "Status":" ",
+                            "PdfUrl":pdfURL,
+                            "Name":usermodel["Name"],
+                            "Roll-No":usermodel["Rollnumber"],
                           }
                         }).whenComplete(() {
                           print("Completed");
+                          Navigator.pop(context);
                           Navigator.pop(context);
 
                         }
@@ -205,6 +213,26 @@ class _AssigmentQuestionState extends State<AssigmentQuestion> {
                         );
                       }
                       );
+                    }
+                    else{
+                      InAppNotifications.instance
+                        ..titleFontSize = 14.0
+                        ..descriptionFontSize = 14.0
+                        ..textColor = Colors.black
+                        ..backgroundColor =
+                        const Color.fromRGBO(150, 150, 150, 1)
+                        ..shadow = true
+                        ..animationStyle =
+                            InAppNotificationsAnimationStyle.scale;
+                      InAppNotifications.show(
+                          title: 'Failed',
+                          duration: const Duration(seconds: 2),
+                          description: "Please Select the File",
+                          leading: const Icon(
+                            Icons.error_outline_outlined,
+                            color: Colors.red,
+                            size: 20,
+                          ));
                     }
                   },
                   child: AutoSizeText(
