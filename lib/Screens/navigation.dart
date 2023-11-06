@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
+import 'package:alarm/service/notification.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Constraints.dart';
 import 'package:campus_link_student/Registration/database.dart';
@@ -474,9 +477,28 @@ class _navigationState extends State<navigation> {
               ListTile(
                 leading: const Icon(Icons.logout,color: Colors.black),
                 title: const Text("Alarm"),
-                onTap:  () {
-                  FlutterAlarmClock.createAlarm(
-                      title: 'Assignment', hour: 5, minutes: 0);
+                onTap:  () async {
+                  await Alarm.init(showDebugLogs: true);
+             //     AlarmNotification.instance.scheduleAlarmNotif(id: 1, dateTime: DateTime.now(), title: "dgsd", body: "Zgzx", fullScreenIntent: true);
+                  print("Alarm initialized");
+                  print("setting alarm");
+                  final alarmSettings = AlarmSettings(
+                    id: 42,
+                    dateTime: DateTime.now(),
+                    assetAudioPath: 'assets/ringtones/male version.mp3',
+                    loopAudio: false,
+                    vibrate: true,
+                    volumeMax: true,
+                    fadeDuration: 3.0,
+                    stopOnNotificationOpen: true,
+                    androidFullScreenIntent: true,
+                    notificationTitle: 'This is the title',
+                    notificationBody: 'This is the body',
+                    enableNotificationOnKill: true,
+
+                  );
+                  print("launching alarm");
+                  Future(()=> Alarm.set(alarmSettings: alarmSettings));
                 },
               ),
 

@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:alarm/alarm.dart';
+import 'package:alarm/service/notification.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:campus_link_student/Registration/database.dart';
 import 'package:campus_link_student/push_notification/helper_notification.dart';
@@ -122,8 +124,9 @@ callbackDispatcherforreminder() async {
           final study= DateTime.utc(DateTime.now().year,DateTime.now().month,DateTime.now().day,hours,minutes,0,0,0);
           send = now.difference(study).isNegative ? true : false ;
           print("Difference : ${now.difference(study).isNegative}");
+          await AndroidAlarmManager.initialize();
           if(send){
-            await AndroidAlarmManager.initialize();
+
             print("Alarm initialized");
             print(DateTime.now().hour);
             await AndroidAlarmManager.oneShotAt(
@@ -146,6 +149,42 @@ callbackDispatcherforreminder() async {
 
             );
             print("Alarm one shot ready");
+          }
+          else{
+            int day=DateTime.now().day ;
+            int year=DateTime.now().year;
+            int month=DateTime.now().month;
+            if(database().getDaysInMonth(DateTime.now().year, DateTime.now().month) == day){
+              day=1;
+              if(month==12){
+                month=1;
+                year++;
+              }
+              else{
+                month++;
+              }
+
+            }
+            await AndroidAlarmManager.oneShotAt(
+                DateTime(
+                    year,
+                   month,
+                   day,
+                    hours,
+                    minutes,
+                    0,0,0
+
+                ),
+                2,
+                firealarm,
+                rescheduleOnReboot: true,
+                wakeup: true,
+                exact: true,
+                allowWhileIdle: true,
+                alarmClock: true
+
+            );
+
           }
         }catch (e){
           print("error from best  : $e");
@@ -189,6 +228,28 @@ Future<void> firealarm()  async {
         '$i'
     );
   }
+  // print("initializing alarm");
+  // await Alarm.init(showDebugLogs: true);
+  //
+  // print("Alarm initialized");
+  // print("setting alarm");
+  // final alarmSettings = AlarmSettings(
+  //   id: 42,
+  //   dateTime: DateTime.now(),
+  //   assetAudioPath: 'assets/ringtones/male version.mp3',
+  //   loopAudio: true,
+  //   vibrate: true,
+  //   volumeMax: true,
+  //   fadeDuration: 3.0,
+  //   stopOnNotificationOpen: true,
+  //   androidFullScreenIntent: true,
+  //   notificationTitle: 'This is the title',
+  //   notificationBody: 'This is the body',
+  //   enableNotificationOnKill: true,
+  //
+  // );
+  // print("launching alarm");
+  // Future(()=> Alarm.set(alarmSettings: alarmSettings));
 }
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {

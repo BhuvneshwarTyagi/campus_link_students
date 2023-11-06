@@ -180,11 +180,11 @@ class _AssignmentState extends State<Assignment> {
                       File(newpath).exists().then((value) {
                         if (value) {
 
-                               isdownloaded[index] = true;
+                          isdownloaded[index] = true;
 
                         } else {
 
-                              isdownloaded[index] = false;
+                          isdownloaded[index] = false;
 
                         }
                       });
@@ -258,10 +258,10 @@ class _AssignmentState extends State<Assignment> {
                                             mainAxisAlignment: MainAxisAlignment.end,
                                             children: [
                                               isdownloaded[index]
-                                              ?
-                                                  SizedBox(
-                                                   height:  size.height * 0.03,
-                                                  )
+                                                  ?
+                                              SizedBox(
+                                                height:  size.height * 0.03,
+                                              )
                                                   :
                                               downloding[index]
                                                   ?
@@ -293,47 +293,47 @@ class _AssignmentState extends State<Assignment> {
                                                   Colors.transparent,
                                                 ),
                                               )
-                                              :
+                                                  :
 
                                               CircleAvatar(
                                                 backgroundColor:   Color.fromRGBO(60, 99, 100, 1),
                                                 radius: size.height*0.02,
-                                                  child: IconButton(
-                                                      onPressed: () async {
-                                                    setState(() {
-                                                      downloding[index] =
-                                                      true;
-                                                    });
+                                                child: IconButton(
+                                                    onPressed: () async {
+                                                      setState(() {
+                                                        downloding[index] =
+                                                        true;
+                                                      });
 
-                                                    await dio.download(
-                                                      snapshot.data()?["Assignment-${index + 1}"]["Assignment"], newpath,
-                                                      onReceiveProgress:
-                                                          (count, total) {
+                                                      await dio.download(
+                                                        snapshot.data()?["Assignment-${index + 1}"]["Assignment"], newpath,
+                                                        onReceiveProgress:
+                                                            (count, total) {
 
-                                                        if (count ==
-                                                            total) {
-                                                          setState(() {
-                                                            print(
-                                                                "completed");
-                                                            isdownloaded[
-                                                            index] =
-                                                            true;
-                                                            downloding[
-                                                            index] =
-                                                            false;
-                                                          });
-                                                        } else {
-                                                          if(mounted){
+                                                          if (count ==
+                                                              total) {
                                                             setState(() {
-                                                              percent =count/total;
+                                                              print(
+                                                                  "completed");
+                                                              isdownloaded[
+                                                              index] =
+                                                              true;
+                                                              downloding[
+                                                              index] =
+                                                              false;
                                                             });
+                                                          } else {
+                                                            if(mounted){
+                                                              setState(() {
+                                                                percent =count/total;
+                                                              });
+                                                            }
                                                           }
-                                                        }
-                                                      },
-                                                    );
-                                                  },
-                                                      icon: Icon(Icons.file_download_sharp,size: size.height*0.023,color: Colors.white,)
-                                                  ),
+                                                        },
+                                                      );
+                                                    },
+                                                    icon: Icon(Icons.file_download_sharp,size: size.height*0.023,color: Colors.white,)
+                                                ),
                                               ),
                                               SizedBox(
                                                 width: size.width*0.02,

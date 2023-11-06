@@ -173,7 +173,7 @@ class _NotesState extends State<Notes> {
           ),
         ),
         body: SizedBox(
-          height: size.height*0.7,
+          height: size.height*0.75,
           width: size.width,
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -181,7 +181,7 @@ class _NotesState extends State<Notes> {
               children: [
                 Divider(
                   color: Colors.black,
-                  height: MediaQuery.of(context).size.height * 0.03,
+                  height: MediaQuery.of(context).size.height * 0.01,
                   thickness: MediaQuery.of(context).size.height * 0.003,
                   endIndent: 8,
                   indent: 8,
@@ -199,11 +199,11 @@ class _NotesState extends State<Notes> {
                       return  snapshot.hasData
                           ?
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: ListView.builder(
                           itemCount: snapshot.data["Total_Notes"],
                           itemBuilder: (context, index) {
-                            Timestamp deadline=snapshot.data["Notes-${index+1}"]["Deadline"];
+                            Timestamp deadline=snapshot.data["Notes-${index+1}"]["Deadline"] ?? Timestamp(0, 0);
                             String? dir=directory?.path.toString().substring(0,19);
                             String path="$dir/Campus Link/${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $selectedSubject/Notes/";
 
@@ -249,14 +249,15 @@ class _NotesState extends State<Notes> {
                               child: Container(
                                 width: size.width*0.85,
                                 decoration: BoxDecoration(
-                                  color: const Color.fromRGBO(56, 33, 101,1),
+                                  color: Colors.white70,
                                   borderRadius: radiusGeomentry,
+                                    border: Border.all(color:const Color.fromRGBO(56, 33, 101,1),width: 3)
                                 ),
                                 child: Column(
 
                                   children: [
                                     SizedBox(
-                                      height: size.height*0.15,
+                                      height: size.height*0.11,
                                       width: size.width*0.93,
                                       child: Padding(
                                           padding:  EdgeInsets.only(top:size.height*0.01,left:size.height*0.01,right:size.height*0.01),
@@ -279,23 +280,49 @@ class _NotesState extends State<Notes> {
                                             child: Container(
                                               decoration: BoxDecoration(
                                                   borderRadius:BorderRadius.only(
-                                                      topLeft: Radius.circular(size.width*0.05),
-                                                      topRight: Radius.circular(size.width*0.05)),
-                                                  image: DecorationImage(
+                                                      topLeft: Radius.circular(size.width*0.02),
+                                                      topRight: Radius.circular(size.width*0.02)),
+                                                 /* image: DecorationImage(
                                                     image: NetworkImage("${snapshot.data["Notes-${index+1}"]["thumbnailURL"]}",
                                                     ),fit: BoxFit.cover,
-                                                  )
-                                              ),),
+                                                  )*/
+                                              ),
+                                              child:Center(
+                                            child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: [
+                                                SizedBox(
+                                                  height: size.height*0.01,
+                                                ),
+                                                AutoSizeText(
+                                                  selectedSubject,
+                                                  style: GoogleFonts.courgette(
+                                                      color: Colors.black,
+                                                      fontSize: size.height*0.02,
+                                                      fontWeight: FontWeight.w400
+                                                  ),
+                                                ),
+                                                AutoSizeText(
+                                                  "Notes : ${index + 1}",
+                                                  style: GoogleFonts.courgette(
+                                                      color: Colors.black,
+                                                      fontSize: size.height*0.023,
+                                                      fontWeight: FontWeight.w400
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),),
                                           )
                                       ),
                                     ),
                                     AnimatedContainer(
-                                      height: isExpanded[index] ? size.height*0.24 :size.height*0.15,
+                                      height: isExpanded[index] ? size.height*0.24 :size.height*0.14,
                                       width:size.width*0.98,
                                       duration: const Duration(milliseconds: 1),
                                       decoration: BoxDecoration(
                                           color: const Color.fromRGBO(56, 33, 101,1),
-                                          borderRadius: radiusGeomentry
+                                          borderRadius: BorderRadius.circular(size.width*0.068)
 
                                       ),
                                       child: SingleChildScrollView(
@@ -311,50 +338,59 @@ class _NotesState extends State<Notes> {
                                                     bottomLeft: Radius.circular(size.width*0.1),
                                                     bottomRight: Radius.circular(size.width*0.12)),),
                                               title: SizedBox(
-                                                  height: size.height*0.085,
-                                                  width: size.width*0.45,
+                                                  height: size.height*0.088,
+                                                  width: size.width*0.75,
                                                   child: Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                      AutoSizeText(
-                                                        snapshot.data["Notes-${index+1}"]["File_Name"]!=null
-                                                            ?
-                                                        snapshot.data["Notes-${index+1}"]["File_Name"].toString()
-                                                            :
-                                                        "",
-                                                        style: GoogleFonts.exo(
-                                                            fontSize: size.height*0.02,
-                                                            color: Colors.white70,
-                                                            fontWeight: FontWeight.w500
-                                                        ),
-                                                          maxLines: 1,),
+                                                      FittedBox(
+                                                        fit:BoxFit.fill,
+                                                        child: AutoSizeText(
+                                                          snapshot.data["Notes-${index+1}"]["File_Name"]!=null
+                                                              ?
+                                                          snapshot.data["Notes-${index+1}"]["File_Name"].toString()
+                                                              :
+                                                          "",
+                                                          style: GoogleFonts.exo(
+                                                              fontSize: size.height*0.02,
+                                                              color: Colors.white70,
+                                                              fontWeight: FontWeight.w500
+                                                          ),
+                                                            maxLines: 1,),
+                                                      ),
                                                       SizedBox(
-                                                        height: size.height*0.008,
+                                                        height: size.height*0.0075,
                                                       ),
                                                       Row(
                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
-                                                          AutoSizeText(
-                                                            snapshot.data["Notes-${index+1}"]["File_Size"]!=null
-                                                                ?
-                                                            "Size:${(int.parse(snapshot.data["Notes-${index+1}"]["File_Size"].toString())/1048576).toStringAsFixed(2)} MB"
-                                                                :
-                                                            "",
-                                                            style: GoogleFonts.exo(
-                                                                fontSize: size.height*0.016,
-                                                                color: Colors.white70,
-                                                                fontWeight: FontWeight.w500),),
-                                                          AutoSizeText(
-                                                            snapshot.data["Notes-${index+1}"]["Stamp"]!=null
-                                                                ?
-                                                            "Date: ${(snapshot.data["Notes-${index+1}"]["Stamp"].toDate()).toString().split(" ")[0]}"
-                                                                :
-                                                            "",
-                                                            style: GoogleFonts.exo(
-                                                                fontSize: size.height*0.016,
-                                                                color: Colors.white70,
-                                                                fontWeight: FontWeight.w500),),
+                                                          FittedBox(
+                                                            fit: BoxFit.fill,
+                                                            child: AutoSizeText(
+                                                              snapshot.data["Notes-${index+1}"]["File_Size"]!=null
+                                                                  ?
+                                                              "Size:${(int.parse(snapshot.data["Notes-${index+1}"]["File_Size"].toString())/1048576).toStringAsFixed(2)} MB"
+                                                                  :
+                                                              "",
+                                                              style: GoogleFonts.exo(
+                                                                  fontSize: size.height*0.016,
+                                                                  color: Colors.white70,
+                                                                  fontWeight: FontWeight.w500),),
+                                                          ),
+                                                          FittedBox(
+                                                            fit: BoxFit.fill,
+                                                            child: AutoSizeText(
+                                                              snapshot.data["Notes-${index+1}"]["Stamp"]!=null
+                                                                  ?
+                                                              "Date: ${(snapshot.data["Notes-${index+1}"]["Stamp"].toDate()).toString().split(" ")[0]}"
+                                                                  :
+                                                              "",
+                                                              style: GoogleFonts.exo(
+                                                                  fontSize: size.height*0.016,
+                                                                  color: Colors.white70,
+                                                                  fontWeight: FontWeight.w500),),
+                                                          ),
                                                         ],
                                                       ),
                                                       SizedBox(
@@ -374,16 +410,19 @@ class _NotesState extends State<Notes> {
                                                                 fontSize: size.height*0.016,
                                                                 color: Colors.white70,
                                                                 fontWeight: FontWeight.w500),),*/
-                                                          AutoSizeText(
-                                                            snapshot.data["Notes-${index+1}"]["Stamp"]!=null
-                                                                ?
-                                                            "Deadline : ${(snapshot.data["Notes-${index+1}"]["Stamp"].toDate()).toString().split(" ")[0]} ${snapshot.data["Notes-${index+1}"]["Submitted by"]!=null &&  snapshot.data["Notes-${index+1}"]["Submitted by"].contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")?"( Submit )":"( Pending )"}"
-                                                                :
-                                                            "",
-                                                            style: GoogleFonts.exo(
-                                                                fontSize: size.height*0.016,
-                                                                color: Colors.white70,
-                                                                fontWeight: FontWeight.w500),),
+                                                          FittedBox(
+                                                            fit:BoxFit.fill,
+                                                            child: AutoSizeText(
+                                                              snapshot.data["Notes-${index+1}"]["Stamp"]!=null
+                                                                  ?
+                                                              "Deadline : ${(snapshot.data["Notes-${index+1}"]["Stamp"].toDate()).toString().split(" ")[0]} ${snapshot.data["Notes-${index+1}"]["Submitted by"]!=null &&  snapshot.data["Notes-${index+1}"]["Submitted by"].contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")?"( Submit )":"( Pending )"}"
+                                                                  :
+                                                              "",
+                                                              style: GoogleFonts.exo(
+                                                                  fontSize: size.height*0.016,
+                                                                  color: Colors.white70,
+                                                                  fontWeight: FontWeight.w500),),
+                                                          ),
                                                         ],
                                                       )
                                                     ],
@@ -465,29 +504,33 @@ class _NotesState extends State<Notes> {
                                               ),
 
                                               // subtitle: AutoSizeText('DEADLIiNE',style: GoogleFonts.exo(fontSize: size.height*0.015,color: Colors.black,fontWeight: FontWeight.w400),),
-                                              trailing:  FloatingActionButton(
-                                                backgroundColor:
-                                                    (currDate.year>deadline.toDate().year ||
-                                                        currDate.month>deadline.toDate().month ||
-                                                        currDate.day>deadline.toDate().day ||
-                                                        currDate.hour>deadline.toDate().hour ||
-                                                        currDate.minute>deadline.toDate().minute ||
-                                                        currDate.second>deadline.toDate().second) &&
-                                                    (snapshot.data["Notes-${index+1}"]["Quiz_Created"]==true)
-                                                    ?
-                                                    Colors.red
-                                                    :
-                                                    Colors.lightBlueAccent,
-                                                elevation: 0,
-                                                onPressed: (){
-                                                  setState(() {
-                                                    isExpanded[index]= !isExpanded[index];
-                                                  });
+                                              trailing:  SizedBox(
+                                                height: size.width * 0.12,
+                                                width: size.width * 0.12,
+                                                child: FloatingActionButton(
+                                                  backgroundColor:
+                                                      (currDate.year>deadline.toDate().year ||
+                                                          currDate.month>deadline.toDate().month ||
+                                                          currDate.day>deadline.toDate().day ||
+                                                          currDate.hour>deadline.toDate().hour ||
+                                                          currDate.minute>deadline.toDate().minute ||
+                                                          currDate.second>deadline.toDate().second) &&
+                                                      (snapshot.data["Notes-${index+1}"]["Quiz_Created"]==true)
+                                                      ?
+                                                      Colors.red
+                                                      :
+                                                      Colors.lightBlueAccent,
+                                                  elevation: 0,
+                                                  onPressed: (){
+                                                    setState(() {
+                                                      isExpanded[index]= !isExpanded[index];
+                                                    });
 
-                                                },
-                                                child:Image.asset("assets/icon/speech-bubble.png",
-                                                  width: size.height*0.045,
-                                                  height: size.height*0.045,),
+                                                  },
+                                                  child:Image.asset("assets/icon/speech-bubble.png",
+                                                    width: size.height*0.045,
+                                                    height: size.height*0.045,),
+                                                ),
                                               ),
 
                                             ),
@@ -603,14 +646,17 @@ class _NotesState extends State<Notes> {
                                                                     )
                                                                 );
                                                               },
-                                                              child: AutoSizeText(
-                                                                "Leaderboard",
-                                                                style: GoogleFonts.openSans(
-                                                                    fontSize: size.height * 0.022,
-                                                                    color: Colors.white
+                                                              child: FittedBox(
+                                                                fit: BoxFit.cover,
+                                                                child: AutoSizeText(
+                                                                  "Leaderboard",
+                                                                  style: GoogleFonts.openSans(
+                                                                      fontSize: size.height * 0.022,
+                                                                      color: Colors.white
+                                                                  ),
+
+
                                                                 ),
-
-
                                                               )),
                                                         ),
                                                       ],
@@ -686,10 +732,11 @@ class _NotesState extends State<Notes> {
                                                         ),
 
                                                         onPressed: (){
-                                                          Navigator.pushReplacement(context,
+
+                                                          Navigator.push(context,
                                                               PageTransition(
                                                                   child: QuizScreen(subject: selectedSubject, notesId: index+1,
-                                                                    ),
+                                                                  ),
                                                                   type: PageTransitionType
                                                                       .bottomToTopJoined,
                                                                   childCurrent: const Notes(),
@@ -697,6 +744,7 @@ class _NotesState extends State<Notes> {
                                                                       milliseconds: 300)
                                                               )
                                                           );
+
                                                         },
                                                         child: AutoSizeText(
 
@@ -832,7 +880,7 @@ class _NotesState extends State<Notes> {
       ?
       Container(
         height: size.height * 0.046,
-        width: size.width * 0.34,
+        width: size.width * 0.372,
         decoration: BoxDecoration(
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
@@ -871,14 +919,25 @@ class _NotesState extends State<Notes> {
                   )
               );
             },
-            child: AutoSizeText(
-              "Leaderboard",
-              style: GoogleFonts.openSans(
-                  fontSize: size.height * 0.022,
-                  color: Colors.white
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const Icon(Icons.leaderboard_sharp,color: Colors.red),
+                  SizedBox(
+                    width: size.width*0.02,
+                  ),
+                  AutoSizeText(
+                    "Leaderboard",
+                    style: TextStyle(
+                        fontSize: size.height * 0.02,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black
+                    ),
+                  ),
+                ],
               ),
-
-
             )),
       )
       :
