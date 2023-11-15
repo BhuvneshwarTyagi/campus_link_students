@@ -446,7 +446,7 @@ class _navigationState extends State<navigation> {
                 leading: const Icon(Icons.logout,color: Colors.black),
                 title: const Text("Logout"),
                 onTap: () async {
-                  final token = await FirebaseMessaging.instance.getToken();
+                  final token = Platform.isIOS ? await FirebaseMessaging.instance.getAPNSToken() : await FirebaseMessaging.instance.getToken();
                   String? userId = FirebaseAuth.instance.currentUser?.email;
 
 

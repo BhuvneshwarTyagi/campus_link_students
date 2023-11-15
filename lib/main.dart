@@ -3,6 +3,7 @@ import 'package:alarm/alarm.dart';
 import 'package:alarm/service/notification.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:campus_link_student/Registration/database.dart';
+import 'package:campus_link_student/firebase_options.dart';
 import 'package:campus_link_student/push_notification/helper_notification.dart';
 import 'package:campus_link_student/push_notification/temp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -469,7 +470,9 @@ Future<void> firebaseMessagingonmessageOpenedAppHandler(RemoteMessage message) a
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform
+  );
   // Workmanager().initialize(
   //       callbackDispatcher,
   //     );

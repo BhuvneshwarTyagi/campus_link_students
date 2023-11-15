@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -68,8 +69,26 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> fetchuser() async{
-    if(!loaded){
+    if(!loaded && Platform.isAndroid){
       await FirebaseMessaging.instance.getToken().then((token) async {
+        await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
+          'Token' : token,
+        }).whenComplete(() async {
+          await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
+            setState(() {
+              usermodel=value.data()!;
+              if (kDebugMode) {
+                print(usermodel);
+              }
+              loaded=true;
+            });
+          });
+        });
+
+      });
+    }
+    if(!loaded && Platform.isIOS){
+      await FirebaseMessaging.instance.getAPNSToken().then((token) async {
         await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
           'Token' : token,
         }).whenComplete(() async {
