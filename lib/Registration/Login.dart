@@ -256,6 +256,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   child: ElevatedButton(
                     onPressed: () async{
+                      print("login pressed");
                       final ref=await FirebaseFirestore.instance.collection("Student_record").doc("Email").get();
                       final student_record=ref.data()!["Email"];
                       if( student_record!=null && student_record.contains(_email.text.trim())) {
@@ -274,6 +275,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               childCurrent: const SignInScreen(),
                             ),
                           );
+                          print("to main page");
                           final token = await FirebaseMessaging.instance.getToken();
                           String? userId = FirebaseAuth.instance.currentUser?.email;
                           final userdoc= await FirebaseFirestore.instance.collection("Students").doc(userId).get();
@@ -432,7 +434,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<String> signin(String email, String password) async {
     try {
-      await  FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       return "1";
     } on FirebaseAuthException catch (e) {
       print(e.code);
