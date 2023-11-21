@@ -46,10 +46,6 @@ class _NotesState extends State<Notes> {
   String filePath="";
   //String selectedSubject="DBMS";
 
-  List<bool>isExpanded=[];
-  List<bool>isDownloaded=[];
-  List<bool>isDownloading=[];
-
 
   List<bool> selected = List.filled(usermodel["Subject"].length, false);
 
@@ -59,7 +55,7 @@ class _NotesState extends State<Notes> {
 
   List<PdfController> pdfControllers=[];
   List<Uint8List> imageBytes=[];
-
+  int currIndex=-1;
   @override
   void initState() {
     // TODO: implement initState
@@ -203,47 +199,25 @@ class _NotesState extends State<Notes> {
                         child: ListView.builder(
                           itemCount: snapshot.data["Total_Notes"],
                           itemBuilder: (context, index) {
+                            bool isDownloaded=false;
+                            bool isDownloading=false;
+                            bool isExpanded;
+                            if(currIndex==index)
+                              {
+                                isExpanded=true;
+                              }
+                            else{
+                              isExpanded=false;
+                            }
                             Timestamp deadline=snapshot.data["Notes-${index+1}"]["Deadline"] ?? Timestamp(0, 0);
                             String? dir=directory?.path.toString().substring(0,19);
                             String path="$dir/Campus Link/${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $selectedSubject/Notes/";
 
                             File newPath=File("${path}${snapshot.data["Notes-${index+1}"]["File_Name"]}");
-                            newPath.exists().then((value) async  {
-                              if(!value)
+                            if(newPath.existsSync())
                               {
-                                if(mounted)
-                                  {
-                                    setState(() {
-                                      isDownloaded[index]=false;
-                                    });
-                                  }
-
+                                isDownloaded=true;
                               }
-                              else{
-
-                                  if(mounted)
-                                    {
-                                      setState(() {
-
-                                        isDownloaded[index]=true;
-                                      });
-                                    }
-
-                               /* pdfControllers.add(PdfController(document: PdfDocument.openFile("$path${snapshot.data["Notes-${index+1}"]["File_Name"]}")));
-                                PdfDocument doc = await pdfControllers[index].document;
-                                  print("..........index---- ${index}");
-                                PdfPage page = await doc.getPage(1).whenComplete(() => print("..............Complettd}"));
-                                  PdfPageImage? image = await page.render(
-                                      width: 400,
-                                      height: 400,
-                                      format: PdfPageImageFormat.png,
-                                      backgroundColor: "#FFFFFF");
-                                  imageBytes.add(image!.bytes);
-                                  print("........${imageBytes.length}");
-                                  await page.close();*/
-
-                              }
-                            });
                             return Padding(
                               padding:  EdgeInsets.all(size.width*0.032),
                               child: Container(
@@ -263,7 +237,7 @@ class _NotesState extends State<Notes> {
                                           padding:  EdgeInsets.only(top:size.height*0.01,left:size.height*0.01,right:size.height*0.01),
                                           child: InkWell(
                                             onTap: (){
-                                              if(isDownloaded[index])
+                                              if(isDownloaded)
                                               {
                                                 Navigator.push(
                                                   context,
@@ -317,7 +291,7 @@ class _NotesState extends State<Notes> {
                                       ),
                                     ),
                                     AnimatedContainer(
-                                      height: isExpanded[index] ? size.height*0.24 :size.height*0.14,
+                                      height: isExpanded ? size.height*0.24 :size.height*0.14,
                                       width:size.width*0.98,
                                       duration: const Duration(milliseconds: 1),
                                       decoration: BoxDecoration(
@@ -442,11 +416,11 @@ class _NotesState extends State<Notes> {
                                                 fit: BoxFit.cover,
                                                 alignment: Alignment.center, )*/
                                                   ),
-                                                  child:isDownloaded[index]
+                                                  child:isDownloaded
                                                       ?
                                                   Image.asset("assets/icon/pdf.png")
                                                       :
-                                                  isDownloading[index]
+                                                  isDownloading
                                                       ?
                                                   Center(
                                                     child: Center(
@@ -468,7 +442,7 @@ class _NotesState extends State<Notes> {
                                                       onTap: ()
                                                       async {
                                                         setState(() {
-                                                          isDownloading[index]=true;
+                                                          isDownloading=true;
                                                         });
 
                                                         String path="$dir/Campus Link/${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $selectedSubject/Notes/";
@@ -482,8 +456,8 @@ class _NotesState extends State<Notes> {
                                                               if(count==total){
                                                                 setState(() {
                                                                   filePath=newPath.path;
-                                                                  isDownloaded[index]=true;
-                                                                  isDownloading[index]=false;
+                                                                  isDownloaded=true;
+                                                                  isDownloading=false;
                                                                 });
                                                               }
                                                               else{
@@ -523,7 +497,13 @@ class _NotesState extends State<Notes> {
                                                   elevation: 0,
                                                   onPressed: (){
                                                     setState(() {
-                                                      isExpanded[index]= !isExpanded[index];
+                                                      if(currIndex==index)
+                                                        {
+                                                          currIndex=-1;
+                                                        }
+                                                      else{
+                                                        currIndex=index;
+                                                      }
                                                     });
 
                                                   },
@@ -534,7 +514,7 @@ class _NotesState extends State<Notes> {
                                               ),
 
                                             ),
-                                            isExpanded[index]
+                                            isExpanded
                                                 ?
                                             Padding(
                                                 padding: EdgeInsets.only(top: size.height*0.014),
@@ -977,9 +957,7 @@ class _NotesState extends State<Notes> {
       if(value.exists)
       {
           setState(() {
-            isExpanded=List.generate(value.data()?["Total_Notes"], (index) =>  false);
-            isDownloaded=List.generate(value.data()?["Total_Notes"], (index) =>  false);
-            isDownloading=List.generate(value.data()?["Total_Notes"], (index) =>  false);
+
             docExists=true;
           });
       }

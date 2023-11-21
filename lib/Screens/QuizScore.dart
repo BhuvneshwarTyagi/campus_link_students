@@ -58,14 +58,12 @@ class _QuizscoreState extends State<Quizscore> {
         ),
         body: Container(
           decoration:  const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.blue,
-                Colors.purpleAccent,
-              ],
-            ),
+              gradient: LinearGradient(
+                  colors: [
+                    Color.fromRGBO(89, 152, 207, 1),
+                    Color.fromRGBO(178, 227, 235, 1)
+
+                  ])
           ),
           child:load && snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"]!=null && snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"].length>=3
             ?

@@ -10,6 +10,16 @@ import 'package:page_transition/page_transition.dart';
 import '../Constraints.dart';
 import 'loadingscreen.dart';
 
+
+late Timer _timer;
+int _start = 0;
+int minute=0;
+int milliSecond=0;
+var count = 0;
+var totalMinutes;
+int score=0;
+Map<String,dynamic>responseMap={};
+
 class QuizScreen extends StatefulWidget {
    QuizScreen({super.key,
     required this.subject,
@@ -21,12 +31,7 @@ class QuizScreen extends StatefulWidget {
 }
 
 class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
-  late Timer _timer;
-  int _start = 0;
-  int minute=0;
-  int milliSecond=0;
-  var count = 0;
-  var totalMinutes;
+
   List<String> selectedChoice = [];
   List<dynamic>options=[];
   List<String>selectedOption=["A","B","C","D"];
@@ -36,15 +41,14 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
   PageController pageQuestionController = PageController();
   bool loaded = false;
   bool skip=false;
-  Map<String,dynamic>responseMap={};
-  int score=0;
+
+
   @override
   initState() {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     fetchQuiz();
-    startTimer();
   }
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -58,7 +62,7 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
               pageQuestionController.animateToPage(page+1, duration: const Duration(milliseconds: 200), curve: Curves.linear);
               count=page+1;
               if(loaded &&  count==snap.data()?["Notes-${widget.notesId}"]["Total_Question"]){
-                submit();
+                submit(context,widget.subject,widget.notesId);
               }
             }
             skip=true;
@@ -95,8 +99,8 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
             return Center(
                 child:Container
                   (
-                  height: size.height*0.22,
-                  width: size.width*0.72,
+                  height: size.height*0.26,
+                  width: size.width*0.732,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(size.height*0.02)),
                       border: Border.all(
@@ -185,11 +189,15 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
                             ),
                             child: ElevatedButton(
                               onPressed: (){
-                                setState(() {
+                                _start = 0;
+                                minute=0;
+                                milliSecond=0;
+                                count = 0;
+                                totalMinutes;
+                                score=0;
                                   _timer.cancel();
                                  Navigator.pop(context);
                                   Navigator.pop(context);
-                                });
 
                               },
                               style: ElevatedButton.styleFrom(
@@ -321,12 +329,17 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
                                       ),
                                       child: ElevatedButton(
                                         onPressed: (){
-                                          setState(() {
+                                          _start = 0;
+                                          minute=0;
+                                          milliSecond=0;
+                                          count = 0;
+                                          totalMinutes;
+                                          score=0;
                                            // Navigator.pop(context);
                                             _timer.cancel();
                                             Navigator.pop(context);
                                             Navigator.pop(context);
-                                          });
+
 
                                         },
                                         style: ElevatedButton.styleFrom(
@@ -476,12 +489,16 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
                                         ),
                                         child: ElevatedButton(
                                           onPressed: (){
-                                            setState(() {
-                                            //Navigator.pop(context);
+                                            _start = 0;
+                                            minute=0;
+                                            milliSecond=0;
+                                            count = 0;
+                                            totalMinutes;
+                                            score=0;
                                               _timer.cancel();
                                             Navigator.pop(context);
                                             Navigator.pop(context);
-                                            });
+
 
                                           },
                                           style: ElevatedButton.styleFrom(
@@ -545,11 +562,7 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
                         SizedBox(
                           width: size.width*0.16,
                         ),
-                        AutoSizeText("$minute : $_start",
-                          style: GoogleFonts.poppins(
-                              color: Colors.redAccent,
-                              fontSize: size.height*0.04
-                          ),)
+                         time(subject: widget.subject,notesId:widget.notesId)
                       ],
                     ),
                   ),
@@ -813,68 +826,103 @@ class _QuizScreenState extends State<QuizScreen> with WidgetsBindingObserver{
     });
   }
 
+
+
+}
+//  ${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]}
+
+class time extends StatefulWidget {
+   time({super.key,
+     required this.subject,
+     required this.notesId});
+ String subject;
+ int notesId;
+  @override
+  State<time> createState() => _timeState();
+}
+
+class _timeState extends State<time> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    startTimer();
+  }
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return AutoSizeText("$minute : $_start",
+      style: GoogleFonts.poppins(
+          color: Colors.redAccent,
+          fontSize: size.height*0.04
+      ),);
+  }
   void startTimer() {
-    const oneSec = Duration(milliseconds: 0);
+    const oneSec = Duration(milliseconds: 1);
     _timer = Timer.periodic(
       oneSec,
           (Timer timer) async {
         if (_start == 60) {
-            setState(() {
-              minute++;
-              _start=0;
-            });
-           // timer.cancel();
+          setState(() {
+            minute++;
+            _start=0;
+          });
+          // timer.cancel();
         }
         else if(milliSecond==1000)
+        {
+
+          if(mounted)
           {
-
-            if(mounted)
-              {
-                setState(() {
-                  _start++;
-                  milliSecond=0;
-                });
-              }
-
-
+            setState(() {
+              _start++;
+              milliSecond=0;
+            });
           }
+
+
+        }
         else{
 
           milliSecond++;
         }
         if(minute==5)
-          {
-
-              submit();
+        {
+          submit(context, widget.subject, widget.notesId);
         }
       },
     );
   }
- submit() async {
-   _timer.cancel();
-   //super.dispose();
-   Navigator.push(context,
-     PageTransition(
-         child: const loading(text: "Data is uploading to the server Please wait."),
-         type: PageTransitionType.bottomToTopJoined,
-         childCurrent:  QuizScreen(subject: widget.subject, notesId: widget.notesId),
-         duration: const Duration(milliseconds: 200)
-     ),
-   );
-   await FirebaseFirestore.instance
-       .collection("Notes")
-       .doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.subject}")
-       .update({
-     "${usermodel["Email"]}":{"Score":FieldValue.increment(score),"Time":FieldValue.increment(totalMinutes)},
-     "Notes-${widget.notesId}.Submitted by":FieldValue.arrayUnion(["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]),
-     "Notes-${widget.notesId}.Response.${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}":responseMap
-   }).whenComplete(() {
-     print(".......................Ho gaya upload");
-     Navigator.pop(context);
-     Navigator.pop(context);
-   });
- }
 }
-//  ${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]}
 
-
+submit(BuildContext context,String subject,int notesId) async {
+  _timer.cancel();
+  //super.dispose();
+  Navigator.push(context,
+    PageTransition(
+        child: const loading(text: "Data is uploading to the server Please wait."),
+        type: PageTransitionType.bottomToTopJoined,
+        childCurrent:  QuizScreen(subject: subject, notesId: notesId),
+        duration: const Duration(milliseconds: 200)
+    ),
+  );
+  await FirebaseFirestore.instance
+      .collection("Notes")
+      .doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $subject")
+      .update({
+    "${usermodel["Email"]}":{"Score":FieldValue.increment(score),"Time":FieldValue.increment(totalMinutes)},
+    "Notes-${notesId}.Submitted by":FieldValue.arrayUnion(["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]),
+    "Notes-${notesId}.Response.${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}":responseMap
+  }).whenComplete(() {
+    _start = 0;
+     minute=0;
+     milliSecond=0;
+     count = 0;
+     totalMinutes;
+     score=0;
+    Map<String,dynamic>responseMap={};
+    print(".......................Ho gaya upload");
+    Navigator.pop(context);
+    Navigator.pop(context);
+  });
+}

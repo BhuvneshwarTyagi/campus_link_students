@@ -39,14 +39,12 @@ class _subjectQuizScoreState extends State<subjectQuizScore> {
         ),
         body: Container(
             decoration:  const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.blue,
-                  Colors.purpleAccent,
-                ],
-              ),
+                gradient: LinearGradient(
+                    colors: [
+                      Color.fromRGBO(89, 152, 207, 1),
+                      Color.fromRGBO(178, 227, 235, 1)
+
+                    ])
             ),
             child: StreamBuilder(
                   stream: FirebaseFirestore.instance.collection("Notes").doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.subject}").snapshots(),
