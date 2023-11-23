@@ -12,7 +12,6 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../Constraints.dart';
-import '../push_notification/Storage_permission.dart';
 import 'Chat_tiles/Image_viewer.dart';
 import 'Chat_tiles/PdfViewer.dart';
 
@@ -24,7 +23,7 @@ class Assignment extends StatefulWidget {
 }
 
 class _AssignmentState extends State<Assignment> {
-  var checkALLPermissions = CheckPermission();
+  var checkALLPermissions ;
   bool permissionGranted = false;
   bool docExists = false;
   Directory? directory;
