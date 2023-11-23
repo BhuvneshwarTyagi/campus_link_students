@@ -48,7 +48,8 @@ class _AssignmentState extends State<Assignment> {
 
     super.initState();
     selectedSubject = usermodel["Subject"][0];
-
+    selected[0]=true;
+    getdata();
     checkAndRequestPermissions();
   }
 
