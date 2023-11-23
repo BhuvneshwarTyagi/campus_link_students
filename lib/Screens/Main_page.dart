@@ -88,7 +88,8 @@ class _MainPageState extends State<MainPage> {
       });
     }
     if(!loaded && Platform.isIOS){
-      await FirebaseMessaging.instance.getAPNSToken().then((token) async {
+      await FirebaseMessaging.instance..getAPNSToken().then((token) async {
+        print(token);
         await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
           'Token' : token,
         }).whenComplete(() async {

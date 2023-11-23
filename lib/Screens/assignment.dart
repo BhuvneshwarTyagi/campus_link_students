@@ -296,7 +296,7 @@ class _AssignmentState extends State<Assignment> {
                                                   :
 
                                               CircleAvatar(
-                                                backgroundColor:   Color.fromRGBO(60, 99, 100, 1),
+                                                backgroundColor:   const Color.fromRGBO(60, 99, 100, 1),
                                                 radius: size.height*0.02,
                                                 child: IconButton(
                                                     onPressed: () async {
@@ -678,7 +678,9 @@ class _AssignmentState extends State<Assignment> {
   }
 
   Future<void> checkAndRequestPermissions() async {
-    directory = await getExternalStorageDirectory();
+    if(Platform.isAndroid){
+      directory = await getExternalStorageDirectory();
+    }
 
     var permission = await checkALLPermissions.isStoragePermission();
     if(!permission){
@@ -693,6 +695,11 @@ class _AssignmentState extends State<Assignment> {
     }
     if (permission) {
       String? dir = directory?.path.toString().substring(0, 19);
+      if(Platform.isIOS){
+        await getDownloadsDirectory().then((value){
+          dir=value?.path;
+        });
+      }
       path = "$dir/Campus Link/$selectedSubject/Assignment/";
       Directory(path).exists().then((value) async {
         if (!value) {
