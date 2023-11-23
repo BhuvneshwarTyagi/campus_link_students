@@ -19,12 +19,12 @@ import 'package:flutter_alarm_clock/flutter_alarm_clock.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
-import 'assignment.dart';
+import 'Assignment/assignment.dart';
 import 'attendance.dart';
 import 'Chat_tiles/chat_list.dart';
 import 'feedbackScreen.dart';
 import 'marks.dart';
-import 'notes.dart';
+import 'Notes/notes.dart';
 import 'performance.dart';
 import 'profile_page.dart';
 

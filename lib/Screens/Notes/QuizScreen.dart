@@ -7,8 +7,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../Constraints.dart';
-import 'loadingscreen.dart';
+import '../../Constraints.dart';
+import '../loadingscreen.dart';
 
 
 late Timer _timer;

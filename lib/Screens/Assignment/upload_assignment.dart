@@ -9,10 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
-import '../Constraints.dart';
+import '../../Constraints.dart';
 
-class AssigmentQuestion extends StatefulWidget {
-  AssigmentQuestion(
+class uploadAssignment extends StatefulWidget {
+  uploadAssignment(
       {super.key,
         required this.selectedSubject,
         required this.assignmentNumber});
@@ -20,10 +20,10 @@ class AssigmentQuestion extends StatefulWidget {
   int assignmentNumber;
 
   @override
-  State<AssigmentQuestion> createState() => _AssigmentQuestionState();
+  State<uploadAssignment> createState() => _uploadAssignmentState();
 }
 
-class _AssigmentQuestionState extends State<AssigmentQuestion> {
+class _uploadAssignmentState extends State<uploadAssignment> {
   late final FilePickerResult? filePath;
   bool fileSelected = false;
   int assignmentCount = 0;

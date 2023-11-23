@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:campus_link_student/Screens/upload_assignment.dart';
+import 'package:campus_link_student/Screens/Assignment/upload_assignment.dart';
 import 'package:campus_link_student/push_notification/Storage_permission.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
@@ -12,9 +12,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../Constraints.dart';
-import 'Chat_tiles/Image_viewer.dart';
-import 'Chat_tiles/PdfViewer.dart';
+import '../../Constraints.dart';
+import '../Chat_tiles/Image_viewer.dart';
+import '../Chat_tiles/PdfViewer.dart';
+import '../Notes/download_tile.dart';
 
 class Assignment extends StatefulWidget {
   const Assignment({Key? key}) : super(key: key);
@@ -38,9 +39,7 @@ class _AssignmentState extends State<Assignment> {
 
   List<dynamic> subjects = usermodel["Subject"];
   String selectedSubject =" ";
-  List<bool> isdownloaded = [];
-  List<bool> downloding = [];
-  String path = "";
+  String path ="";
   double percent=0.0;
   @override
   void initState() {
@@ -176,24 +175,17 @@ class _AssignmentState extends State<Assignment> {
                   child: ListView.builder(
                     itemCount: snapshot.data()?["Total_Assignment"],
                     itemBuilder: (context, index) {
+                      bool isDownloaded=false;
+                      bool isDownloading=true;
                       String newpath = "${path}Assignment-${index + 1}.${snapshot.data()?["Assignment-${index + 1}"]["Document-type"]}";
-                      print("isuht aisf ghasfdh ");
-                      File(newpath).exists().then((value) {
-                        if (value) {
-
-                          isdownloaded[index] = true;
-
-                        } else {
-
-                          isdownloaded[index] = false;
-
-                        }
-                      });
+                      if(File(newpath).existsSync()){
+                       isDownloaded=true;
+                       }
                       return Padding(
                           padding: EdgeInsets.all( size.height*0.01),
                           child:  InkWell(
                             onTap: (){
-                              if(isdownloaded[index]) {
+                              if(File(newpath).existsSync()) {
                                 if (snapshot.data()?["Assignment-${index +
                                     1}"]["Document-type"] == "pdf") {
                                   Navigator.push(
@@ -230,7 +222,6 @@ class _AssignmentState extends State<Assignment> {
 
                             },
                             child: Container(
-
                               height: size.height*0.235,
                               width: size.width,
                               decoration: BoxDecoration(
@@ -258,48 +249,13 @@ class _AssignmentState extends State<Assignment> {
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.end,
                                             children: [
-                                              isdownloaded[index]
-                                                  ?
-                                              SizedBox(
-                                                height:  size.height * 0.03,
-                                              )
-                                                  :
-                                              downloding[index]
-                                                  ?
-                                              Center(
-                                                child:
-                                                CircularPercentIndicator(
-                                                  percent:
-                                                  percent,
-                                                  radius:
-                                                  size.height * 0.04,
-                                                  animation: true,
-                                                  animateFromLastPercent:
-                                                  true,
-                                                  curve: accelerateEasing,
-                                                  progressColor:
-                                                  Colors.green,
-                                                  center: Text(
-                                                    (percent * 100)
-                                                        .toStringAsFixed(
-                                                        0),
-                                                    style: GoogleFonts
-                                                        .openSans(
-                                                        fontSize: size
-                                                            .height *
-                                                            0.024),
-                                                  ),
-                                                  //footer: const Text("Downloading"),
-                                                  backgroundColor:
-                                                  Colors.transparent,
-                                                ),
-                                              )
-                                                  :
-
+                                              !isDownloaded
+                                              ?
                                               CircleAvatar(
-                                                backgroundColor:   const Color.fromRGBO(60, 99, 100, 1),
-                                                radius: size.height*0.02,
-                                                child: IconButton(
+                                                backgroundColor: Colors.transparent,
+                                                radius: size.width*0.045,
+                                                child: download(downloadUrl:snapshot.data()?["Assignment-${index + 1}"]["Assignment"], pdfName: "Assignment-${index + 1}.${snapshot.data()?["Assignment-${index + 1}"]["Document-type"]}", path:path)
+                                                /*IconButton(
                                                     onPressed: () async {
                                                       setState(() {
                                                         downloding[index] =
@@ -334,8 +290,10 @@ class _AssignmentState extends State<Assignment> {
                                                       );
                                                     },
                                                     icon: Icon(Icons.file_download_sharp,size: size.height*0.023,color: Colors.white,)
-                                                ),
-                                              ),
+                                                )*/,
+                                              )
+                                              :
+                                              const SizedBox(),
                                               SizedBox(
                                                 width: size.width*0.02,
                                               )
@@ -373,12 +331,13 @@ class _AssignmentState extends State<Assignment> {
 
                                       ),
                                       child: Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
                                           Column(
                                             crossAxisAlignment:
                                             CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
                                               AutoSizeText(
                                                 "Assignment : ${index + 1}(${(int.parse(snapshot.data()!["Assignment-${index + 1}"]["Size"].toString())/1048576).toStringAsFixed(2)}MB)",
@@ -596,7 +555,7 @@ class _AssignmentState extends State<Assignment> {
                                                   Navigator.push(
                                                       context,
                                                       PageTransition(
-                                                        child: AssigmentQuestion(
+                                                        child: uploadAssignment(
                                                             selectedSubject:
                                                             selectedSubject,
                                                             assignmentNumber:
@@ -657,18 +616,8 @@ class _AssignmentState extends State<Assignment> {
         });
       } else {
         setState(() {
-
-
           nodata = false;
           snapshot = value;
-          isdownloaded = List.generate(
-              snapshot.data()?["Total_Assignment"],
-                  (index) => false);
-          downloding = List.generate(
-              snapshot.data()?["Total_Assignment"],
-                  (index) => false);
-
-
         });
       }
     }).whenComplete(() {
