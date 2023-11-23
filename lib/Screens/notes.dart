@@ -29,7 +29,7 @@ class Notes extends StatefulWidget {
 
 class _NotesState extends State<Notes> {
 
-  var checkALLPermissions;
+  var checkALLPermissions = CheckPermission();
   bool permissionGranted=false;
   bool docExists=false;
   Directory? directory;

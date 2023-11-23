@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Screens/upload_assignment.dart';
+import 'package:campus_link_student/push_notification/Storage_permission.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class Assignment extends StatefulWidget {
 }
 
 class _AssignmentState extends State<Assignment> {
-  var checkALLPermissions ;
+  var checkALLPermissions = CheckPermission();
   bool permissionGranted = false;
   bool docExists = false;
   Directory? directory;
@@ -681,17 +682,33 @@ class _AssignmentState extends State<Assignment> {
       directory = await getExternalStorageDirectory();
     }
 
-    var permission = await checkALLPermissions.isStoragePermission();
-    if(!permission){
-      if(await Permission.manageExternalStorage.request().isGranted){
-        permission=true;
-      }else{
-        await Permission.manageExternalStorage.request().then((value) {
-          bool check=value.isGranted;
-          if(check){permission=true;}});
-      }
+    var permission;
+     if(Platform.isAndroid){
+       permission=await checkALLPermissions.isStoragePermission();
+       if(!permission){
+         if(await Permission.manageExternalStorage.request().isGranted){
+           permission=true;
+         }else{
+           await Permission.manageExternalStorage.request().then((value) {
+             bool check=value.isGranted;
+             if(check){permission=true;}});
+         }
 
-    }
+       }
+     }
+     if(Platform.isIOS){
+       permission= Permission.mediaLibrary.isGranted;
+       if(!permission){
+         if(await Permission.mediaLibrary.request().isGranted){
+           permission=true;
+         }else{
+           await Permission.mediaLibrary.request().then((value) {
+             bool check=value.isGranted;
+             if(check){permission=true;}});
+         }
+
+       }
+     }
     if (permission) {
       String? dir = directory?.path.toString().substring(0, 19);
       if(Platform.isIOS){
