@@ -1,22 +1,20 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'dart:io';
-import '../../Constraints.dart';
 
-class download extends StatefulWidget {
-   download({Key? key,required this.downloadUrl,required this.pdfName,required this.path}) : super(key: key);
+class Download extends StatefulWidget {
+   Download({Key? key,required this.downloadUrl,required this.pdfName,required this.path}) : super(key: key);
   String downloadUrl;
   String pdfName;
   String path;
   @override
-  State<download> createState() => _downloadState();
+  State<Download> createState() => _DownloadState();
 }
 
-class _downloadState extends State<download> {
+class _DownloadState extends State<Download> {
   final dio=Dio();
   double percent=0.0;
   bool isDownloading=false;

@@ -39,7 +39,7 @@ class _navigationState extends State<navigation> {
   List<Widget>All_Pages=[const Assignment(),const Notes(),const Attendance(),const Marks(),performance()];
   PageController page_controller=PageController();
   List<String>cuu_title=["Assingments","Notes","Attendeance","Marks","Performance"];
-  var curr_index=3;
+  var curr_index=0;
   bool profile_update=false;
 
 
@@ -506,6 +506,7 @@ class _navigationState extends State<navigation> {
           ),
         ),
         bottomNavigationBar: CurvedNavigationBar(
+          index: curr_index,
           backgroundColor: Colors.transparent,
           color:Colors.black38,
           animationDuration: const Duration(milliseconds: 200),
@@ -575,6 +576,11 @@ class _navigationState extends State<navigation> {
         ),
         body: PageView(
           controller: page_controller,
+          onPageChanged: (index){
+            setState(() {
+              curr_index=index;
+            });
+          },
           children: [
             const Assignment(),
             const Notes(),

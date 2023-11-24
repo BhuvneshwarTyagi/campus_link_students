@@ -2,14 +2,11 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Screens/Assignment/upload_assignment.dart';
 import 'package:campus_link_student/Screens/loadingscreen.dart';
-import 'package:campus_link_student/push_notification/Storage_permission.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../../Constraints.dart';
 import '../Chat_tiles/Image_viewer.dart';
 import '../Chat_tiles/PdfViewer.dart';
@@ -23,15 +20,12 @@ class Assignment extends StatefulWidget {
 }
 
 class _AssignmentState extends State<Assignment> {
-
-
   List<dynamic> subjects = usermodel["Subject"];
   String selectedSubject =" ";
 
   @override
   void initState() {
     // TODO: implement initState
-
     super.initState();
     selectedSubject = usermodel["Subject"][0];
   }
@@ -140,8 +134,8 @@ class _AssignmentState extends State<Assignment> {
                     stream: FirebaseFirestore
                         .instance
                         .collection("Assignment")
-                        .doc("${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]} $selectedSubject",
-                    ).snapshots(),
+                        .doc("${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]} $selectedSubject",)
+                        .snapshots(),
                     builder: (context, snapshot) {
                       return snapshot.hasData
                           ?
@@ -232,7 +226,11 @@ class _AssignmentState extends State<Assignment> {
                                                   CircleAvatar(
                                                     backgroundColor: Colors.transparent,
                                                     radius: size.width*0.045,
-                                                    child: download(downloadUrl:snapshot.data!.data()?["Assignment-${index + 1}"]["Assignment"], pdfName: "Assignment-${index + 1}.${snapshot.data!.data()?["Assignment-${index + 1}"]["Document-type"]}", path: "/Campus Link/$selectedSubject/Assignment")
+                                                    child: Download(
+                                                        downloadUrl: snapshot.data!.data()?["Assignment-${index + 1}"]["Assignment"],
+                                                        pdfName: "Assignment-${index + 1}.${snapshot.data!.data()?["Assignment-${index + 1}"]["Document-type"]}",
+                                                        path: "/Campus Link/$selectedSubject/Assignment",
+                                                    )
 
                                                   ),
                                                   SizedBox(

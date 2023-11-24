@@ -1,23 +1,13 @@
 
-
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:campus_link_student/Screens/loadingscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pdfx/pdfx.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
-
 import '../../Constraints.dart';
 import 'QuizScore.dart';
 import 'QuizScreen.dart';
-import '../../push_notification/Storage_permission.dart';
-import '../Chat_tiles/PdfViewer.dart';
 import 'SubjectQuizScore.dart';
 import 'download_tile.dart';
 
@@ -30,44 +20,18 @@ class Notes extends StatefulWidget {
 
 class _NotesState extends State<Notes> {
 
-  var checkALLPermissions = CheckPermission();
-  bool permissionGranted=false;
-  bool docExists=false;
-  Directory? directory;
-  bool fileAlreadyExists=false;
   DateTime currDate=DateTime.now();
-
-  int ind=0;
-  bool a=true;
-
-  bool ispdfExpanded=false;
-  final dio=Dio();
-
-  double percent=0.0;
-  String filePath="";
-  //String selectedSubject="DBMS";
-
-
-  List<bool> selected = List.filled(usermodel["Subject"].length, false);
 
   List<dynamic> subjects = usermodel["Subject"];
   String selectedSubject = usermodel["Subject"][0];
 
 
-  List<PdfController> pdfControllers=[];
-  List<Uint8List> imageBytes=[];
+
   int currIndex=-1;
-  late String dir;
-  String path='';
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    checkAndRequestPermissions();
-    checkExists();
-    setState(() {
-      selected[0]=true;
-    });
   }
   @override
   Widget build(BuildContext context) {
@@ -97,18 +61,8 @@ class _NotesState extends State<Notes> {
                         children: [
                           InkWell(
                             onTap: () {
-                              var preIndex = index;
-
                               setState(() {
-                                docExists=false;
-                                selected =
-                                    List.filled(subjects.length, false);
-                                selected[index] = true;
-                                // previousIndex = index;
-                                print(subjects[index]);
                                 selectedSubject = subjects[index];
-                                checkExists();
-
                               });
                             },
                             child: Container(
@@ -132,7 +86,7 @@ class _NotesState extends State<Notes> {
                                   //   ],
                                   // ),
                                   shape: BoxShape.circle,
-                                  border: selected[index]
+                                  border:  selectedSubject == subjects[index]
                                       ? Border.all(
                                       color: Colors.greenAccent, width: 2)
                                       : Border.all(
@@ -144,7 +98,7 @@ class _NotesState extends State<Notes> {
                                   style: GoogleFonts.openSans(
                                     fontSize: 23,
                                       fontWeight: FontWeight.w600,
-                                      color: selected[index]
+                                      color: selectedSubject == subjects[index]
                                           ? Colors.greenAccent
                                           : Colors.white),
                                 ),
@@ -158,7 +112,7 @@ class _NotesState extends State<Notes> {
                             "${subjects[index]}",
                             style: GoogleFonts.openSans(
                               fontWeight: FontWeight.w600,
-                                color: selected[index]
+                                color: selectedSubject == subjects[index]
                                     ? Colors.greenAccent
                                     : Colors.black),
                           )
@@ -185,25 +139,24 @@ class _NotesState extends State<Notes> {
                   endIndent: 8,
                   indent: 8,
                 ),
-                docExists
-                    ?
+
                 SizedBox(
                   height: size.height,
                   width: size.width,
                   child: StreamBuilder
                     (
                     stream: FirebaseFirestore.instance.collection("Notes").doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $selectedSubject").snapshots(),
-                    builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot)
+                    builder: ( context, snapshot)
                     {
                       return  snapshot.hasData
+                          ?
+                      snapshot.data?.data() != null
                           ?
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: ListView.builder(
-                          itemCount: snapshot.data["Total_Notes"],
+                          itemCount: snapshot.data!.data()?["Total_Notes"],
                           itemBuilder: (context, index) {
-                            bool isDownloaded=false;
-                            bool isDownloading=false;
                             bool isExpanded;
                             if(currIndex==index)
                               {
@@ -212,13 +165,8 @@ class _NotesState extends State<Notes> {
                             else{
                               isExpanded=false;
                             }
-                            Timestamp deadline=snapshot.data["Notes-${index+1}"]["Deadline"] ?? Timestamp(0, 0);
+                            Timestamp deadline=snapshot.data!.data()?["Notes-${index+1}"]["Deadline"] ?? Timestamp(0, 0);
 
-                            File newPath=File("${path}${snapshot.data["Notes-${index+1}"]["File_Name"]}");
-                            if(newPath.existsSync())
-                              {
-                                isDownloaded=true;
-                              }
                             return Padding(
                               padding:  EdgeInsets.all(size.width*0.032),
                               child: Container(
@@ -240,19 +188,19 @@ class _NotesState extends State<Notes> {
                                               padding:  EdgeInsets.only(top:size.height*0.01,left:size.height*0.01,right:size.height*0.01),
                                               child: InkWell(
                                                 onTap: (){
-                                                  if(isDownloaded)
-                                                  {
-                                                    Navigator.push(
-                                                      context,
-                                                      PageTransition(
-                                                        child: PdfViewer(document: newPath.path,name:snapshot.data["Notes-${index+1}"]["File_Name"] ),
-                                                        type: PageTransitionType.bottomToTopJoined,
-                                                        duration: const Duration(milliseconds: 200),
-                                                        alignment: Alignment.bottomCenter,
-                                                        childCurrent: const Notes(),
-                                                      ),
-                                                    );
-                                                  }
+                                                  // if(isDownloaded)
+                                                  // {
+                                                  //   Navigator.push(
+                                                  //     context,
+                                                  //     PageTransition(
+                                                  //       child: PdfViewer(document: newPath.path,name: snapshot.data!.data()?["Notes-${index+1}"]["File_Name"] ),
+                                                  //       type: PageTransitionType.bottomToTopJoined,
+                                                  //       duration: const Duration(milliseconds: 200),
+                                                  //       alignment: Alignment.bottomCenter,
+                                                  //       childCurrent: const Notes(),
+                                                  //     ),
+                                                  //   );
+                                                  // }
                                                 },
                                                 child: Container(
                                                   decoration: BoxDecoration(
@@ -323,11 +271,7 @@ class _NotesState extends State<Notes> {
                                                           FittedBox(
                                                             fit:BoxFit.fill,
                                                             child: AutoSizeText(
-                                                              snapshot.data["Notes-${index+1}"]["File_Name"]!=null
-                                                                  ?
-                                                              snapshot.data["Notes-${index+1}"]["File_Name"].toString()
-                                                                  :
-                                                              "",
+                                                              snapshot.data!.data()?["Notes-${index+1}"]["File_Name"] ?? "",
                                                               style: GoogleFonts.exo(
                                                                   fontSize: size.height*0.02,
                                                                   color: Colors.white70,
@@ -345,9 +289,9 @@ class _NotesState extends State<Notes> {
                                                               FittedBox(
                                                                 fit: BoxFit.fill,
                                                                 child: AutoSizeText(
-                                                                  snapshot.data["Notes-${index+1}"]["File_Size"]!=null
+                                                                  snapshot.data!.data()?["Notes-${index+1}"]["File_Size"]!=null
                                                                       ?
-                                                                  "Size:${(int.parse(snapshot.data["Notes-${index+1}"]["File_Size"].toString())/1048576).toStringAsFixed(2)} MB"
+                                                                  "Size:${(int.parse(snapshot.data!.data()?["Notes-${index+1}"]["File_Size"].toString() ?? "")/1048576).toStringAsFixed(2)} MB"
                                                                       :
                                                                   "",
                                                                   style: GoogleFonts.exo(
@@ -358,9 +302,9 @@ class _NotesState extends State<Notes> {
                                                               FittedBox(
                                                                 fit: BoxFit.fill,
                                                                 child: AutoSizeText(
-                                                                  snapshot.data["Notes-${index+1}"]["Stamp"]!=null
+                                                                  snapshot.data!.data()?["Notes-${index+1}"]["Stamp"]!=null
                                                                       ?
-                                                                  "Date: ${(snapshot.data["Notes-${index+1}"]["Stamp"].toDate()).toString().split(" ")[0]}"
+                                                                  "Date: ${(snapshot.data!.data()?["Notes-${index+1}"]["Stamp"].toDate()).toString().split(" ")[0]}"
                                                                       :
                                                                   "",
                                                                   style: GoogleFonts.exo(
@@ -390,9 +334,9 @@ class _NotesState extends State<Notes> {
                                                               FittedBox(
                                                                 fit:BoxFit.fill,
                                                                 child: AutoSizeText(
-                                                                  snapshot.data["Notes-${index+1}"]["Stamp"]!=null
+                                                                  snapshot.data!.data()?["Notes-${index+1}"]["Stamp"]!=null
                                                                       ?
-                                                                  "Deadline : ${(snapshot.data["Notes-${index+1}"]["Stamp"].toDate()).toString().split(" ")[0]} ${snapshot.data["Notes-${index+1}"]["Submitted by"]!=null &&  snapshot.data["Notes-${index+1}"]["Submitted by"].contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")?"( Submit )":"( Pending )"}"
+                                                                  "Deadline : ${(snapshot.data!.data()?["Notes-${index+1}"]["Stamp"].toDate()).toString().split(" ")[0]} ${snapshot.data!.data()?["Notes-${index+1}"]["Submitted by"]!=null &&  snapshot.data!.data()?["Notes-${index+1}"]["Submitted by"].contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")?"( Submit )":"( Pending )"}"
                                                                       :
                                                                   "",
                                                                   style: GoogleFonts.exo(
@@ -433,7 +377,7 @@ class _NotesState extends State<Notes> {
                                                           currDate.hour>deadline.toDate().hour ||
                                                           currDate.minute>deadline.toDate().minute ||
                                                           currDate.second>deadline.toDate().second) &&
-                                                          (snapshot.data["Notes-${index+1}"]["Quiz_Created"]==true)
+                                                          (snapshot.data!.data()?["Notes-${index+1}"]["Quiz_Created"]==true)
                                                           ?
                                                       Colors.red
                                                           :
@@ -462,7 +406,7 @@ class _NotesState extends State<Notes> {
                                                     ?
                                                 Padding(
                                                     padding: EdgeInsets.only(top: size.height*0.014),
-                                                    child:  snapshot.data["Notes-${index+1}"]["Submitted by"]!=null &&  snapshot.data["Notes-${index+1}"]["Submitted by"].contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")
+                                                    child:  snapshot.data!.data()?["Notes-${index+1}"]["Submitted by"]!=null &&  snapshot.data!.data()?["Notes-${index+1}"]["Submitted by"].contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")
                                                         ?
                                                     Column(
                                                       children: [
@@ -473,7 +417,7 @@ class _NotesState extends State<Notes> {
                                                               mainAxisAlignment: MainAxisAlignment.start,
                                                               children: [
                                                                 AutoSizeText(
-                                                                  "Score :${snapshot.data["Notes-${index+1}"]["Response"]["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]["Score"].toString()}/10",
+                                                                  "Score :${snapshot.data!.data()?["Notes-${index+1}"]["Response"]["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]["Score"].toString()}/10",
                                                                   style: GoogleFonts.poppins(
                                                                       color: Colors.white70,
                                                                       fontSize: size.height*0.015
@@ -484,7 +428,7 @@ class _NotesState extends State<Notes> {
                                                                   backgroundColor: Colors.black,
                                                                   color: Colors.green,
                                                                   //borderRadius: const BorderRadius.all(Radius.circular(20)),
-                                                                  value: snapshot.data["Notes-${index+1}"]["Response"]["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]["Score"]/10,
+                                                                  value: snapshot.data!.data()?["Notes-${index+1}"]["Response"]["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]["Score"]/10,
                                                                 ),
                                                               ],
                                                             )
@@ -588,13 +532,13 @@ class _NotesState extends State<Notes> {
                                                       ],
                                                     )
                                                         :
-                                                    snapshot.data["Notes-${index+1}"]["Quiz_Created"]==true
+                                                    snapshot.data!.data()?["Notes-${index+1}"]["Quiz_Created"]==true
                                                         ?
                                                     Row(
                                                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                       children: [
-                                                        snapshot.data["Notes-${index+1}"]["Submitted by"]!=null &&
-                                                            snapshot.data["Notes-${index+1}"]["Submitted by"]
+                                                        snapshot.data!.data()?["Notes-${index+1}"]["Submitted by"]!=null &&
+                                                            snapshot.data!.data()?["Notes-${index+1}"]["Submitted by"]
                                                                 .contains("${usermodel["Email"]
                                                                 .toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")
                                                             ?
@@ -778,14 +722,12 @@ class _NotesState extends State<Notes> {
                                         ),
                                       ],
                                     ),
-                                    !isDownloaded
-                                    ?
+
                                     Positioned(
                                         top: 10,
                                         right: size.width*0.055,
-                                        child: download(downloadUrl:snapshot.data["Notes-${index+1}"]["Pdf_URL"], pdfName: snapshot.data["Notes-${index+1}"]["File_Name"], path:path))
-                                        :
-                                        const SizedBox()
+                                        child: Download(downloadUrl:snapshot.data!.data()?["Notes-${index+1}"]["Pdf_URL"], pdfName: snapshot.data!.data()?["Notes-${index+1}"]["File_Name"], path: "/Campus Link/$selectedSubject/Notes"))
+
                                   ],
                                 ),
                               ),
@@ -796,23 +738,18 @@ class _NotesState extends State<Notes> {
                           :
                       const SizedBox(
                         child: Center(child: Text("No Data Found")),
-                      );
+                      )
+                      :
+                          const loading(text: "Fetching from the server")
+                      ;
                     },),
                 )
-                    :
-                Center(
-                    child: AutoSizeText("No data Found Yet",
-                      style: GoogleFonts.poppins(
-                          color: Colors.black26,
-                          fontSize: size.height*0.03
-                      ),))
+
               ],
             ),
           ),
         ),
-      floatingActionButton: docExists
-      ?
-      Container(
+      floatingActionButton: Container(
         height: size.height * 0.046,
         width: size.width * 0.372,
         decoration: BoxDecoration(
@@ -874,55 +811,53 @@ class _NotesState extends State<Notes> {
               ),
             )),
       )
-      :
-      const SizedBox()
 
 
     );
 
   }
-  Future<void> checkAndRequestPermissions() async {
-    directory = await getExternalStorageDirectory();
-    var permission = await checkALLPermissions.isStoragePermission();
-    if (permission) {
-          dir = directory!.path.toString().substring(0, 19);
-      path = "$dir/Campus Link/${usermodel["University"].split(
-          " ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"]
-          .split(" ")[0]} ${usermodel["Branch"].split(
-          " ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $selectedSubject/Notes/";
-      Directory(path).exists().then((value) async {
-        if (!value) {
-          await Directory(path).create(recursive: true);
-        }
-      });
-      setState(() {
-        permissionGranted = true;
-      });
-    }
-    else {
-
-    }
-  }
-
-  Future<void>checkExists()
-  async {
-    await FirebaseFirestore.instance.collection("Notes").doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $selectedSubject")
-        .get().then((value) {
-      if(value.exists)
-      {
-          setState(() {
-
-            docExists=true;
-          });
-      }
-      else{
-        setState(() {
-          docExists=false;
-        });
-      }
-
-    });
-  }
+  // Future<void> checkAndRequestPermissions() async {
+  //   directory = await getExternalStorageDirectory();
+  //   var permission = await checkALLPermissions.isStoragePermission();
+  //   if (permission) {
+  //         dir = directory!.path.toString().substring(0, 19);
+  //     path = "$dir/Campus Link/${usermodel["University"].split(
+  //         " ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"]
+  //         .split(" ")[0]} ${usermodel["Branch"].split(
+  //         " ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $selectedSubject/Notes/";
+  //     Directory(path).exists().then((value) async {
+  //       if (!value) {
+  //         await Directory(path).create(recursive: true);
+  //       }
+  //     });
+  //     setState(() {
+  //       permissionGranted = true;
+  //     });
+  //   }
+  //   else {
+  //
+  //   }
+  // }
+  //
+  // Future<void>checkExists()
+  // async {
+  //   await FirebaseFirestore.instance.collection("Notes").doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $selectedSubject")
+  //       .get().then((value) {
+  //     if(value.exists)
+  //     {
+  //         setState(() {
+  //
+  //           docExists=true;
+  //         });
+  //     }
+  //     else{
+  //       setState(() {
+  //         docExists=false;
+  //       });
+  //     }
+  //
+  //   });
+  // }
 
 }
 
