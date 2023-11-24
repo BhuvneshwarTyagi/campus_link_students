@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Screens/Assignment/upload_assignment.dart';
 import 'package:campus_link_student/push_notification/Storage_permission.dart';
@@ -9,9 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../../Constraints.dart';
 import '../Chat_tiles/Image_viewer.dart';
 import '../Chat_tiles/PdfViewer.dart';
@@ -78,17 +75,21 @@ class _AssignmentState extends State<Assignment> {
                     child: Column(
                       children: [
                         InkWell(
-                          onTap: () {
+                          onTap: () async {
                             setState(() {
-                              selected =
-                                  List.filled(subjects.length, false);
+                              selected = List.filled(subjects.length, false);
                               selected[index] = true;
 
                               selectedSubject = subjects[index];
-                              checkAndRequestPermissions();
-                              getdata();
+
                               print(selectedSubject);
                             });
+                            await checkAndRequestPermissions();
+                            await getdata();
+                            print("nodata: $nodata");
+                            print("loaded: $loaded");
+                            print("permission: $permissionGranted");
+                            setState(() {});
                           },
                           child: Container(
                             height: size.height * 0.068,
@@ -632,7 +633,7 @@ class _AssignmentState extends State<Assignment> {
       directory = await getExternalStorageDirectory();
     }
 
-    var permission;
+    bool permission=false;
      if(Platform.isAndroid){
        permission=await checkALLPermissions.isStoragePermission();
        if(!permission){
@@ -647,36 +648,48 @@ class _AssignmentState extends State<Assignment> {
        }
      }
      if(Platform.isIOS){
-       permission= Permission.mediaLibrary.isGranted;
+       print("inside ios");
+       permission= await Permission.mediaLibrary.isGranted;
+       print("no permission");
        if(!permission){
          if(await Permission.mediaLibrary.request().isGranted){
+           print("permission granted");
            permission=true;
          }else{
+           print("not granted, requesting again");
            await Permission.mediaLibrary.request().then((value) {
+             print("2nd request result: $value");
              bool check=value.isGranted;
              if(check){permission=true;}});
          }
 
        }
      }
-    if (permission) {
+    //if (permission) {
       String? dir = directory?.path.toString().substring(0, 19);
       if(Platform.isIOS){
         await getDownloadsDirectory().then((value){
+
           dir=value?.path;
+          print("dir printing: $dir");
         });
       }
-      path = "$dir/Campus Link/$selectedSubject/Assignment/";
-      Directory(path).exists().then((value) async {
+      path = "${dir!}/Campus Link/$selectedSubject/Assignment";
+      await Directory(path).exists().then((value) async {
         if (!value) {
-          await Directory(path)
-              .create(recursive: true)
-              .whenComplete(() => print(">>>>>created"));
+          try{
+            await Directory(path)
+                .create(recursive: true)
+                .whenComplete(() => print(">>>>>created"));
+          }catch(e){
+            print("file error: $e");
+          }
         }
       });
       setState(() {
         permissionGranted = true;
       });
-    } else {}
+
+
   }
 }

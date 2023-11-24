@@ -58,7 +58,7 @@ class _NotesState extends State<Notes> {
   List<Uint8List> imageBytes=[];
   int currIndex=-1;
   late String dir;
-  late String path;
+  String path='';
   @override
   void initState() {
     // TODO: implement initState
