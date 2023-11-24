@@ -141,7 +141,11 @@ class _chatsystemState extends State<chatsystem> {
                 height: size.height*0.1,
                 width: size.width,
                 child: StreamBuilder(
-                    stream: FirebaseFirestore.instance.collection("Messages").doc(usermodel["Message_channels"][index]).snapshots(),
+                    stream: FirebaseFirestore
+                        .instance
+                        .collection("Messages")
+                        .doc(usermodel["Message_channels"][index])
+                        .snapshots(),
                     builder: (context, snapshot) {
                       print(">>>>>>>>>>>>>>>>>>>>>chat list");
                       int readCount=0;

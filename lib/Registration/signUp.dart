@@ -7,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Constraints.dart';
 import 'Login.dart';
-import 'registration.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -330,13 +329,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email).set({
                                 "Email" : email.text.trim().toString(),
                                 "Name" : nameController.text.trim().toString(),
-                                "bg" : "bg-1.jpg"
+                                "bg" : "bg-1.jpg",
+                                "Profile_URL" : null
                               });
+                              final doc = await FirebaseFirestore.instance.collection("Student_record").doc("Email").get();
+                              doc.exists
+                                  ?
                               await FirebaseFirestore.instance.collection("Student_record").doc("Email").update({
                                 "Email" : FieldValue.arrayUnion([email.text.trim().toString()]),
-                              }).whenComplete(() =>
-
-                                  Navigator.push(
+                              }).whenComplete(() => Navigator.push(
                                       context,
                                       PageTransition(
                                         child: const SignInScreen(),
@@ -345,7 +346,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         childCurrent: const SignUpScreen(),
                                       )
 
-                                  ));
+                                  ))
+                               :
+                              await FirebaseFirestore.instance.collection("Student_record").doc("Email").set({
+                                "Email" : FieldValue.arrayUnion([email.text.trim().toString()]),
+                              }).whenComplete(() => Navigator.push(
+                                  context,
+                                  PageTransition(
+                                    child: const SignInScreen(),
+                                    type: PageTransitionType.rightToLeftJoined,
+                                    duration: const Duration(milliseconds: 350),
+                                    childCurrent: const SignUpScreen(),
+                                  )
+
+                              ))
+                              ;
                             }
 
 

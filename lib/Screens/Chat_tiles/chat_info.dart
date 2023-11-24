@@ -427,20 +427,20 @@ class _Chat_InfoState extends State<Chat_Info> {
                                                                       Colors.purpleAccent
                                                                     ])),
                                                                 child: ElevatedButton(
-                                                                    onPressed: () async {
-                                                                      await FirebaseFirestore.instance
-                                                                          .collection("Messages")
-                                                                          .doc(widget.channel)
-                                                                          .update({
-                                                                        "${snapshot.data?.data()!["Members"][index]["Email"].split("@")[0].split("@")[0]}.Mute": true
-                                                                      }).whenComplete(() {
-                                                                        Navigator.pop(context);
-                                                                      });
-                                                                    },
-                                                                    style: ElevatedButton.styleFrom(
-                                                                      backgroundColor: Colors.transparent,
-                                                                    ),
-                                                                    child: AutoSizeText("Mute ${snapshot2.data?.data()!["Name"]}",textAlign: TextAlign.center),),
+                                                                  onPressed: () async {
+                                                                    await FirebaseFirestore.instance
+                                                                        .collection("Messages")
+                                                                        .doc(widget.channel)
+                                                                        .update({
+                                                                      "${snapshot.data?.data()!["Members"][index]["Email"].split("@")[0].split("@")[0]}.Mute": true
+                                                                    }).whenComplete(() {
+                                                                      Navigator.pop(context);
+                                                                    });
+                                                                  },
+                                                                  style: ElevatedButton.styleFrom(
+                                                                    backgroundColor: Colors.transparent,
+                                                                  ),
+                                                                  child: AutoSizeText("Mute ${snapshot2.data?.data()!["Name"]}",textAlign: TextAlign.center),),
                                                               )
                                                                   : Container(
                                                                 width: size.width * 0.7,
@@ -581,9 +581,9 @@ class _Chat_InfoState extends State<Chat_Info> {
                                                                 width: size.width*0.5,
                                                                 child: AutoSizeText( snapshot2.data?.data()!["Name"],
                                                                   style: GoogleFonts.openSans(
-                                                                      color: normalColor,
-                                                                      fontSize: size.height*0.02,
-                                                                      fontWeight: FontWeight.w600,
+                                                                    color: normalColor,
+                                                                    fontSize: size.height*0.02,
+                                                                    fontWeight: FontWeight.w600,
                                                                   ),
                                                                   minFontSize: 13,
                                                                   softWrap: true,
@@ -621,9 +621,9 @@ class _Chat_InfoState extends State<Chat_Info> {
                                                         child: AutoSizeText(
                                                           "Group Admin",
                                                           style: GoogleFonts.openSans(
-                                                              color: adminColor,
-                                                              fontSize: size.height*0.016,
-                                                              fontWeight: FontWeight.w600,
+                                                            color: adminColor,
+                                                            fontSize: size.height*0.016,
+                                                            fontWeight: FontWeight.w600,
                                                           ),
                                                         ),
                                                       ),
