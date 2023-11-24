@@ -5,9 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import '../Constraints.dart';
 import '../Registration/Login.dart';
 import '../Registration/Verify Email.dart';
+import '../Registration/registration.dart';
 import 'loadingscreen.dart';
 import 'navigation.dart';
 
@@ -77,6 +79,15 @@ class _MainPageState extends State<MainPage> {
           await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
             setState(() {
               usermodel=value.data()!;
+              if(usermodel["Subject"]==null){
+                Navigator.push(context, PageTransition(
+                    child: const StudentDetails(),
+                    type: PageTransitionType.bottomToTop,
+                  duration: const Duration(milliseconds: 400),
+                  childCurrent: const MainPage()
+                ),
+                );
+              }
               if (kDebugMode) {
                 print(usermodel);
               }
@@ -88,7 +99,7 @@ class _MainPageState extends State<MainPage> {
       });
     }
     if(!loaded && Platform.isIOS){
-      await FirebaseMessaging.instance..getAPNSToken().then((token) async {
+      await FirebaseMessaging.instance.getAPNSToken().then((token) async {
         print(token);
         await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
           'Token' : token,

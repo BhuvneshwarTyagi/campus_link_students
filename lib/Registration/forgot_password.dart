@@ -1,3 +1,4 @@
+import 'package:campus_link_student/Screens/Main_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -260,7 +261,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               ,),
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pushReplacement(context, PageTransition(child: const MainPage(), type: PageTransitionType.leftToRight,duration: const Duration(milliseconds: 400),childCurrent: const ForgotPassword())
+                );
                 //Navigator.pop(context);
               },
               child: const Text("Sign In", style: TextStyle(

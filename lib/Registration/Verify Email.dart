@@ -1,7 +1,9 @@
+import 'package:campus_link_student/Registration/registration.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:page_transition/page_transition.dart';
 
 class Verify extends StatefulWidget {
   const Verify({Key? key}) : super(key: key);
@@ -62,6 +64,13 @@ class _VerifyState extends State<Verify> {
                 ),
                 ElevatedButton(
                   onPressed: () async{
+                    Navigator.push(context, PageTransition(
+                        child: const StudentDetails(),
+                        type: PageTransitionType.bottomToTop,
+                        childCurrent: const Verify(),
+                      duration: const Duration(milliseconds: 400)
+                    ),
+                    );
                     await FirebaseAuth.instance.signOut();
                   },
                   style: ElevatedButton.styleFrom(

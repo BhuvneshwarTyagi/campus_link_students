@@ -743,10 +743,10 @@ class _StudentDetailsState extends State<StudentDetails> {
                             "Muted" : false,
                             "Post" : "Students"
                           };
-                          List<dynamic> channelList = await FirebaseFirestore.instance.collection("Chat_Channels").doc("Channels").get().then((value){
+                          var channelList = await FirebaseFirestore.instance.collection("Chat_Channels").doc("Channels").get().then((value){
                             return value.data()?["Channels"];
                           });
-
+                          channelList ??= [];
                           if(channelList.contains("${universityController.text.trim().split(" ")[0]} "
                               "${collegeController.text.trim().split(" ")[0]} "
                               "${courseController.text.trim().split(" ")[0]} "
@@ -786,6 +786,8 @@ class _StudentDetailsState extends State<StudentDetails> {
                                 "Date" : stamp,
                                 "Name" : usermodel["Name"]
                               },
+                              "image_URL":"null",
+                              "Admins" : [],
                               "Messages": FieldValue.arrayUnion([]),
                               "Members": FieldValue.arrayUnion([
                                 "${usermodel["Email"]}",
@@ -793,7 +795,9 @@ class _StudentDetailsState extends State<StudentDetails> {
                               usermodel["Email"].toString().split("@")[0]:  map1,
 
                             });
-
+                            final channel = await FirebaseFirestore.instance.collection("Chat_Channels").doc("Channels").get();
+                            channel.exists
+                                ?
                             await FirebaseFirestore.instance.collection("Chat_Channels").doc("Channels").update({
                               "Channels" : FieldValue.arrayUnion([
                                 "${universityController.text.trim().split(" ")[0]} "
@@ -804,7 +808,20 @@ class _StudentDetailsState extends State<StudentDetails> {
                                     "${sectionController.text.trim().split(" ")[0]} "
                                     "${subjectlist[i].text.trim().split(" ")[0]}"
                               ])
-                            });
+                            })
+                                :
+                            await FirebaseFirestore.instance.collection("Chat_Channels").doc("Channels").set({
+                              "Channels" : FieldValue.arrayUnion([
+                                "${universityController.text.trim().split(" ")[0]} "
+                                    "${collegeController.text.trim().split(" ")[0]} "
+                                    "${courseController.text.trim().split(" ")[0]} "
+                                    "${branchController.text.trim().split(" ")[0]} "
+                                    "${yearController.text.trim().split(" ")[0]} "
+                                    "${sectionController.text.trim().split(" ")[0]} "
+                                    "${subjectlist[i].text.trim().split(" ")[0]}"
+                              ])
+                            })
+                            ;
                             
                           }
                           await FirebaseFirestore.instance
