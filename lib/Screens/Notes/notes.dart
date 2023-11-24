@@ -1,11 +1,16 @@
 
+import 'dart:io';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Screens/loadingscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../Constraints.dart';
+import '../Chat_tiles/PdfViewer.dart';
 import 'QuizScore.dart';
 import 'QuizScreen.dart';
 import 'SubjectQuizScore.dart';
@@ -25,13 +30,14 @@ class _NotesState extends State<Notes> {
   List<dynamic> subjects = usermodel["Subject"];
   String selectedSubject = usermodel["Subject"][0];
 
-
+  String systempath='';
 
   int currIndex=-1;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    setsystemppath();
   }
   @override
   Widget build(BuildContext context) {
@@ -188,19 +194,39 @@ class _NotesState extends State<Notes> {
                                               padding:  EdgeInsets.only(top:size.height*0.01,left:size.height*0.01,right:size.height*0.01),
                                               child: InkWell(
                                                 onTap: (){
-                                                  // if(isDownloaded)
-                                                  // {
-                                                  //   Navigator.push(
-                                                  //     context,
-                                                  //     PageTransition(
-                                                  //       child: PdfViewer(document: newPath.path,name: snapshot.data!.data()?["Notes-${index+1}"]["File_Name"] ),
-                                                  //       type: PageTransitionType.bottomToTopJoined,
-                                                  //       duration: const Duration(milliseconds: 200),
-                                                  //       alignment: Alignment.bottomCenter,
-                                                  //       childCurrent: const Notes(),
-                                                  //     ),
-                                                  //   );
-                                                  // }
+                                                  File file=File("$systempath/Campus Link/$selectedSubject/Notes/${snapshot.data!.data()?["Notes-${index+1}"]["File_Name"]}");
+                                                   if(file.existsSync())
+                                                   {
+                                                     Navigator.push(
+                                                       context,
+                                                       PageTransition(
+                                                         child: PdfViewer(document: "$systempath/Campus Link/$selectedSubject/Notes/${snapshot.data!.data()?["Notes-${index+1}"]["File_Name"]}",name: snapshot.data!.data()?["Notes-${index+1}"]["File_Name"] ),
+                                                         type: PageTransitionType.bottomToTopJoined,
+                                                         duration: const Duration(milliseconds: 200),
+                                                         alignment: Alignment.bottomCenter,
+                                                         childCurrent: const Notes(),
+                                                       ),
+                                                     );
+                                                  }
+                                                   else{
+                                                     InAppNotifications.instance
+                                                       ..titleFontSize = 14.0
+                                                       ..descriptionFontSize = 14.0
+                                                       ..textColor = Colors.black
+                                                       ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
+                                                       ..shadow = true
+                                                       ..animationStyle = InAppNotificationsAnimationStyle.scale;
+                                                     InAppNotifications.show(
+                                                       // title: '',
+                                                       duration: const Duration(seconds: 2),
+                                                       description: "Please download the notes first",
+                                                       // leading: const Icon(
+                                                       //   Icons.error_outline_outlined,
+                                                       //   color: Colors.red,
+                                                       //   size: 55,
+                                                       // )
+                                                     );
+                                                   }
                                                 },
                                                 child: Container(
                                                   decoration: BoxDecoration(
@@ -862,6 +888,18 @@ class _NotesState extends State<Notes> {
   //
   //   });
   // }
+  setsystemppath() async {
+    Directory? directory;
+    if(Platform.isAndroid){
+      Directory? directory = await getExternalStorageDirectory();
 
+      systempath = directory!.path.toString().substring(0, 19);
+
+    }
+    if(Platform.isIOS){
+      directory= await getApplicationDocumentsDirectory();
+      systempath = directory.path;
+    }
+  }
 }
 

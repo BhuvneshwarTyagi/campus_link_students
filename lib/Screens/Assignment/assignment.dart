@@ -4,6 +4,7 @@ import 'package:campus_link_student/Screens/Assignment/upload_assignment.dart';
 import 'package:campus_link_student/Screens/loadingscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
@@ -22,12 +23,13 @@ class Assignment extends StatefulWidget {
 class _AssignmentState extends State<Assignment> {
   List<dynamic> subjects = usermodel["Subject"];
   String selectedSubject =" ";
-
+  String systempath="";
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     selectedSubject = usermodel["Subject"][0];
+    setsystemppath();
   }
 
   @override
@@ -148,49 +150,42 @@ class _AssignmentState extends State<Assignment> {
                               padding: EdgeInsets.all( size.height*0.01),
                               child:  InkWell(
                                 onTap: () async {
-                                  String path='';
-
-                                  if(Platform.isAndroid){
-                                    Directory? directory = await getExternalStorageDirectory();
-                                    String? dir = directory?.path.toString().substring(0, 19);
-                                    path="${dir!}/Campus Link/$selectedSubject/Assignment";
+                                  File file=File("$systempath/Campus Link/$selectedSubject/Assignment/Assignment-${index + 1}.${snapshot.data!.data()?["Assignment-${index + 1}"]["Document-type"]}");
+                                  if(file.existsSync())
+                                  {
+                                    Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        child: PdfViewer(
+                                            document: "$systempath/Campus Link/$selectedSubject/Assignment/Assignment-${index + 1}.${snapshot.data!.data()?["Assignment-${index + 1}"]["Document-type"]}",
+                                            name: "Assignment-${index + 1}.${snapshot.data!.data()?["Assignment-${index + 1}"]["Document-type"]}"
+                                        ),
+                                        type: PageTransitionType.bottomToTopJoined,
+                                        duration: const Duration(milliseconds: 200),
+                                        alignment: Alignment.bottomCenter,
+                                        childCurrent: const Assignment(),
+                                      ),
+                                    );
                                   }
-                                  String newpath = "${path}Assignment-${index + 1}.${snapshot.data!.data()?["Assignment-${index + 1}"]["Document-type"]}";
-                                  if(File(newpath).existsSync()) {
-                                    if (snapshot.data!.data()?["Assignment-${index +
-                                        1}"]["Document-type"] == "pdf") {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (context) =>
-                                                PdfViewer(
-                                                  document:
-                                                  "${path}Assignment-${index +
-                                                      1}.${snapshot.data!
-                                                      .data()?["Assignment-${index +
-                                                      1}"]["Document-type"]}",
-                                                  name:
-                                                  "Assignment-${index + 1}",
-                                                ),
-                                          ));
-                                    }
-                                    else {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (context) =>
-                                                Image_viewer(path: File(
-                                                  "${path}Assignment-${index +
-                                                      1}.${snapshot.data!
-                                                      .data()?["Assignment-${index +
-                                                      1}"]["Document-type"]}",),
-                                                ),
-                                          ));
-                                    }
+                                  else{
+                                    InAppNotifications.instance
+                                      ..titleFontSize = 14.0
+                                      ..descriptionFontSize = 14.0
+                                      ..textColor = Colors.black
+                                      ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
+                                      ..shadow = true
+                                      ..animationStyle = InAppNotificationsAnimationStyle.scale;
+                                    InAppNotifications.show(
+                                      // title: '',
+                                      duration: const Duration(seconds: 2),
+                                      description: "Please download the assignment first",
+                                      // leading: const Icon(
+                                      //   Icons.error_outline_outlined,
+                                      //   color: Colors.red,
+                                      //   size: 55,
+                                      // )
+                                    );
                                   }
-
                                 },
                                 child: Container(
                                   height: size.height*0.235,
@@ -478,4 +473,17 @@ class _AssignmentState extends State<Assignment> {
   //
   //
   // }
+  setsystemppath() async {
+    Directory? directory;
+    if(Platform.isAndroid){
+      Directory? directory = await getExternalStorageDirectory();
+
+      systempath = directory!.path.toString().substring(0, 19);
+
+    }
+    if(Platform.isIOS){
+      directory= await getApplicationDocumentsDirectory();
+      systempath = directory.path;
+    }
+  }
 }
