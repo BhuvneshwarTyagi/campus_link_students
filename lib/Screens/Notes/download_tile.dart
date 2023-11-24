@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'dart:io';
 import '../../Constraints.dart';
@@ -20,6 +21,13 @@ class _downloadState extends State<download> {
   double percent=0.0;
   bool isDownloading=false;
   bool isDownloaded=true;
+  String? systempath='';
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setsystemppath();
+  }
   @override
   Widget build(BuildContext context) {
     Size size=MediaQuery.of(context).size;
@@ -45,7 +53,7 @@ class _downloadState extends State<download> {
                   animateFromLastPercent: true,
                   curve: accelerateEasing,
                   progressColor: Colors.green,
-                  center: Text((percent*100).toDouble().toStringAsFixed(0),style: GoogleFonts.openSans(fontSize: size.height*0.017),),
+                  center: Text("${(percent*100).toDouble().toStringAsFixed(0)}%",style: GoogleFonts.openSans(fontSize: size.height*0.014),),
                   //footer: const Text("Downloading"),
                   backgroundColor: Colors.transparent,
                 ),
@@ -53,9 +61,8 @@ class _downloadState extends State<download> {
             )
             :
             InkWell(
-                onTap: ()
-                async {
-                  File file=File("${widget.path}/${widget.pdfName}");
+                onTap: () async {
+                  File file=File("$systempath${widget.path}/${widget.pdfName}");
                   await file.exists().then((value) async {
                     if(!value)
                     {
@@ -89,5 +96,22 @@ class _downloadState extends State<download> {
         ),
       ),
     );
+  }
+  setsystemppath() async {
+    if(Platform.isAndroid){
+      Directory? directory = await getExternalStorageDirectory();
+
+        systempath = directory?.path.toString().substring(0, 19);
+
+    }
+    await check();
+  }
+  check(){
+    File file=File("$systempath${widget.path}/${widget.pdfName}");
+    if(file.existsSync()){
+      setState(() {
+        isDownloaded=false;
+      });
+    }
   }
 }

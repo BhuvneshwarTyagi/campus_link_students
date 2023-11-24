@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Screens/Assignment/upload_assignment.dart';
+import 'package:campus_link_student/Screens/loadingscreen.dart';
 import 'package:campus_link_student/push_notification/Storage_permission.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
@@ -22,31 +23,17 @@ class Assignment extends StatefulWidget {
 }
 
 class _AssignmentState extends State<Assignment> {
-  var checkALLPermissions = CheckPermission();
-  bool permissionGranted = false;
-  bool docExists = false;
-  Directory? directory;
-  bool fileAlreadyExists = false;
-  final dio = Dio();
 
-  late DocumentSnapshot<Map<String, dynamic>> snapshot;
-  bool loaded = false;
-  bool nodata = false;
-  List<bool> selected = List.filled(usermodel["Subject"].length, false);
 
   List<dynamic> subjects = usermodel["Subject"];
   String selectedSubject =" ";
-  String path ="";
-  double percent=0.0;
+
   @override
   void initState() {
     // TODO: implement initState
 
     super.initState();
     selectedSubject = usermodel["Subject"][0];
-    selected[0]=true;
-    getdata();
-    checkAndRequestPermissions();
   }
 
   @override
@@ -77,42 +64,19 @@ class _AssignmentState extends State<Assignment> {
                         InkWell(
                           onTap: () async {
                             setState(() {
-                              selected = List.filled(subjects.length, false);
-                              selected[index] = true;
-
                               selectedSubject = subjects[index];
 
                               print(selectedSubject);
                             });
-                            await checkAndRequestPermissions();
-                            await getdata();
-                            print("nodata: $nodata");
-                            print("loaded: $loaded");
-                            print("permission: $permissionGranted");
-                            setState(() {});
+
                           },
                           child: Container(
                             height: size.height * 0.068,
                             width: size.width * 0.2,
                             decoration: BoxDecoration(
                                 color: Colors.black87,
-                                // gradient: const LinearGradient(
-                                //   begin: Alignment.centerLeft,
-                                //   end: Alignment.centerRight,
-                                //   colors: [
-                                //     Color.fromRGBO(169, 169, 207, 1),
-                                //     // Color.fromRGBO(86, 149, 178, 1),
-                                //     Color.fromRGBO(189, 201, 214, 1),
-                                //     //Color.fromRGBO(118, 78, 232, 1),
-                                //     Color.fromRGBO(175, 207, 240, 1),
-                                //
-                                //     // Color.fromRGBO(86, 149, 178, 1),
-                                //     Color.fromRGBO(189, 201, 214, 1),
-                                //     Color.fromRGBO(169, 169, 207, 1),
-                                //   ],
-                                // ),
                                 shape: BoxShape.circle,
-                                border: selected[index]
+                                border: subjects[index]== selectedSubject
                                     ? Border.all(
                                     color: Colors.greenAccent, width: 2)
                                     : Border.all(
@@ -124,7 +88,7 @@ class _AssignmentState extends State<Assignment> {
                                 style: GoogleFonts.openSans(
                                     fontSize: 23,
                                     fontWeight: FontWeight.w600,
-                                    color: selected[index]
+                                    color:  subjects[index]== selectedSubject
                                         ? Colors.greenAccent
                                         : Colors.white),
                               ),
@@ -138,7 +102,7 @@ class _AssignmentState extends State<Assignment> {
                           "${subjects[index]}",
                           style: GoogleFonts.openSans(
                               fontWeight: FontWeight.w600,
-                              color: selected[index]
+                              color:  subjects[index]== selectedSubject
                                   ? Colors.greenAccent
                                   : Colors.black),
                         )
@@ -167,433 +131,259 @@ class _AssignmentState extends State<Assignment> {
               SizedBox(
                 height: size.height * 0.015,
               ),
-              loaded && !nodata && permissionGranted
-                  ? Padding(
+              Padding(
                 padding: EdgeInsets.all(size.height * 0.01),
                 child: SizedBox(
                   height: size.height * 0.63,
                   width: size.width,
-                  child: ListView.builder(
-                    itemCount: snapshot.data()?["Total_Assignment"],
-                    itemBuilder: (context, index) {
-                      bool isDownloaded=false;
-                      bool isDownloading=true;
-                      String newpath = "${path}Assignment-${index + 1}.${snapshot.data()?["Assignment-${index + 1}"]["Document-type"]}";
-                      if(File(newpath).existsSync()){
-                       isDownloaded=true;
-                       }
-                      return Padding(
-                          padding: EdgeInsets.all( size.height*0.01),
-                          child:  InkWell(
-                            onTap: (){
-                              if(File(newpath).existsSync()) {
-                                if (snapshot.data()?["Assignment-${index +
-                                    1}"]["Document-type"] == "pdf") {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) =>
-                                            PdfViewer(
-                                              document:
-                                              "${path}Assignment-${index +
-                                                  1}.${snapshot
-                                                  .data()?["Assignment-${index +
-                                                  1}"]["Document-type"]}",
-                                              name:
-                                              "Assignment-${index + 1}",
-                                            ),
-                                      ));
-                                }
-                                else {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) =>
-                                            Image_viewer(path: File(
-                                              "${path}Assignment-${index +
-                                                  1}.${snapshot
-                                                  .data()?["Assignment-${index +
-                                                  1}"]["Document-type"]}",),
-                                            ),
-                                      ));
-                                }
-                              }
+                  child: StreamBuilder(
+                    stream: FirebaseFirestore
+                        .instance
+                        .collection("Assignment")
+                        .doc("${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]} $selectedSubject",
+                    ).snapshots(),
+                    builder: (context, snapshot) {
+                      return snapshot.hasData
+                          ?
+                      snapshot.data!.data()!=null
+                          ?
+                      ListView.builder(
+                        itemCount: snapshot.data!.data()!["Total_Assignment"] ,
+                        itemBuilder: (context, index) {
 
-                            },
-                            child: Container(
-                              height: size.height*0.235,
-                              width: size.width,
-                              decoration: BoxDecoration(
-                                  color: Colors.transparent,
-                                  borderRadius: const BorderRadius.all(Radius.circular(15)),
-                                  border: Border.all(color: Colors.black,width: 2)
-                              ),
-                              child: Column(
-                                children: [
-                                  Expanded(
 
-                                    child: Container(
+                          return Padding(
+                              padding: EdgeInsets.all( size.height*0.01),
+                              child:  InkWell(
+                                onTap: () async {
+                                  String path='';
 
-                                      height: size.height*0.12,
-                                      width: size.width,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:BorderRadius.only(topLeft: Radius.circular(15),topRight: Radius.circular(15)),
+                                  if(Platform.isAndroid){
+                                    Directory? directory = await getExternalStorageDirectory();
+                                    String? dir = directory?.path.toString().substring(0, 19);
+                                    path="${dir!}/Campus Link/$selectedSubject/Assignment";
+                                  }
+                                  String newpath = "${path}Assignment-${index + 1}.${snapshot.data!.data()?["Assignment-${index + 1}"]["Document-type"]}";
+                                  if(File(newpath).existsSync()) {
+                                    if (snapshot.data!.data()?["Assignment-${index +
+                                        1}"]["Document-type"] == "pdf") {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) =>
+                                                PdfViewer(
+                                                  document:
+                                                  "${path}Assignment-${index +
+                                                      1}.${snapshot.data!
+                                                      .data()?["Assignment-${index +
+                                                      1}"]["Document-type"]}",
+                                                  name:
+                                                  "Assignment-${index + 1}",
+                                                ),
+                                          ));
+                                    }
+                                    else {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) =>
+                                                Image_viewer(path: File(
+                                                  "${path}Assignment-${index +
+                                                      1}.${snapshot.data!
+                                                      .data()?["Assignment-${index +
+                                                      1}"]["Document-type"]}",),
+                                                ),
+                                          ));
+                                    }
+                                  }
 
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          SizedBox(height: size.height*0.008,),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.end,
-                                            children: [
-                                              !isDownloaded
-                                              ?
-                                              CircleAvatar(
-                                                backgroundColor: Colors.transparent,
-                                                radius: size.width*0.045,
-                                                child: download(downloadUrl:snapshot.data()?["Assignment-${index + 1}"]["Assignment"], pdfName: "Assignment-${index + 1}.${snapshot.data()?["Assignment-${index + 1}"]["Document-type"]}", path:path)
-                                                /*IconButton(
-                                                    onPressed: () async {
-                                                      setState(() {
-                                                        downloding[index] =
-                                                        true;
-                                                      });
-
-                                                      await dio.download(
-                                                        snapshot.data()?["Assignment-${index + 1}"]["Assignment"], newpath,
-                                                        onReceiveProgress:
-                                                            (count, total) {
-
-                                                          if (count ==
-                                                              total) {
-                                                            setState(() {
-                                                              print(
-                                                                  "completed");
-                                                              isdownloaded[
-                                                              index] =
-                                                              true;
-                                                              downloding[
-                                                              index] =
-                                                              false;
-                                                            });
-                                                          } else {
-                                                            if(mounted){
-                                                              setState(() {
-                                                                percent =count/total;
-                                                              });
-                                                            }
-                                                          }
-                                                        },
-                                                      );
-                                                    },
-                                                    icon: Icon(Icons.file_download_sharp,size: size.height*0.023,color: Colors.white,)
-                                                )*/,
-                                              )
-                                              :
-                                              const SizedBox(),
-                                              SizedBox(
-                                                width: size.width*0.02,
-                                              )
-                                            ],
-                                          ),
-                                          AutoSizeText(
-                                            selectedSubject,
-                                            style: GoogleFonts.courgette(
-                                                color: Colors.black,
-                                                fontSize: size.height*0.02,
-                                                fontWeight: FontWeight.w400
-                                            ),
-                                          ),
-                                          AutoSizeText(
-                                            "Assignment : ${index+1}",
-                                            style: GoogleFonts.courgette(
-                                                color: Colors.black,
-                                                fontSize: size.height*0.02,
-                                                fontWeight: FontWeight.w400
-                                            ),
-                                          ),
-
-                                        ],
-                                      ),
-                                    ),
+                                },
+                                child: Container(
+                                  height: size.height*0.235,
+                                  width: size.width,
+                                  decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: const BorderRadius.all(Radius.circular(15)),
+                                      border: Border.all(color: Colors.black,width: 2)
                                   ),
-                                  Expanded(
-                                    child: Container(
-                                      padding: EdgeInsets.only( left: size.height*0.01,right: size.height*0.008,top: size.height*0.006),
-                                      height: size.height*0.107,
-                                      width: size.width,
-                                      decoration: const BoxDecoration(
-                                        color:  Color.fromRGBO(60, 99, 100, 1),
-                                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15),bottomRight: Radius.circular(15)),
+                                  child: Column(
+                                    children: [
+                                      Expanded(
 
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                        child: Container(
+
+                                          height: size.height*0.12,
+                                          width: size.width,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:BorderRadius.only(topLeft: Radius.circular(15),topRight: Radius.circular(15)),
+
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
+                                              SizedBox(height: size.height*0.008,),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                children: [
+
+                                                  CircleAvatar(
+                                                    backgroundColor: Colors.transparent,
+                                                    radius: size.width*0.045,
+                                                    child: download(downloadUrl:snapshot.data!.data()?["Assignment-${index + 1}"]["Assignment"], pdfName: "Assignment-${index + 1}.${snapshot.data!.data()?["Assignment-${index + 1}"]["Document-type"]}", path: "/Campus Link/$selectedSubject/Assignment")
+
+                                                  ),
+                                                  SizedBox(
+                                                    width: size.width*0.02,
+                                                  )
+                                                ],
+                                              ),
                                               AutoSizeText(
-                                                "Assignment : ${index + 1}(${(int.parse(snapshot.data()!["Assignment-${index + 1}"]["Size"].toString())/1048576).toStringAsFixed(2)}MB)",
+                                                selectedSubject,
                                                 style: GoogleFonts.courgette(
                                                     color: Colors.black,
-                                                    fontSize: size.height*0.018,
+                                                    fontSize: size.height*0.02,
                                                     fontWeight: FontWeight.w400
                                                 ),
                                               ),
                                               AutoSizeText(
-                                                "Deadline :${snapshot.data()?["Assignment-${index + 1}"]["Last Date"]}",
+                                                "Assignment : ${index+1}",
                                                 style: GoogleFonts.courgette(
                                                     color: Colors.black,
-                                                    fontSize: size.height*0.018,
+                                                    fontSize: size.height*0.02,
                                                     fontWeight: FontWeight.w400
                                                 ),
                                               ),
-                                              AutoSizeText(
-                                                "Before :${snapshot.data()?["Assignment-${index + 1}"]["Time"].toString().substring(10, 15)}",
-                                                style: GoogleFonts.courgette(
-                                                    color: Colors.black,
-                                                    fontSize: size.height*0.018,
-                                                    fontWeight: FontWeight.w400
-                                                ),
-                                              ),
-                                              // AutoSizeText(
-                                              //   "Assign:${snapshot.data()?["Assignment-${index + 1}"]["Assign-Date"]}",
-                                              //   style: GoogleFonts.courgette(
-                                              //       color: Colors.black,
-                                              //       fontSize: size.height*0.018,
-                                              //       fontWeight: FontWeight.w400
-                                              //   ),
-                                              // ),
 
                                             ],
                                           ),
-                                          // isdownloaded[index]
-                                          //     ?
-                                          // Container(
-                                          //   height: size.height * 0.045,
-                                          //   width: size.width * 0.2,
-                                          //   decoration: BoxDecoration(
-                                          //       color: Colors.transparent,
-                                          //       borderRadius:
-                                          //       const BorderRadius.all(
-                                          //           Radius.circular(20)),
-                                          //       border: Border.all(
-                                          //           color: Colors.black,
-                                          //           width: 1)),
-                                          //   child: ElevatedButton(
-                                          //       style: ElevatedButton.styleFrom(
-                                          //           shape:
-                                          //           const RoundedRectangleBorder(
-                                          //               borderRadius:
-                                          //               BorderRadius.all(
-                                          //                   Radius
-                                          //                       .circular(
-                                          //                       20))),
-                                          //           backgroundColor:
-                                          //           Colors.transparent),
-                                          //       onPressed: () {
-                                          //         if(snapshot.data()?["Assignment-${index + 1}"]["Document-type"]=="pdf"){
-                                          //           Navigator.push(
-                                          //               context,
-                                          //               MaterialPageRoute(
-                                          //                 builder:
-                                          //                     (context) =>
-                                          //                     PdfViewer(
-                                          //                       document:
-                                          //                       "${path}Assignment-${index + 1}.${snapshot.data()?["Assignment-${index + 1}"]["Document-type"]}",
-                                          //                       name:
-                                          //                       "Assignment-${index + 1}",
-                                          //                     ),
-                                          //               ));
-                                          //         }
-                                          //         else{
-                                          //           Navigator.push(
-                                          //               context,
-                                          //               MaterialPageRoute(
-                                          //                 builder:
-                                          //                     (context) =>
-                                          //                     Image_viewer(path:File("${path}Assignment-${index + 1}.${snapshot.data()?["Assignment-${index + 1}"]["Document-type"]}",),
-                                          //                     ),
-                                          //               ));
-                                          //         }
-                                          //       },
-                                          //       child: AutoSizeText(
-                                          //         "View",
-                                          //         style: GoogleFonts.gfsDidot(
-                                          //             fontWeight: FontWeight.w600,
-                                          //             fontSize:
-                                          //             size.height * 0.025),
-                                          //       )),
-                                          // )
-                                          //     :
-                                          // downloding[index]
-                                          //     ?
-                                          // Center(
-                                          //   child:
-                                          //   CircularPercentIndicator(
-                                          //     percent:
-                                          //     percent,
-                                          //     radius:
-                                          //     size.width * 0.04,
-                                          //     animation: true,
-                                          //     animateFromLastPercent:
-                                          //     true,
-                                          //     curve: accelerateEasing,
-                                          //     progressColor:
-                                          //     Colors.green,
-                                          //     center: Text(
-                                          //       (percent * 100)
-                                          //           .toStringAsFixed(
-                                          //           0),
-                                          //       style: GoogleFonts
-                                          //           .openSans(
-                                          //           fontSize: size
-                                          //               .height *
-                                          //               0.024),
-                                          //     ),
-                                          //     //footer: const Text("Downloading"),
-                                          //     backgroundColor:
-                                          //     Colors.transparent,
-                                          //   ),
-                                          // )
-                                          //     :
-                                          // Container(
-                                          //   height: size.height * 0.045,
-                                          //   width: size.width * 0.25,
-                                          //   decoration: BoxDecoration(
-                                          //       color: Colors.transparent,
-                                          //       borderRadius:
-                                          //       const BorderRadius.all(
-                                          //           Radius.circular(20)),
-                                          //       border: Border.all(
-                                          //           color: Colors.black,
-                                          //           width: 1)),
-                                          //   child: ElevatedButton(
-                                          //       style: ElevatedButton.styleFrom(
-                                          //           shape:
-                                          //           const RoundedRectangleBorder(
-                                          //               borderRadius:
-                                          //               BorderRadius.all(
-                                          //                   Radius
-                                          //                       .circular(
-                                          //                       20))),
-                                          //           backgroundColor:
-                                          //           Colors.transparent),
-                                          //       onPressed: () async {
-                                          //         setState(() {
-                                          //           downloding[index] =
-                                          //           true;
-                                          //         });
-                                          //
-                                          //         await dio.download(
-                                          //           snapshot.data()?["Assignment-${index + 1}"]["Assignment"], newpath,
-                                          //           onReceiveProgress:
-                                          //               (count, total) {
-                                          //
-                                          //             if (count ==
-                                          //                 total) {
-                                          //               setState(() {
-                                          //                 print(
-                                          //                     "completed");
-                                          //                 isdownloaded[
-                                          //                 index] =
-                                          //                 true;
-                                          //                 downloding[
-                                          //                 index] =
-                                          //                 false;
-                                          //               });
-                                          //             } else {
-                                          //               if(mounted){
-                                          //                 setState(() {
-                                          //                   percent =count/total;
-                                          //                 });
-                                          //               }
-                                          //             }
-                                          //           },
-                                          //         );
-                                          //       },
-                                          //
-                                          //       child: AutoSizeText(
-                                          //         "Download",
-                                          //         style: GoogleFonts.gfsDidot(
-                                          //             fontWeight: FontWeight.w600,
-                                          //             fontSize:
-                                          //             size.height * 0.04),
-                                          //       )),
-                                          // ),
-
-                                          Container(
-                                            height: size.height * 0.045,
-                                            width: size.width * 0.2,
-                                            decoration: BoxDecoration(
-                                                color: Colors.transparent,
-                                                borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(20)),
-                                                border: Border.all(
-                                                    color: Colors.black,
-                                                    width: 1)),
-                                            child: ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    shape:
-                                                    const RoundedRectangleBorder(
-                                                        borderRadius:
-                                                        BorderRadius.all(
-                                                            Radius
-                                                                .circular(
-                                                                20))),
-                                                    backgroundColor:
-                                                    Colors.transparent),
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      PageTransition(
-                                                        child: uploadAssignment(
-                                                            selectedSubject:
-                                                            selectedSubject,
-                                                            assignmentNumber:
-                                                            index + 1),
-                                                        type: PageTransitionType
-                                                            .bottomToTopJoined,
-                                                        duration: const Duration(
-                                                            milliseconds: 200),
-                                                        childCurrent:
-                                                        const Assignment(),
-                                                      ));
-                                                },
-                                                child: AutoSizeText(
-                                                  "Submit",
-                                                  style: GoogleFonts.gfsDidot(
-                                                      fontWeight: FontWeight.w600,
-                                                      fontSize:
-                                                      size.height * 0.03),
-                                                )),
-                                          ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  )
+                                      Expanded(
+                                        child: Container(
+                                          padding: EdgeInsets.only( left: size.height*0.01,right: size.height*0.008,top: size.height*0.006),
+                                          height: size.height*0.107,
+                                          width: size.width,
+                                          decoration: const BoxDecoration(
+                                            color:  Color.fromRGBO(60, 99, 100, 1),
+                                            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15),bottomRight: Radius.circular(15)),
+
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Column(
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  AutoSizeText(
+                                                    "Assignment : ${index + 1}(${(int.parse(snapshot.data!.data()!["Assignment-${index + 1}"]["Size"].toString())/1048576).toStringAsFixed(2)}MB)",
+                                                    style: GoogleFonts.courgette(
+                                                        color: Colors.black,
+                                                        fontSize: size.height*0.018,
+                                                        fontWeight: FontWeight.w400
+                                                    ),
+                                                  ),
+                                                  AutoSizeText(
+                                                    "Deadline :${snapshot.data!.data()?["Assignment-${index + 1}"]["Last Date"]}",
+                                                    style: GoogleFonts.courgette(
+                                                        color: Colors.black,
+                                                        fontSize: size.height*0.018,
+                                                        fontWeight: FontWeight.w400
+                                                    ),
+                                                  ),
+                                                  AutoSizeText(
+                                                    "Before :${snapshot.data!.data()?["Assignment-${index + 1}"]["Time"].toString().substring(10, 15)}",
+                                                    style: GoogleFonts.courgette(
+                                                        color: Colors.black,
+                                                        fontSize: size.height*0.018,
+                                                        fontWeight: FontWeight.w400
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
 
 
-                                ],
+                                              Container(
+                                                height: size.height * 0.045,
+                                                width: size.width * 0.2,
+                                                decoration: BoxDecoration(
+                                                    color: Colors.transparent,
+                                                    borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(20)),
+                                                    border: Border.all(
+                                                        color: Colors.black,
+                                                        width: 1)),
+                                                child: ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                        shape:
+                                                        const RoundedRectangleBorder(
+                                                            borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius
+                                                                    .circular(
+                                                                    20))),
+                                                        backgroundColor:
+                                                        Colors.transparent),
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          PageTransition(
+                                                            child: uploadAssignment(
+                                                                selectedSubject:
+                                                                selectedSubject,
+                                                                assignmentNumber:
+                                                                index + 1),
+                                                            type: PageTransitionType
+                                                                .bottomToTopJoined,
+                                                            duration: const Duration(
+                                                                milliseconds: 200),
+                                                            childCurrent:
+                                                            const Assignment(),
+                                                          ));
+                                                    },
+                                                    child: AutoSizeText(
+                                                      "Submit",
+                                                      style: GoogleFonts.gfsDidot(
+                                                          fontWeight: FontWeight.w600,
+                                                          fontSize:
+                                                          size.height * 0.03),
+                                                    )),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+
+
+                                    ],
+                                  ),
+                                ),
+                              )
+                          );
+                        },
+                      )
+                      :
+                          Center(
+                              child: AutoSizeText(
+                                  "No Data found!",
+                                style: GoogleFonts.tiltNeon(
+                                  color: Colors.black87,
+                                  fontSize: size.width*0.08
+                                ),
                               ),
-                            ),
                           )
-                      );
-                    },
+                          :
+                      const loading(text: "Fetching data from server")
+                      ;
+                    }
                   ),
                 ),
-              )
-                  : const SizedBox(
-                child: Center(child: Text("No Data Found")),
               ),
             ],
           ),
@@ -602,94 +392,94 @@ class _AssignmentState extends State<Assignment> {
     );
   }
 
-  Future<void> getdata() async {
-    await FirebaseFirestore.instance
-        .collection("Assignment")
-        .doc(
-      "${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]} $selectedSubject",
-    )
-        .get()
-        .then((value) {
-
-      if (value.data() == null) {
-        setState(() {
-          nodata = true;
-        });
-      } else {
-        setState(() {
-          nodata = false;
-          snapshot = value;
-        });
-      }
-    }).whenComplete(() {
-      setState(() {
-        loaded = true;
-      });
-    });
-  }
-
-  Future<void> checkAndRequestPermissions() async {
-    if(Platform.isAndroid){
-      directory = await getExternalStorageDirectory();
-    }
-
-    bool permission=false;
-     if(Platform.isAndroid){
-       permission=await checkALLPermissions.isStoragePermission();
-       if(!permission){
-         if(await Permission.manageExternalStorage.request().isGranted){
-           permission=true;
-         }else{
-           await Permission.manageExternalStorage.request().then((value) {
-             bool check=value.isGranted;
-             if(check){permission=true;}});
-         }
-
-       }
-     }
-     if(Platform.isIOS){
-       print("inside ios");
-       permission= await Permission.mediaLibrary.isGranted;
-       print("no permission");
-       if(!permission){
-         if(await Permission.mediaLibrary.request().isGranted){
-           print("permission granted");
-           permission=true;
-         }else{
-           print("not granted, requesting again");
-           await Permission.mediaLibrary.request().then((value) {
-             print("2nd request result: $value");
-             bool check=value.isGranted;
-             if(check){permission=true;}});
-         }
-
-       }
-     }
-    //if (permission) {
-      String? dir = directory?.path.toString().substring(0, 19);
-      if(Platform.isIOS){
-        await getDownloadsDirectory().then((value){
-
-          dir=value?.path;
-          print("dir printing: $dir");
-        });
-      }
-      path = "${dir!}/Campus Link/$selectedSubject/Assignment";
-      await Directory(path).exists().then((value) async {
-        if (!value) {
-          try{
-            await Directory(path)
-                .create(recursive: true)
-                .whenComplete(() => print(">>>>>created"));
-          }catch(e){
-            print("file error: $e");
-          }
-        }
-      });
-      setState(() {
-        permissionGranted = true;
-      });
-
-
-  }
+  // Future<void> getdata() async {
+  //   await FirebaseFirestore.instance
+  //       .collection("Assignment")
+  //       .doc(
+  //     "${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]} $selectedSubject",
+  //   )
+  //       .get()
+  //       .then((value) {
+  //
+  //     if (value.data() == null) {
+  //       setState(() {
+  //         nodata = true;
+  //       });
+  //     } else {
+  //       setState(() {
+  //         nodata = false;
+  //         snapshot = value;
+  //       });
+  //     }
+  //   }).whenComplete(() {
+  //     setState(() {
+  //       loaded = true;
+  //     });
+  //   });
+  // }
+  //
+  // Future<void> checkAndRequestPermissions() async {
+  //   if(Platform.isAndroid){
+  //     directory = await getExternalStorageDirectory();
+  //   }
+  //
+  //   bool permission=false;
+  //    if(Platform.isAndroid){
+  //      permission=await checkALLPermissions.isStoragePermission();
+  //      if(!permission){
+  //        if(await Permission.manageExternalStorage.request().isGranted){
+  //          permission=true;
+  //        }else{
+  //          await Permission.manageExternalStorage.request().then((value) {
+  //            bool check=value.isGranted;
+  //            if(check){permission=true;}});
+  //        }
+  //
+  //      }
+  //    }
+  //    if(Platform.isIOS){
+  //      print("inside ios");
+  //      permission= await Permission.mediaLibrary.isGranted;
+  //      print("no permission");
+  //      if(!permission){
+  //        if(await Permission.mediaLibrary.request().isGranted){
+  //          print("permission granted");
+  //          permission=true;
+  //        }else{
+  //          print("not granted, requesting again");
+  //          await Permission.mediaLibrary.request().then((value) {
+  //            print("2nd request result: $value");
+  //            bool check=value.isGranted;
+  //            if(check){permission=true;}});
+  //        }
+  //
+  //      }
+  //    }
+  //   //if (permission) {
+  //     String? dir = directory?.path.toString().substring(0, 19);
+  //     if(Platform.isIOS){
+  //       await getDownloadsDirectory().then((value){
+  //
+  //         dir=value?.path;
+  //         print("dir printing: $dir");
+  //       });
+  //     }
+  //     path = "${dir!}/Campus Link/$selectedSubject/Assignment";
+  //     await Directory(path).exists().then((value) async {
+  //       if (!value) {
+  //         try{
+  //           await Directory(path)
+  //               .create(recursive: true)
+  //               .whenComplete(() => print(">>>>>created"));
+  //         }catch(e){
+  //           print("file error: $e");
+  //         }
+  //       }
+  //     });
+  //     setState(() {
+  //       permissionGranted = true;
+  //     });
+  //
+  //
+  // }
 }
