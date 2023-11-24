@@ -117,18 +117,16 @@ class _AssignmentState extends State<Assignment> {
             children: [
               Divider(
                 color: Colors.black,
-                height: MediaQuery.of(context).size.height * 0.03,
+                height: MediaQuery.of(context).size.height * 0.015,
                 thickness: MediaQuery.of(context).size.height * 0.003,
                 endIndent: 8,
                 indent: 8,
               ),
-              SizedBox(
-                height: size.height * 0.015,
-              ),
+
               Padding(
-                padding: EdgeInsets.all(size.height * 0.01),
+                padding: EdgeInsets.symmetric(horizontal: size.height * 0.01),
                 child: SizedBox(
-                  height: size.height * 0.63,
+                  height: size.height * 0.69,
                   width: size.width,
                   child: StreamBuilder(
                     stream: FirebaseFirestore

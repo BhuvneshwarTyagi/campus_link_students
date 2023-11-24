@@ -141,7 +141,7 @@ class _NotesState extends State<Notes> {
                 ),
 
                 SizedBox(
-                  height: size.height,
+                  height: size.height*0.7,
                   width: size.width,
                   child: StreamBuilder
                     (
@@ -736,9 +736,13 @@ class _NotesState extends State<Notes> {
                           },),
                       )
                           :
-                      const SizedBox(
-                        child: Center(child: Text("No Data Found")),
-                      )
+                      Center(child: AutoSizeText(
+                        "No Data found!",
+                        style: GoogleFonts.tiltNeon(
+                            color: Colors.black87,
+                            fontSize: size.width*0.08
+                        ),
+                      ),)
                       :
                           const loading(text: "Fetching from the server")
                       ;
