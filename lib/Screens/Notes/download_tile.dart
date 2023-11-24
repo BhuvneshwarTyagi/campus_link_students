@@ -1,9 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'dart:io';
+
+import 'package:permission_handler/permission_handler.dart';
 
 class Download extends StatefulWidget {
    Download({Key? key,required this.downloadUrl,required this.pdfName,required this.path}) : super(key: key);
@@ -24,6 +27,7 @@ class _DownloadState extends State<Download> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    checkPermissions();
     setsystemppath();
   }
   @override
@@ -60,32 +64,51 @@ class _DownloadState extends State<Download> {
             :
             InkWell(
                 onTap: () async {
-                  File file=File("$systempath${widget.path}/${widget.pdfName}");
-                  await file.exists().then((value) async {
-                    if(!value)
-                    {
-                      print(".Start");
-                      setState(() {
-                        isDownloading=true;
-                      });
-                      await dio.download(widget.downloadUrl,file.path,onReceiveProgress: (count, total) {
-                        if(count==total){
-                          setState(() {
-                          isDownloaded=false;
-                          });
-                        }
-                        else{
-                          setState(() {
-                            percent = (count/total);
-                          });
-                        }
-                      },);
-                    }
-                    else{
-                      print("..Already Exsist");
-                    }
-                  });
-
+                  if(await checkPermissions()){
+                    File file=File("$systempath${widget.path}/${widget.pdfName}");
+                    await file.exists().then((value) async {
+                      if(!value)
+                      {
+                        print(".Start");
+                        setState(() {
+                          isDownloading=true;
+                        });
+                        await dio.download(widget.downloadUrl,file.path,onReceiveProgress: (count, total) {
+                          if(count==total){
+                            setState(() {
+                              isDownloaded=false;
+                            });
+                          }
+                          else{
+                            setState(() {
+                              percent = (count/total);
+                            });
+                          }
+                        },);
+                      }
+                      else{
+                        print("..Already Exsist");
+                      }
+                    });
+                  }else{
+                    InAppNotifications.instance
+                      ..titleFontSize = 14.0
+                      ..descriptionFontSize = 14.0
+                      ..textColor = Colors.black
+                      ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
+                      ..shadow = true
+                      ..animationStyle = InAppNotificationsAnimationStyle.scale;
+                    InAppNotifications.show(
+                      // title: '',
+                      duration: const Duration(seconds: 2),
+                      description: "Please grant storage permission first to download documents",
+                      // leading: const Icon(
+                      //   Icons.error_outline_outlined,
+                      //   color: Colors.red,
+                      //   size: 55,
+                      // )
+                    );
+                  }
                 },
                 child: Icon(Icons.download_for_offline_outlined,color: Colors.black87,size:size.height*0.043))
                 :
@@ -95,12 +118,39 @@ class _DownloadState extends State<Download> {
       ),
     );
   }
+  Future<bool> checkPermissions() async {
+    bool granted=false;
+    if(Platform.isAndroid){
+      granted=  await Permission.manageExternalStorage.isGranted;
+      if(!granted){
+        await Permission.manageExternalStorage.request();
+      }
+      granted = await Permission.accessMediaLocation.isGranted;
+      if(!granted){
+        await Permission.accessMediaLocation.request();
+      }
+      return (await Permission.manageExternalStorage.isGranted && await Permission.accessMediaLocation.isGranted);
+    }
+    if(Platform.isIOS){
+      granted=  await Permission.mediaLibrary.isGranted;
+      if(!granted){
+        await Permission.mediaLibrary.request();
+      }
+      return await Permission.mediaLibrary.isGranted;
+    }
+    return false;
+  }
   setsystemppath() async {
+    Directory? directory;
     if(Platform.isAndroid){
       Directory? directory = await getExternalStorageDirectory();
 
         systempath = directory?.path.toString().substring(0, 19);
 
+    }
+    if(Platform.isIOS){
+      directory= await getDownloadsDirectory();
+      systempath = directory?.path;
     }
     await check();
   }
