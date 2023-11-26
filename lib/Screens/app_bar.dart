@@ -63,7 +63,7 @@ class _AppbarState extends State<Appbar> {
             style: TextStyle(
               fontSize: 25
             )),
-            IconButton(onPressed: (){}, icon: Icon(Icons.notifications))
+            IconButton(onPressed: (){}, icon: const Icon(Icons.notifications))
                 ],
               ),
             ),

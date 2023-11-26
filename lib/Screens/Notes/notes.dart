@@ -273,7 +273,7 @@ class _NotesState extends State<Notes> {
                                           duration: const Duration(milliseconds: 1),
                                           decoration: BoxDecoration(
                                               color: const Color.fromRGBO(56, 33, 101,1),
-                                              borderRadius: BorderRadius.circular(size.width*0.068)
+                                              borderRadius: BorderRadius.only(bottomRight:Radius.circular(size.width*0.068),bottomLeft: Radius.circular(size.width*0.068))
 
                                           ),
                                           child: SingleChildScrollView(
@@ -375,21 +375,21 @@ class _NotesState extends State<Notes> {
                                                         ],
                                                       )
                                                   ),
-                                                  leading:Container(
-                                                      height: size.width*0.07,
-                                                      width: size.width*0.07,
-                                                      decoration:  const BoxDecoration(
-                                                        color: Colors.transparent,
-                                                        shape: BoxShape.circle,
-                                                        /*image:DecorationImage(
-                                                image: fileAlreadyExists
-                                                    ?
-                                                const AssetImage("assets/icon/pdf.png"):
-                                                const AssetImage("assets/icon/download-button.png"),
-                                                fit: BoxFit.cover,
-                                                alignment: Alignment.center, )*/
-                                                      ),
-                                                      child: Image.asset("assets/icon/pdf.png")),
+                                                //   leading:Container(
+                                                //       height: size.width*0.07,
+                                                //       width: size.width*0.07,
+                                                //       decoration:  const BoxDecoration(
+                                                //         color: Colors.transparent,
+                                                //         shape: BoxShape.circle,
+                                                //         /*image:DecorationImage(
+                                                // image: fileAlreadyExists
+                                                //     ?
+                                                // const AssetImage("assets/icon/pdf.png"):
+                                                // const AssetImage("assets/icon/download-button.png"),
+                                                // fit: BoxFit.cover,
+                                                // alignment: Alignment.center, )*/
+                                                //       ),
+                                                //       child: Image.asset("assets/icon/pdf.png")),
 
                                                   // subtitle: AutoSizeText('DEADLIiNE',style: GoogleFonts.exo(fontSize: size.height*0.015,color: Colors.black,fontWeight: FontWeight.w400),),
                                                   trailing:  SizedBox(
