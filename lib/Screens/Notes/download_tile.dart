@@ -27,7 +27,7 @@ class _DownloadState extends State<Download> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    checkPermissions();
+    //checkPermissions();
     setsystemppath();
   }
   @override

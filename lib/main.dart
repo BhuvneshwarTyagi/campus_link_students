@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:alarm/alarm.dart';
-import 'package:alarm/service/notification.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:campus_link_student/Registration/database.dart';
 import 'package:campus_link_student/firebase_options.dart';
