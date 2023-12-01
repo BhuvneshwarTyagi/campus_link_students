@@ -149,8 +149,8 @@ class _DownloadState extends State<Download> {
 
     }
     if(Platform.isIOS){
-      directory= await getDownloadsDirectory();
-      systempath = directory?.path;
+      directory= await getApplicationDocumentsDirectory();
+      systempath = directory.path;
     }
     await check();
   }
