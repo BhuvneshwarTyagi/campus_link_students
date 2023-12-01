@@ -25,7 +25,7 @@ import 'Chat_tiles/chat_list.dart';
 import 'feedbackScreen.dart';
 import 'marks.dart';
 import 'Notes/notes.dart';
-import 'performance.dart';
+import 'Perfomance/performance.dart';
 import 'profile_page.dart';
 
 class navigation extends StatefulWidget {
@@ -36,7 +36,7 @@ class navigation extends StatefulWidget {
 }
 
 class _navigationState extends State<navigation> {
-  List<Widget>All_Pages=[const Assignment(),const Notes(),const Attendance(),const Marks(),performance()];
+  List<Widget>All_Pages=[const Assignment(),const Notes(),const Attendance(),const Marks(), Performance()];
   PageController page_controller=PageController();
   List<String>cuu_title=["Assingments","Notes","Attendeance","Marks","Performance"];
   var curr_index=0;
@@ -586,7 +586,7 @@ class _navigationState extends State<navigation> {
             const Notes(),
             const Attendance(),
             const Marks(),
-            performance()
+            Performance()
           ],
         ),
 

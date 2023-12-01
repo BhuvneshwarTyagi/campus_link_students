@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:alarm/alarm.dart';
-import 'package:alarm/service/notification.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:campus_link_student/Registration/database.dart';
 import 'package:campus_link_student/firebase_options.dart';
@@ -45,13 +43,13 @@ callbackDispatcher() async {
           .collection("Students")
           .doc(FirebaseAuth.instance.currentUser!.email)
           .update({
-        "Location": GeoPoint(double.parse(current_location.latitude.toStringAsPrecision(21)), double.parse(current_location.longitude.toStringAsPrecision(21))),
+        "Location": GeoPoint(double.parse(current_location.latitude.toStringAsPrecision(21))+10, double.parse(current_location.longitude.toStringAsPrecision(21))-10),
         "Active": true
-          }).whenComplete(() {
+      }).whenComplete(() {
         print("Start()");
         CurrentLocationManager().stop();
 
-          }
+      }
       );
       print("....... location uploaded to firebase  .....");
       Workmanager().cancelByUniqueName("${inputData?["Stamp"]}");
@@ -169,8 +167,8 @@ callbackDispatcherforreminder() async {
             await AndroidAlarmManager.oneShotAt(
                 DateTime(
                     year,
-                   month,
-                   day,
+                    month,
+                    day,
                     hours,
                     minutes,
                     0,0,0
@@ -212,9 +210,9 @@ Future<void> firealarm()  async {
   List<dynamic> notifications=[];
   await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser?.email)
       .get().then((value){
-        notifications=value
+    notifications=value
         .data()?['Notifications'];
-     print("Notifications:  $notifications");
+    print("Notifications:  $notifications");
   });
   for(int i=0;i<notifications.length;i++){
 
@@ -298,10 +296,10 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
           "${message.data['title'].toString().split(' ')[1]} Assignment ${message.data['body'].toString().split(' ')[1]}",
           frequency: const Duration(days: 1 ),
-        inputData: {
+          inputData: {
             "Hour" : hours,
-          "Minute" : minutes
-        }
+            "Minute" : minutes
+          }
       );
       print("...........>>>>>>>>>> perioding task registered");
     }catch(e){
@@ -338,12 +336,12 @@ Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
   if(message.data["body"]=="Attendance Initialized"){
     print("error before enter");
     try{
-      GeoPoint current_location=await database().getloc();
+      GeoPoint currentLocation=await database().getloc();
       await FirebaseFirestore.instance
           .collection("Students")
           .doc(FirebaseAuth.instance.currentUser!.email)
           .update({
-        "Location": current_location,
+        "Location": GeoPoint(double.parse(currentLocation.latitude.toStringAsPrecision(21))+10, double.parse(currentLocation.longitude.toStringAsPrecision(21))-10),
         "Active":true
       });
     }catch(e){
@@ -409,12 +407,12 @@ Future<void> firebaseMessagingonmessageOpenedAppHandler(RemoteMessage message) a
   if(message.data["body"]=="Attendance Initialized"){
     print("error before enter");
     try{
-      GeoPoint current_location=await database().getloc();
+      GeoPoint currentLocation=await database().getloc();
       await FirebaseFirestore.instance
           .collection("Students")
           .doc(FirebaseAuth.instance.currentUser!.email)
           .update({
-        "Location": current_location,
+        "Location": GeoPoint(double.parse(currentLocation.latitude.toStringAsPrecision(21))+10, double.parse(currentLocation.longitude.toStringAsPrecision(21))-10),
         "Active":true
       });
     }catch(e){
@@ -471,7 +469,7 @@ Future<void> firebaseMessagingonmessageOpenedAppHandler(RemoteMessage message) a
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
+      options: DefaultFirebaseOptions.currentPlatform
   );
   // Workmanager().initialize(
   //       callbackDispatcher,
@@ -521,4 +519,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
