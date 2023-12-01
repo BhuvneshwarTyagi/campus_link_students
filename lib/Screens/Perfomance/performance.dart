@@ -23,6 +23,8 @@ class _pieChart extends State<Performance>{
 
   };
   double overallAttendancePercent=0;
+  List<String> monthListForAttendance=[];
+  Map<String,double> attendanceDataMapforOverAllPerformance={};
   List<Map<String,dynamic>> dataMapList=[];
   List<Color> BigColorList = [
     const Color(0xffD95AF3),
@@ -31,27 +33,11 @@ class _pieChart extends State<Performance>{
     const Color(0xffFA4A42),
   ];
   bool dataLoaded=false;
-  Map<String,double> AttendancedataMap={
-    "May":55,
-    "june":16,
-    "july":36
-  };
   List<Color> SmallPieChartcolorList=[
     const Color(0xffD95AF3),
     const Color(0xff3EE094),
     const Color(0xff3398F6),
   ];
-  Map<String,double> MarksdataMap={
-    "Maths":55,
-    "DAA":16,
-    "Compiler":36
-  };
-  Map<String,double> AssignmentdataMap={
-    "Maths":55,
-    "DAA":16,
-    "Compiler":36
-
-  };
   final gradientList = <List<Color>>[
     [
       const Color.fromRGBO(223, 250, 92, 1),
@@ -176,7 +162,7 @@ class _pieChart extends State<Performance>{
                 },
                 body: dataLoaded
                     ?
-                AttendancePerformance(dataMapList: dataMapList)
+                AttendancePerformance(dataMapList: dataMapList, attendanceDataMap: attendanceDataMapforOverAllPerformance,month: monthListForAttendance,)
                     :
                 const SizedBox(),
 
@@ -302,6 +288,7 @@ class _pieChart extends State<Performance>{
             monthName="Dec";
             break;
         }
+        monthListForAttendance.add(monthName);
         for(int i=0;i<usermodel["Subject"].length;i++){
           String subName = usermodel["Subject"][i];
           await FirebaseFirestore.instance.collection("Students").doc(usermodel["Email"]).collection("Attendance").doc("$subName-$month").get().then((value){
@@ -321,6 +308,7 @@ class _pieChart extends State<Performance>{
 
         }
         dataMapList.add({"Month" : monthName, "Percent" : attandence/totalLecture});
+        attendanceDataMapforOverAllPerformance[monthName]=attandence/totalLecture;
       }
 
     }

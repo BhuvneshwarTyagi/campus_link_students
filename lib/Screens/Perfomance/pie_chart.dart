@@ -22,7 +22,7 @@ class _piechartState extends State<piechart> {
     return PieChart(
       dataMap: widget.dataMap,
       colorList: SmallPieChartcolorList,
-      chartRadius: size.width/4,
+      chartRadius: size.width/3,
       chartValuesOptions: const ChartValuesOptions(showChartValueBackground: false,showChartValuesInPercentage: true,),
       legendOptions: const LegendOptions(showLegends: false,legendShape: BoxShape.rectangle,),
 

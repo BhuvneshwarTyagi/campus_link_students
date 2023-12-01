@@ -6,18 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class AttendancePerformance extends StatefulWidget {
-  const AttendancePerformance({super.key, required this.dataMapList});
+  const AttendancePerformance({super.key, required this.dataMapList, required this.attendanceDataMap, required this.month});
   final List<Map<String,dynamic>> dataMapList;
+  final Map<String,double> attendanceDataMap;
+  final List<String> month;
   @override
   State<AttendancePerformance> createState() => _AttendancePerformanceState();
 }
 
 class _AttendancePerformanceState extends State<AttendancePerformance> {
-  Map<String,double> attendanceDataMap={
-    "May":55,
-    "june":16,
-    "july":36
-  };
+
   List<Color> smallPieChartColorList=[
     const Color(0xffD95AF3),
     const Color(0xff3EE094),
@@ -38,9 +36,8 @@ class _AttendancePerformanceState extends State<AttendancePerformance> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return
-    SizedBox(
-      height: size.height*0.3,
+    return SizedBox(
+      height: size.height*0.4,
       width: size.width*0.95,
       child: StreamBuilder(
         stream: FirebaseFirestore.instance.collection("Students").doc(usermodel["Email"]).collection("Attendance").snapshots(),
@@ -63,74 +60,44 @@ class _AttendancePerformanceState extends State<AttendancePerformance> {
                 //   legendOptions: const LegendOptions(showLegends: false,legendShape: BoxShape.rectangle,),
                 //
                 // ),
-                piechart(dataMap: attendanceDataMap,),
+                piechart(dataMap: widget.attendanceDataMap,),
                 SizedBox(width: size.width*0.05,),
-                Padding(
-                  padding:EdgeInsets.only(top:size.height*0.01),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: size.height*0.034,
+                SizedBox(
+                  height: size.height*0.15,
+                  width: size.width*0.5,
+                  child: GridView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: widget.month.length,
+                    shrinkWrap: true,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: widget.month.length>2 ? 2: 1,
+                        mainAxisSpacing: 10.0,
+                        crossAxisSpacing: 10.0,
+                        childAspectRatio: 5.0, // number of items in each row
+                      //mainAxisSpacing: 5, // spacing between row
+                    ),
+                    itemBuilder:(context,index) {
+                      return SizedBox(
+                        height: size.height*0.03,
                         child: Row(
                           children: [
                             Container(
-                              height:size.height*0.02,
-                              width: size.width*0.05,
+                              width: size.width*0.07,
                               decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  color:smallPieChartColorList[0]
+                                  shape: BoxShape.circle,
+                                  color:smallPieChartColorList[index]
                               ),
                             ),
-                            TextButton(
-                                onPressed: () {
-                                  circleNo++;
-                                },
-                                child: const Text("Maths",style: TextStyle(color: Colors.black),))
+                            SizedBox(width: size.width*0.03,),
+                            Text( widget.month[index],style: const TextStyle(color: Colors.black),)
                           ],
 
                         ),
-                      ),
-                      SizedBox(
-                        height: size.height*0.034,
-                        child: Row(
-                          children: [
-                            Container(
-                              height:size.height*0.02,
-                              width: size.width*0.05,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  color:smallPieChartColorList[1]
-                              ),
-                            ),
-                            TextButton(onPressed: () {
-                              isCircleExpanded=!isCircleExpanded;
+                      );
+                    },
 
-                            }, child: const Text("Maths",style: TextStyle(color: Colors.black),))
-                          ],
 
-                        ),
-                      ),
-                      SizedBox(
-                        height: size.height*0.034,
-                        child: Row(
-                          children: [
-                            Container(
-                              height:size.height*0.02,
-                              width: size.width*0.05,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.rectangle,
-                                  color:smallPieChartColorList[2]
-                              ),
-                            ),
-                            TextButton(onPressed: () {
-                              isCircleExpanded=!isCircleExpanded;
 
-                            }, child: const Text("Maths",style: TextStyle(color: Colors.black),))
-                          ],
-
-                        ),
-                      ),
-                    ],
 
                   ),
                 ),
@@ -143,19 +110,21 @@ class _AttendancePerformanceState extends State<AttendancePerformance> {
               child: GridView.builder(
                 scrollDirection: Axis.vertical,
                 itemCount: widget.dataMapList.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3, // number of items in each row
-                  mainAxisSpacing: size.width*0.05, // spacing between row
+                  mainAxisSpacing: 10.0,
+                  crossAxisSpacing: 10.0,
+                  childAspectRatio: 4.0, // spacing between row
                 ),
                 itemBuilder:(context,index) {
 
                   return  CircularPercentIndicator(
                     footer: AutoSizeText( widget.dataMapList[index]["Month"]),
-                    radius: size.height*0.035,
+                    radius: size.height*0.04,
                     lineWidth: 2,
                     percent: widget.dataMapList[index]["Percent"],
                     backgroundColor: Colors.grey,
-                    center: AutoSizeText("${double.parse("${widget.dataMapList[index]["Percent"]*100}").toStringAsPrecision(2)}%") ,
+                    center: AutoSizeText("${double.parse("${widget.dataMapList[index]["Percent"]*100}").toStringAsFixed(2)}%") ,
                     progressColor: Colors.red,
                 );
               },
