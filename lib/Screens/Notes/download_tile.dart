@@ -9,7 +9,7 @@ import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 
 class Download extends StatefulWidget {
-   Download({Key? key,required this.downloadUrl,required this.pdfName,required this.path}) : super(key: key);
+  Download({Key? key,required this.downloadUrl,required this.pdfName,required this.path}) : super(key: key);
   String downloadUrl;
   String pdfName;
   String path;
@@ -37,15 +37,15 @@ class _DownloadState extends State<Download> {
       height: size.height*0.045,
       width: size.height*0.045,
       decoration: const BoxDecoration(
-        shape: BoxShape.circle
+          shape: BoxShape.circle
       ),
       child: Center(
         child: Column(
           children: [
             isDownloaded
-            ?
+                ?
             isDownloading
-            ?
+                ?
             Center(
               child: Center(
                 child: CircularPercentIndicator(
@@ -61,7 +61,7 @@ class _DownloadState extends State<Download> {
                 ),
               ),
             )
-            :
+                :
             InkWell(
                 onTap: () async {
                   if(await checkPermissions()){
@@ -145,7 +145,7 @@ class _DownloadState extends State<Download> {
     if(Platform.isAndroid){
       Directory? directory = await getExternalStorageDirectory();
 
-        systempath = directory?.path.toString().substring(0, 19);
+      systempath = directory?.path.toString().substring(0, 19);
 
     }
     if(Platform.isIOS){
