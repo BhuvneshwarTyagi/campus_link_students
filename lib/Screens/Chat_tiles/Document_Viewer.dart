@@ -11,7 +11,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdfx/pdfx.dart';
 import '../../Constraints.dart';
-import '../../Registration/database.dart';
+import '../../Database/database.dart';
 import '../loadingscreen.dart';
 import 'chat.dart';
 

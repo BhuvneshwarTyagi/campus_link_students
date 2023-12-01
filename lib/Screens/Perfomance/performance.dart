@@ -1,10 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pie_chart/pie_chart.dart';
-import 'dart:math';
 import 'package:percent_indicator/percent_indicator.dart';
-
+import '../../Constraints.dart';
+import '../../Database/database.dart';
 import 'assignment_performance.dart';
 import 'attendance_performance.dart';
 import 'marks_perfomance.dart';
@@ -21,13 +22,15 @@ class _pieChart extends State<Performance>{
     "Others": 3.51,
 
   };
-
+  double overallAttendancePercent=0;
+  List<Map<String,dynamic>> dataMapList=[];
   List<Color> BigColorList = [
     const Color(0xffD95AF3),
     const Color(0xff3EE094),
     const Color(0xff3398F6),
     const Color(0xffFA4A42),
   ];
+  bool dataLoaded=false;
   Map<String,double> AttendancedataMap={
     "May":55,
     "june":16,
@@ -70,6 +73,12 @@ class _pieChart extends State<Performance>{
   bool isExpanded1 = false;
   bool isExpanded2 = false;
   bool isExpanded3 = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    generatedata();
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -156,14 +165,20 @@ class _pieChart extends State<Performance>{
                   return ListTile(
                     title: AutoSizeText("Attendance",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
                     subtitle: LinearPercentIndicator(
-                      width:size.width*0.7,
+                      width:size.width*0.75,
                       lineHeight: size.height*0.005,
-                      percent: 0.9,
-                      progressColor: Colors.red,
+                      percent: overallAttendancePercent,
+                      animation: true,
+                      animationDuration: 300,
+                      progressColor: overallAttendancePercent< 0.50 ? Colors.red : overallAttendancePercent < 0.70 ?  Colors.deepOrange : Colors.green,
                     ),
                   );
                 },
-                body: const AttendancePerformance(),
+                body: dataLoaded
+                    ?
+                AttendancePerformance(dataMapList: dataMapList)
+                    :
+                const SizedBox(),
 
 
                 isExpanded:isExpanded1,
@@ -220,5 +235,100 @@ class _pieChart extends State<Performance>{
     );
 
   }
+  generatedata() async {
+    DateTime sessionStart=usermodel["SessionStartDate"].toDate();
+    DateTime currentDate=DateTime.now();
+    int overallLecture=0;
+    int overallAttendance=0;
+    for(int year=sessionStart.year ; year<=currentDate.year ; year++){
+      int startMonth=0;
+      int endMonth=0;
 
+      if(year==sessionStart.year){
+        startMonth=sessionStart.month;
+      }
+      else{
+        startMonth=1;
+      }
+
+      if(year < currentDate.year){
+        endMonth= 12;
+      }
+      else{
+        endMonth= currentDate.month;
+      }
+
+      for(int month=startMonth ; month <= endMonth ;month++){
+        int days = database().getDaysInMonth(year, month);
+        String monthName= "";
+        int totalLecture =0;
+        int attandence =0;
+
+        switch (month){
+          case 1:
+            monthName="Jan";
+            break;
+          case 2:
+            monthName="Feb";
+            break;
+          case 3:
+            monthName="Mar";
+            break;
+          case 4:
+            monthName="Apr";
+            break;
+          case 5:
+            monthName="May";
+            break;
+          case 6:
+            monthName="June";
+            break;
+          case 7:
+            monthName="July";
+            break;
+          case 8:
+            monthName="Aug";
+            break;
+          case 9:
+            monthName="Sep";
+            break;
+          case 10:
+            monthName="Oct";
+            break;
+          case 11:
+            monthName="Nov";
+            break;
+          case 12:
+            monthName="Dec";
+            break;
+        }
+        for(int i=0;i<usermodel["Subject"].length;i++){
+          String subName = usermodel["Subject"][i];
+          await FirebaseFirestore.instance.collection("Students").doc(usermodel["Email"]).collection("Attendance").doc("$subName-$month").get().then((value){
+            for(int day=1; day<=days ;day++){
+              if(value.data()?["$day"] != null){
+                for(int lecture=0; lecture < value.data()?["$day"].length ;lecture++){
+                  if(value.data()?["$day"][lecture]["Status"] == "Present"){
+                    attandence++;
+                    overallAttendance++;
+                  }
+                  totalLecture++;
+                  overallLecture++;
+                }
+              }
+            }
+          });
+
+        }
+        dataMapList.add({"Month" : monthName, "Percent" : attandence/totalLecture});
+      }
+
+    }
+    print("setting dataloaded to ture");
+    setState(() {
+      dataLoaded=true;
+      overallAttendancePercent=overallAttendance/overallLecture;
+    });
+
+  }
 }

@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../Constraints.dart';
-import '../../Registration/database.dart';
+import '../../Database/database.dart';
 import '../loadingscreen.dart';
 import 'Group_decription.dart';
 import 'Media_File.dart';

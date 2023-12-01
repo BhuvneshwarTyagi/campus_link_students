@@ -1,5 +1,5 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:campus_link_student/Registration/database.dart';
+import 'package:campus_link_student/Database/database.dart';
 import 'package:campus_link_student/Screens/loadingscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

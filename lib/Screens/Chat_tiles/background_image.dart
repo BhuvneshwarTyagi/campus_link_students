@@ -5,10 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../Constraints.dart';
 import '../../Database/database.dart';
-import '../../Registration/database.dart';
 
 
 // ignore: camel_case_types

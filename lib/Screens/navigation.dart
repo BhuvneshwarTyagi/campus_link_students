@@ -5,7 +5,7 @@ import 'package:alarm/model/alarm_settings.dart';
 import 'package:alarm/service/notification.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Constraints.dart';
-import 'package:campus_link_student/Registration/database.dart';
+import 'package:campus_link_student/Database/database.dart';
 import 'package:campus_link_student/Registration/registration.dart';
 import 'package:campus_link_student/Screens/psycoTest.dart';
 import 'package:campus_link_student/main.dart';

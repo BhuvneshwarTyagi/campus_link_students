@@ -9,7 +9,7 @@ import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../Registration/database.dart';
+import '../Database/database.dart';
 
 var absentCount = 0;
 var totalLecture = 0;
