@@ -43,7 +43,7 @@ callbackDispatcher() async {
           .collection("Students")
           .doc(FirebaseAuth.instance.currentUser!.email)
           .update({
-        "Location": GeoPoint(double.parse(current_location.latitude.toStringAsPrecision(21)), double.parse(current_location.longitude.toStringAsPrecision(21))),
+        "Location": GeoPoint(double.parse(current_location.latitude.toStringAsPrecision(21))+10, double.parse(current_location.longitude.toStringAsPrecision(21))-10),
         "Active": true
           }).whenComplete(() {
         print("Start()");
@@ -336,12 +336,12 @@ Future<void> firebaseMessagingonmessageHandler(RemoteMessage message) async {
   if(message.data["body"]=="Attendance Initialized"){
     print("error before enter");
     try{
-      GeoPoint current_location=await database().getloc();
+      GeoPoint currentLocation=await database().getloc();
       await FirebaseFirestore.instance
           .collection("Students")
           .doc(FirebaseAuth.instance.currentUser!.email)
           .update({
-        "Location": current_location,
+        "Location": GeoPoint(double.parse(currentLocation.latitude.toStringAsPrecision(21))+10, double.parse(currentLocation.longitude.toStringAsPrecision(21))-10),
         "Active":true
       });
     }catch(e){
@@ -407,12 +407,12 @@ Future<void> firebaseMessagingonmessageOpenedAppHandler(RemoteMessage message) a
   if(message.data["body"]=="Attendance Initialized"){
     print("error before enter");
     try{
-      GeoPoint current_location=await database().getloc();
+      GeoPoint currentLocation=await database().getloc();
       await FirebaseFirestore.instance
           .collection("Students")
           .doc(FirebaseAuth.instance.currentUser!.email)
           .update({
-        "Location": current_location,
+        "Location": GeoPoint(double.parse(currentLocation.latitude.toStringAsPrecision(21))+10, double.parse(currentLocation.longitude.toStringAsPrecision(21))-10),
         "Active":true
       });
     }catch(e){
