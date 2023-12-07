@@ -59,11 +59,14 @@ class _pieChart extends State<Performance>{
   bool isExpanded1 = false;
   bool isExpanded2 = false;
   bool isExpanded3 = false;
+
   @override
   void initState() {
     // TODO: implement initState
+
     super.initState();
-    generatedata();
+    generateattendancedata();
+    //assignmentdata();
   }
   @override
   Widget build(BuildContext context) {
@@ -116,6 +119,8 @@ class _pieChart extends State<Performance>{
 
 
               ),
+
+
           ExpansionPanelList(
             elevation: 0,
             expansionCallback: (int index,bool isExpanded){
@@ -193,12 +198,13 @@ class _pieChart extends State<Performance>{
                 canTapOnHeader: true,
                 backgroundColor:Colors.transparent,
                 headerBuilder: (BuildContext context, bool isExpanded) {
+                 // double persent=double.parse("${snapshot.data()?["Total_Submitted_Assignment"][usermodel["Email"]]}")/double.parse("${snapshot.data()?["Total_Assignment"]}");
                   return ListTile(
                     title: AutoSizeText("Assignment",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
                     subtitle: LinearPercentIndicator(
                       width:size.width*0.7,
                       lineHeight: size.height*0.005,
-                      percent: 0.9,
+                      percent: 1.0,
                       progressColor: Colors.red,
                     ),
                   );
@@ -221,7 +227,7 @@ class _pieChart extends State<Performance>{
     );
 
   }
-  generatedata() async {
+  generateattendancedata() async {
     DateTime sessionStart=usermodel["SessionStartDate"].toDate();
     DateTime currentDate=DateTime.now();
     int overallLecture=0;
@@ -248,7 +254,7 @@ class _pieChart extends State<Performance>{
         int days = database().getDaysInMonth(year, month);
         String monthName= "";
         int totalLecture =0;
-        int attandence =0;
+        int attendance =0;
 
         switch (month){
           case 1:
@@ -296,7 +302,7 @@ class _pieChart extends State<Performance>{
               if(value.data()?["$day"] != null){
                 for(int lecture=0; lecture < value.data()?["$day"].length ;lecture++){
                   if(value.data()?["$day"][lecture]["Status"] == "Present"){
-                    attandence++;
+                    attendance++;
                     overallAttendance++;
                   }
                   totalLecture++;
@@ -307,8 +313,8 @@ class _pieChart extends State<Performance>{
           });
 
         }
-        dataMapList.add({"Month" : monthName, "Percent" : attandence/totalLecture});
-        attendanceDataMapforOverAllPerformance[monthName]=attandence/totalLecture;
+        dataMapList.add({"Month" : monthName, "Percent" : attendance/totalLecture});
+        attendanceDataMapforOverAllPerformance[monthName]=attendance/totalLecture;
       }
 
     }
@@ -319,4 +325,5 @@ class _pieChart extends State<Performance>{
     });
 
   }
+
 }

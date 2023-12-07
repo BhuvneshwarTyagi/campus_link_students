@@ -1,12 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Screens/Perfomance/pie_chart.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:pie_chart/pie_chart.dart';
+
+import '../../Constraints.dart';
 
 class AssignmentPerformance extends StatefulWidget {
   const AssignmentPerformance({super.key});
@@ -22,140 +23,196 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
     const Color(0xff3EE094),
     const Color(0xff3398F6),
   ];
-  Map<String,double> AssignmentdataMap={
-    "Maths":55,
-    "DAA":16,
-    "Compiler":36
+   Map<String,double> AssignmentdataMap={};
+   List <dynamic>persentage=[];
 
-  };
   int circleNo=1;
   bool isCircleExpanded = false;
   bool isExpanded1 = false;
   bool isExpanded2 = false;
   bool isExpanded3 = false;
+   List<dynamic> subjects = usermodel["Subject"];
 
+  bool data=false;
+  late DocumentSnapshot<Map<String, dynamic>> snapshot1;
+  late DocumentSnapshot<Map<String, dynamic>> snapshot2;
+
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    overallAssignmentdata(AssignmentdataMap,persentage);
+
+
+
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return  Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
 
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // PieChart(
-            //   dataMap: AssignmentdataMap,
-            //   colorList: SmallPieChartcolorList,
-            //   chartRadius: size.width/4,
-            //   chartValuesOptions: const ChartValuesOptions(showChartValueBackground: false,showChartValuesInPercentage: true,),
-            //   legendOptions: const LegendOptions(showLegends: false,legendShape: BoxShape.rectangle,),
-            //
-            // ),
-            piechart(dataMap: AssignmentdataMap,),
-            SizedBox(width: size.width*0.05,),
-            Padding(
-              padding:EdgeInsets.only(top:size.height*0.01),
-              child: Column(
+    return  StreamBuilder(
+      stream: FirebaseFirestore.instance.collection("Subject").doc("${usermodel["Branch"]}").snapshots(),
+      builder:(context, snapshot) {
+        return snapshot.hasData
+        ?
+        SizedBox(
+          height: size.height*0.4,
+          width: size.width*0.95,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+
+                  piechart(dataMap: AssignmentdataMap,),
+
+                  SizedBox(width: size.width*0.05,),
+                  SizedBox(
+                    height: size.height*0.15,
+                    width: size.width*0.5,
+                    child: GridView.builder(
+
+                      scrollDirection: Axis.vertical,
+                      itemCount:snapshot.data!.data()?["Subject"].length,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          mainAxisSpacing: 10.0,
+                          crossAxisSpacing: 10.0,
+                          childAspectRatio: 5.0,
+                          crossAxisCount: 2),
+                      itemBuilder: (context, index) {
+                        return SizedBox(
+                          height: size.height*0.03,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: size.width*0.07,
+                                decoration:  BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color:SmallPieChartcolorList[index],
+                                ),
+                              ),
+                              SizedBox(width: size.width*0.03,),
+                              InkWell(
+                                onTap: (){
+
+                                  setState(() {
+                                   // selectedSubject=usermodel["Subject"][index];
+                                    //assignmentdata(selectedSubject);
+                                  });
+                                },
+                                  child: AutoSizeText("${snapshot.data!.data()?["Subject"][index]}")),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  )
+
+                ],
+              ),
+              SizedBox(height: size.height*0.02,),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: size.height*0.034,
-                    child: Row(
-                      children: [
-                        Container(
-                          height:size.height*0.02,
-                          width: size.width*0.05,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              color:SmallPieChartcolorList[0]
-                          ),
-                        ),
-                        TextButton(
-                            onPressed: () {
-                              circleNo++;
-                            },
-                            child: const Text("Maths",style: TextStyle(color: Colors.black),))
-                      ],
+                    height: size.height*0.1,
+                    width: size.width*0.7,
+                    child: GridView.builder(
 
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height*0.034,
-                    child: Row(
-                      children: [
-                        Container(
-                          height:size.height*0.02,
-                          width: size.width*0.05,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              color:SmallPieChartcolorList[1]
-                          ),
-                        ),
-                        TextButton(onPressed: () {
-                          isCircleExpanded=!isCircleExpanded;
+                      itemCount:usermodel["Subject"].length,
 
-                        }, child: const Text("Maths",style: TextStyle(color: Colors.black),))
-                      ],
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 1, // number of items in each row
+                        mainAxisSpacing: size.width*0.05, // spacing between row
+                      ),
 
-                    ),
-                  ),
-                  SizedBox(
-                    height: size.height*0.034,
-                    child: Row(
-                      children: [
-                        Container(
-                          height:size.height*0.02,
-                          width: size.width*0.05,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              color:SmallPieChartcolorList[2]
-                          ),
-                        ),
-                        TextButton(onPressed: () {
-                          isCircleExpanded=!isCircleExpanded;
+                      itemBuilder:(context,index)
+                    {
+                      return  CircularPercentIndicator(
+                        radius: size.height*0.035,
+                        lineWidth: 2,
+                        percent: persentage[index],
 
-                        }, child: const Text("Maths",style: TextStyle(color: Colors.black),))
-                      ],
+                        backgroundColor: Colors.grey,
+                        center:  AutoSizeText("${(persentage[index]*100).toStringAsFixed(2)}%",
+                            style: GoogleFonts.gfsDidot(
+                                fontSize: size.height*0.01,
+                                fontWeight: FontWeight.w400
+                            )),
+
+                        progressColor: Colors.green.shade800,
+                        footer: AutoSizeText("${snapshot.data!.data()?["Subject"][index]}",
+                            style: GoogleFonts.gfsDidot(
+                          fontSize: size.height*0.01,
+                              fontWeight: FontWeight.w400
+                        )),
+                      );
+                    },
+                      scrollDirection: Axis.horizontal,
+
+
+
 
                     ),
                   ),
                 ],
+              )
 
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: size.height*0.02,),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: size.height*0.07,
-              width: size.width*0.7,
-              child: GridView.builder(itemBuilder:(context,index)
-              {
-                return  CircularPercentIndicator(radius: size.height*0.035,
-                  lineWidth: 2,
-                  percent: 0.65,
-                  backgroundColor: Colors.grey,
-                  center: const Text("May"),
-                  progressColor: Colors.red,
-                );
-              },
-                scrollDirection: Axis.horizontal,
-                itemCount:3,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 1, // number of items in each row
-                  mainAxisSpacing: size.width*0.05, // spacing between row
-                ),
+            ],
+          ),
+        )
+        :
+            const SizedBox()
+        ;
+      },
+    );
+  }
 
 
+// assignmentdata(selectedSubject){
+//   FirebaseFirestore
+//       .instance
+//       .collection("Assignment")
+//       .doc("${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]} $selectedSubject",)
+//       .get().then((value) {
+//        snapshot1=value;
+//
+//   }).whenComplete(() {
+//
+//     if(snapshot1.data()!=null) {
+//       setState(() {
+//         data = true;
+//       });
+//     }
+//   },);
+// }
+  
+}
+overallAssignmentdata( Map<String,double> AssignmentDataMap,List persentage){
+  for(int i=0;i<usermodel["Subject"].length;i++)
+  {
+    String subName = usermodel["Subject"][i];
+    FirebaseFirestore
+        .instance
+        .collection("Assignment")
+        .doc("${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]} $subName",)
+        .get().then((value){
+         if(value.data()!=null){
 
-              ),
-            ),
-          ],
-        ),
-      ],
+           AssignmentDataMap.addAll({subName:  double.parse("${value.data()?["Total_Submitted_Assignment"][usermodel["Email"]]}"),});
+
+           persentage.add(double.parse("${value.data()?["Total_Submitted_Assignment"][usermodel["Email"]]}")/double.parse("${value.data()?["Total_Assignment"]}") );
+
+
+
+         }
+    }
     );
   }
 }
+
+
+

@@ -18,6 +18,7 @@ class uploadAssignment extends StatefulWidget {
         required this.assignmentNumber});
   String selectedSubject;
   int assignmentNumber;
+  int totalSubmittedAssignment=0;
 
   @override
   State<uploadAssignment> createState() => _uploadAssignmentState();
@@ -230,6 +231,9 @@ class _uploadAssignmentState extends State<uploadAssignment> {
                                         " ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget
                                         .selectedSubject}")
                                     .update({
+                                  "Total_Submitted_Assignment":{
+                                    "${usermodel["Email"]}": FieldValue.increment(1),
+                                  },
                                   "Assignment-${widget.assignmentNumber}.Submitted-by":
                                   FieldValue.arrayUnion([
                                     "${usermodel["Email"]}"
