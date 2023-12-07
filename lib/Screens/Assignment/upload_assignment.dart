@@ -232,7 +232,9 @@ class _uploadAssignmentState extends State<uploadAssignment> {
                                         .selectedSubject}")
                                     .update({
                                   "Total_Submitted_Assignment":{
-                                    "${usermodel["Email"]}": FieldValue.increment(1),
+                                    usermodel["Email"]
+                                        .toString()
+                                        .split("@")[0]: FieldValue.increment(1),
                                   },
                                   "Assignment-${widget.assignmentNumber}.Submitted-by":
                                   FieldValue.arrayUnion([
