@@ -229,7 +229,7 @@ class _pieChart extends State<Performance>{
 
                       ;
                     },
-                    body:  AssignmentPerformance(AssignmentdataMap: AssignmentdataMap, persentage: persentage,),
+                    body:  AssignmentPerformance(AssignmentdataMap: AssignmentdataMap, persentage: persentage, overallAttendancePercent: overallpersent,),
 
                     isExpanded:isExpanded3,
 

@@ -10,9 +10,10 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../../Constraints.dart';
 
 class AssignmentPerformance extends StatefulWidget {
-  AssignmentPerformance({super.key, required this.AssignmentdataMap,required this.persentage});
+  AssignmentPerformance({super.key, required this.AssignmentdataMap,required this.persentage,required this.  overallAttendancePercent});
   Map<String,double> AssignmentdataMap;
   List <dynamic>persentage;
+  double overallAttendancePercent;
 
   @override
   State<AssignmentPerformance> createState() => _AssignmentPerformanceState();
@@ -54,7 +55,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
     return  StreamBuilder(
       stream: FirebaseFirestore.instance.collection("Subject").doc("${usermodel["Branch"]}").snapshots(),
       builder:(context, snapshot) {
-        return snapshot.hasData
+        return snapshot.hasData && widget.overallAttendancePercent !=0
         ?
         SizedBox(
           height: size.height*0.4,
@@ -131,7 +132,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
                         ,
 
                         backgroundColor: Colors.grey,
-                        center:  AutoSizeText("${(widget.persentage[index]).toStringAsFixed(2)}%",
+                        center:  AutoSizeText("${(widget.persentage[index]*100).toStringAsFixed(2)}%",
                             style: GoogleFonts.gfsDidot(
                                 fontSize: size.height*0.01,
                                 fontWeight: FontWeight.w400
