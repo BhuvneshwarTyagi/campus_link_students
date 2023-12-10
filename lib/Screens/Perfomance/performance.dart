@@ -9,6 +9,11 @@ import '../../Database/database.dart';
 import 'assignment_performance.dart';
 import 'attendance_performance.dart';
 import 'marks_perfomance.dart';
+
+
+
+Map<String,double> AssignmentdataMap={};
+List <dynamic>persentage=[];
 class Performance extends StatefulWidget{
   @override
   State<Performance> createState() =>_pieChart();
@@ -26,6 +31,9 @@ class _pieChart extends State<Performance>{
   List<String> monthListForAttendance=[];
   Map<String,double> attendanceDataMapforOverAllPerformance={};
   List<Map<String,dynamic>> dataMapList=[];
+
+
+ late DocumentSnapshot<Map<String, dynamic>> snapshot1;
   List<Color> BigColorList = [
     const Color(0xffD95AF3),
     const Color(0xff3EE094),
@@ -59,6 +67,11 @@ class _pieChart extends State<Performance>{
   bool isExpanded1 = false;
   bool isExpanded2 = false;
   bool isExpanded3 = false;
+  bool data=false;
+
+     double overallpersent=0.0;
+  int total=0;
+  int submit=0;
 
   @override
   void initState() {
@@ -66,6 +79,7 @@ class _pieChart extends State<Performance>{
 
     super.initState();
     generateattendancedata();
+    overallAssignmentdata();
     //assignmentdata();
   }
   @override
@@ -121,101 +135,108 @@ class _pieChart extends State<Performance>{
               ),
 
 
-          ExpansionPanelList(
-            elevation: 0,
-            expansionCallback: (int index,bool isExpanded){
-              setState(() {
-                switch(index){
-                  case 0:
+              ExpansionPanelList(
+                elevation: 0,
+                expansionCallback: (int index,bool isExpanded){
+                  setState(() {
+                    switch(index){
+                      case 0:
 
-                    isExpanded1=!isExpanded1;
-                    isExpanded2=false;
-                    isExpanded3=false;
-                    break;
-                  case 1:
-                    isExpanded2=!isExpanded2;
-                    isExpanded1=false;
-                    isExpanded3=false;
-                    break;
-                  case 2:
-                    isExpanded3=!isExpanded3;
-                    isExpanded1=false;
-                    isExpanded2=false;
-                    break;
+                        isExpanded1=!isExpanded1;
+                        isExpanded2=false;
+                        isExpanded3=false;
+                        break;
+                      case 1:
+                        isExpanded2=!isExpanded2;
+                        isExpanded1=false;
+                        isExpanded3=false;
+                        break;
+                      case 2:
+                        isExpanded3=!isExpanded3;
+                        isExpanded1=false;
+                        isExpanded2=false;
+                        break;
 
-                }
+                    }
 
-              });
+                  });
 
-            },
-            children: [
-              ExpansionPanel(
-                canTapOnHeader: true,
-                backgroundColor:Colors.transparent,
-                headerBuilder: (BuildContext context, bool isExpanded) {
-                  return ListTile(
-                    title: AutoSizeText("Attendance",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
-                    subtitle: LinearPercentIndicator(
-                      width:size.width*0.75,
-                      lineHeight: size.height*0.005,
-                      percent: overallAttendancePercent,
-                      animation: true,
-                      animationDuration: 300,
-                      progressColor: overallAttendancePercent< 0.50 ? Colors.red : overallAttendancePercent < 0.70 ?  Colors.deepOrange : Colors.green,
-                    ),
-                  );
                 },
-                body: dataLoaded
-                    ?
-                AttendancePerformance(dataMapList: dataMapList, attendanceDataMap: attendanceDataMapforOverAllPerformance,month: monthListForAttendance,)
-                    :
-                const SizedBox(),
+                children: [
+                  ExpansionPanel(
+                    canTapOnHeader: true,
+                    backgroundColor:Colors.transparent,
+                    headerBuilder: (BuildContext context, bool isExpanded) {
+                      return ListTile(
+                        title: AutoSizeText("Attendance",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
+                        subtitle: LinearPercentIndicator(
+                          width:size.width*0.75,
+                          lineHeight: size.height*0.005,
+                          percent: overallAttendancePercent,
+                          animation: true,
+                          animationDuration: 300,
+                          progressColor: overallAttendancePercent< 0.50 ? Colors.red : overallAttendancePercent < 0.70 ?  Colors.deepOrange : Colors.green,
+                        ),
+                      );
+                    },
+                    body: dataLoaded
+                        ?
+                    AttendancePerformance(dataMapList: dataMapList, attendanceDataMap: attendanceDataMapforOverAllPerformance,month: monthListForAttendance,)
+                        :
+                    const SizedBox(),
 
 
-                isExpanded:isExpanded1,
+                    isExpanded:isExpanded1,
 
+                  ),
+
+                  ExpansionPanel(
+                    canTapOnHeader: true,
+                    backgroundColor:Colors.transparent,
+                    headerBuilder: (BuildContext context, bool isExpanded) {
+                      return ListTile(
+                        title: AutoSizeText("Marks",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
+                        subtitle: LinearPercentIndicator(
+                          width:size.width*0.7,
+                          lineHeight: size.height*0.005,
+                          percent: 0.9,
+                          progressColor: Colors.red,
+                        ),
+                      );
+                    },
+                    body:const MarksPerformance(),
+                    isExpanded:isExpanded2,
+
+                  ),
+
+                  ExpansionPanel(
+
+                    canTapOnHeader: true,
+                    backgroundColor:Colors.transparent,
+                    headerBuilder: (BuildContext context, bool isExpanded) {
+                      return ListTile(
+                        title: AutoSizeText("Assignment",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
+                        subtitle: LinearPercentIndicator(
+                          width:size.width*0.7,
+                          lineHeight: size.height*0.005,
+                          percent: overallpersent,
+                          progressColor: Colors.red,
+                        )
+
+                        ,
+                      )
+
+
+                      ;
+                    },
+                    body:  AssignmentPerformance(AssignmentdataMap: AssignmentdataMap, persentage: persentage,),
+
+                    isExpanded:isExpanded3,
+
+                  )
+
+                ],
               ),
-
-              ExpansionPanel(
-                canTapOnHeader: true,
-                backgroundColor:Colors.transparent,
-                headerBuilder: (BuildContext context, bool isExpanded) {
-                  return ListTile(
-                    title: AutoSizeText("Marks",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
-                    subtitle: LinearPercentIndicator(
-                      width:size.width*0.7,
-                      lineHeight: size.height*0.005,
-                      percent: 0.9,
-                      progressColor: Colors.red,
-                    ),
-                  );
-                },
-                body:const MarksPerformance(),
-                isExpanded:isExpanded2,
-
-              ),
-              ExpansionPanel(
-                canTapOnHeader: true,
-                backgroundColor:Colors.transparent,
-                headerBuilder: (BuildContext context, bool isExpanded) {
-                 // double persent=double.parse("${snapshot.data()?["Total_Submitted_Assignment"][usermodel["Email"]]}")/double.parse("${snapshot.data()?["Total_Assignment"]}");
-                  return ListTile(
-                    title: AutoSizeText("Assignment",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
-                    subtitle: LinearPercentIndicator(
-                      width:size.width*0.7,
-                      lineHeight: size.height*0.005,
-                      percent: 1.0,
-                      progressColor: Colors.red,
-                    ),
-                  );
-                },
-                body: const AssignmentPerformance(),
-
-                isExpanded:isExpanded3,
-
-              ),
-            ],
-          ),
 
 
 
@@ -318,12 +339,74 @@ class _pieChart extends State<Performance>{
       }
 
     }
-    print("setting dataloaded to ture");
+    print("setting data loaded to ture");
     setState(() {
       dataLoaded=true;
       overallAttendancePercent=overallAttendance/overallLecture;
     });
 
+  }
+
+
+  overallAssignmentdata( ) async {
+
+    for(int i=0;i<usermodel["Subject"].length;i++)
+    {
+      String subName = usermodel["Subject"][i];
+      print("Subjects are");
+      print(usermodel["Subject"]);
+    await  FirebaseFirestore
+          .instance.collection("Assignment")
+        .doc("${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]} $subName",)
+          .get().then((value){
+            setState(() {
+              snapshot1=value;
+            });
+            print("value is ${value.data()}");
+            print(" Total Submitted Assignmentv${value.data()?["Total_Submitted_Assignment"][usermodel["Email"].toString()
+                .split("@")[0]]}");
+
+      }
+      ).whenComplete(() {
+      print("value is ${snapshot1.data()}");
+        if(snapshot1.data()!=null){
+          if(snapshot1.data()?["Total_Submitted_Assignment"][usermodel["Email"].toString()
+              .split("@")[0]]==null){
+            setState(() {
+
+              persentage.add(0.0);
+              total=total+int.parse("${snapshot1.data()?["Total_Assignment"]}");
+              print("Total is ${total}");
+              print("Submit is ${submit}");
+            });
+          }
+          else {
+            setState(() {
+              AssignmentdataMap.addAll({subName:  double.parse("${snapshot1.data()?["Total_Submitted_Assignment"][usermodel["Email"].toString()
+                  .split("@")[0]]}"),});
+              persentage.add((int.parse("${snapshot1.data()?["Total_Submitted_Assignment"][usermodel["Email"].toString()
+                  .split("@")[0]]}"))/int.parse("${snapshot1.data()?["Total_Assignment"]}") );
+
+              total=total+int.parse("${snapshot1.data()?["Total_Assignment"]}");
+              print("Total is ${total}");
+              submit=submit+int.parse("${snapshot1.data()?["Total_Submitted_Assignment"][usermodel["Email"].toString()
+                  .split("@")[0]]}");
+              print("Submit is ${submit}");
+            });
+
+          }
+
+
+
+
+
+        }
+      });
+    }
+  setState(() {
+    overallpersent=submit/total;
+    print(" overall persentage ${overallpersent}");
+  });
   }
 
 }

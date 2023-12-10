@@ -752,7 +752,7 @@ class _NotesState extends State<Notes> {
                                     Positioned(
                                         top: 10,
                                         right: size.width*0.055,
-                                        child: Download(downloadUrl:snapshot.data!.data()?["Notes-${index+1}"]["Pdf_URL"], pdfName: snapshot.data!.data()?["Notes-${index+1}"]["File_Name"], path: "/Campus Link/$selectedSubject/Notes"))
+                                        child: DownloadButton(downloadUrl:snapshot.data!.data()?["Notes-${index+1}"]["Pdf_URL"], pdfName: snapshot.data!.data()?["Notes-${index+1}"]["File_Name"], path: "/Campus Link/$selectedSubject/Notes"))
 
                                   ],
                                 ),

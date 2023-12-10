@@ -1,23 +1,23 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'dart:io';
-
 import 'package:permission_handler/permission_handler.dart';
 
-class Download extends StatefulWidget {
-  Download({Key? key,required this.downloadUrl,required this.pdfName,required this.path}) : super(key: key);
+class DownloadButton extends StatefulWidget {
+  DownloadButton({Key? key,required this.downloadUrl,required this.pdfName,required this.path}) : super(key: key);
   String downloadUrl;
   String pdfName;
   String path;
   @override
-  State<Download> createState() => _DownloadState();
+  State<DownloadButton> createState() => _DownloadButtonState();
 }
 
-class _DownloadState extends State<Download> {
+class _DownloadButtonState extends State<DownloadButton> {
   final dio=Dio();
   double percent=0.0;
   bool isDownloading=false;
@@ -27,8 +27,7 @@ class _DownloadState extends State<Download> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    //checkPermissions();
-    setsystemppath();
+    setSystemPath();
   }
   @override
   Widget build(BuildContext context) {
@@ -39,83 +38,95 @@ class _DownloadState extends State<Download> {
       decoration: const BoxDecoration(
           shape: BoxShape.circle
       ),
-      child: Center(
-        child: Column(
-          children: [
-            isDownloaded
-                ?
-            isDownloading
-                ?
-            Center(
-              child: Center(
-                child: CircularPercentIndicator(
-                  percent: percent,
-                  radius: size.width*0.042,
-                  animation: true,
-                  animateFromLastPercent: true,
-                  curve: accelerateEasing,
-                  progressColor: Colors.green,
-                  center: Text("${(percent*100).toDouble().toStringAsFixed(0)}%",style: GoogleFonts.openSans(fontSize: size.height*0.014),),
-                  //footer: const Text("Downloading"),
-                  backgroundColor: Colors.transparent,
-                ),
-              ),
-            )
-                :
-            InkWell(
-                onTap: () async {
-                  if(await checkPermissions()){
-                    File file=File("$systempath${widget.path}/${widget.pdfName}");
-                    await file.exists().then((value) async {
-                      if(!value)
-                      {
-                        print(".Start");
-                        setState(() {
-                          isDownloading=true;
-                        });
-                        await dio.download(widget.downloadUrl,file.path,onReceiveProgress: (count, total) {
-                          if(count==total){
-                            setState(() {
-                              isDownloaded=false;
-                            });
-                          }
-                          else{
-                            setState(() {
-                              percent = (count/total);
-                            });
-                          }
-                        },);
-                      }
-                      else{
-                        print("..Already Exsist");
-                      }
-                    });
-                  }else{
-                    InAppNotifications.instance
-                      ..titleFontSize = 14.0
-                      ..descriptionFontSize = 14.0
-                      ..textColor = Colors.black
-                      ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
-                      ..shadow = true
-                      ..animationStyle = InAppNotificationsAnimationStyle.scale;
-                    InAppNotifications.show(
-                      // title: '',
-                      duration: const Duration(seconds: 2),
-                      description: "Please grant storage permission first to download documents",
-                      // leading: const Icon(
-                      //   Icons.error_outline_outlined,
-                      //   color: Colors.red,
-                      //   size: 55,
-                      // )
-                    );
-                  }
-                },
-                child: Icon(Icons.download_for_offline_outlined,color: Colors.black87,size:size.height*0.043))
-                :
-            const SizedBox()
-          ],
+      child: isDownloaded
+          ?
+      isDownloading
+          ?
+      Center(
+        child: Center(
+          child: CircularPercentIndicator(
+            percent: percent,
+            radius: size.width*0.045,
+            animation: true,
+            linearGradient: const LinearGradient(
+
+                colors: [
+                  //Colors.lightGreenAccent,
+                  CupertinoColors.activeGreen,
+                  CupertinoColors.activeGreen,
+                  CupertinoColors.activeGreen,
+                  Colors.red,
+                  Colors.red,
+                  Colors.deepOrange,
+
+                  Colors.orangeAccent,
+
+                ]),
+            animateFromLastPercent: true,
+            curve: accelerateEasing,
+            //progressColor: Colors.green,
+            center: Text("${(percent*100).toDouble().toStringAsFixed(0)}%",style: GoogleFonts.openSans(fontSize: size.height*0.014),),
+            //footer: const Text("Downloading"),
+            backgroundColor: Colors.transparent,
+          ),
         ),
-      ),
+      )
+          :
+      InkWell(
+          onTap: () async {
+            if(await checkPermissions()){
+              File file=File("$systempath${widget.path}/${widget.pdfName}");
+              await file.exists().then((value) async {
+                if(!value)
+                {
+                  print(".Start");
+                  setState(() {
+                    isDownloading=true;
+                  });
+                  await dio.download(widget.downloadUrl,file.path,onReceiveProgress: (count, total) {
+                    if(count==total){
+                      setState(() {
+                        isDownloaded=false;
+                      });
+                    }
+                    else{
+                      setState(() {
+                        percent = (count/total);
+                      });
+                    }
+                  },);
+                }
+                else{
+                  print("..Already Exsist");
+                }
+              });
+            }
+            else{
+              InAppNotifications.instance
+                ..titleFontSize = 14.0
+                ..descriptionFontSize = 14.0
+                ..textColor = Colors.black
+                ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
+                ..shadow = true
+                ..animationStyle = InAppNotificationsAnimationStyle.scale;
+              InAppNotifications.show(
+                // title: '',
+                duration: const Duration(seconds: 2),
+                description: "Please grant storage permission first to download documents",
+                // leading: const Icon(
+                //   Icons.error_outline_outlined,
+                //   color: Colors.red,
+                //   size: 55,
+                // )
+              );
+            }
+          },
+          child: SizedBox(
+              width: size.height*0.045,
+              height: size.height*0.045,
+              child: Image.asset("assets/images/download.png",fit: BoxFit.contain)))
+          :
+      const SizedBox(),
     );
   }
   Future<bool> checkPermissions() async {
@@ -140,7 +151,7 @@ class _DownloadState extends State<Download> {
     }
     return false;
   }
-  setsystemppath() async {
+  setSystemPath() async {
     Directory? directory;
     if(Platform.isAndroid){
       Directory? directory = await getExternalStorageDirectory();

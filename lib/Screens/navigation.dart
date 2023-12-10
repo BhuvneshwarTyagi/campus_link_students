@@ -26,7 +26,7 @@ import 'feedbackScreen.dart';
 import 'marks.dart';
 import 'Notes/notes.dart';
 import 'Perfomance/performance.dart';
-import 'profile_page.dart';
+import 'Profile_Page/profile_page.dart';
 
 class navigation extends StatefulWidget {
   const navigation({Key? key}) : super(key: key);

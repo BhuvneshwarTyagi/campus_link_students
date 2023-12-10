@@ -10,7 +10,9 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../../Constraints.dart';
 
 class AssignmentPerformance extends StatefulWidget {
-  const AssignmentPerformance({super.key});
+  AssignmentPerformance({super.key, required this.AssignmentdataMap,required this.persentage});
+  Map<String,double> AssignmentdataMap;
+  List <dynamic>persentage;
 
   @override
   State<AssignmentPerformance> createState() => _AssignmentPerformanceState();
@@ -23,8 +25,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
     const Color(0xff3EE094),
     const Color(0xff3398F6),
   ];
-   Map<String,double> AssignmentdataMap={};
-   List <dynamic>persentage=[];
+
 
   int circleNo=1;
   bool isCircleExpanded = false;
@@ -41,7 +42,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    overallAssignmentdata(AssignmentdataMap,persentage);
+
 
 
 
@@ -66,7 +67,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
 
-                  piechart(dataMap: AssignmentdataMap,),
+                  piechart(dataMap: widget.AssignmentdataMap,),
 
                   SizedBox(width: size.width*0.05,),
                   SizedBox(
@@ -75,7 +76,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
                     child: GridView.builder(
 
                       scrollDirection: Axis.vertical,
-                      itemCount:snapshot.data!.data()?["Subject"].length,
+                      itemCount:usermodel["Subject"].length,
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           mainAxisSpacing: 10.0,
                           crossAxisSpacing: 10.0,
@@ -94,15 +95,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
                                 ),
                               ),
                               SizedBox(width: size.width*0.03,),
-                              InkWell(
-                                onTap: (){
-
-                                  setState(() {
-                                   // selectedSubject=usermodel["Subject"][index];
-                                    //assignmentdata(selectedSubject);
-                                  });
-                                },
-                                  child: AutoSizeText("${snapshot.data!.data()?["Subject"][index]}")),
+                              AutoSizeText("${snapshot.data!.data()?["Subject"][index]}"),
                             ],
                           ),
                         );
@@ -134,10 +127,11 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
                       return  CircularPercentIndicator(
                         radius: size.height*0.035,
                         lineWidth: 2,
-                        percent: persentage[index],
+                        percent: widget.persentage[index] ?? 0.0
+                        ,
 
                         backgroundColor: Colors.grey,
-                        center:  AutoSizeText("${(persentage[index]*100).toStringAsFixed(2)}%",
+                        center:  AutoSizeText("${(widget.persentage[index]).toStringAsFixed(2)}%",
                             style: GoogleFonts.gfsDidot(
                                 fontSize: size.height*0.01,
                                 fontWeight: FontWeight.w400
@@ -191,28 +185,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
 // }
   
 }
-overallAssignmentdata( Map<String,double> AssignmentDataMap,List persentage){
-  for(int i=0;i<usermodel["Subject"].length;i++)
-  {
-    String subName = usermodel["Subject"][i];
-    FirebaseFirestore
-        .instance
-        .collection("Assignment")
-        .doc("${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]} $subName",)
-        .get().then((value){
-         if(value.data()!=null){
 
-           AssignmentDataMap.addAll({subName:  double.parse("${value.data()?["Total_Submitted_Assignment"][usermodel["Email"]]}"),});
-
-           persentage.add(double.parse("${value.data()?["Total_Submitted_Assignment"][usermodel["Email"]]}")/double.parse("${value.data()?["Total_Assignment"]}") );
-
-
-
-         }
-    }
-    );
-  }
-}
 
 
 

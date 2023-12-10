@@ -19,13 +19,18 @@ class _piechartState extends State<piechart> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return PieChart(
+    return widget.dataMap.isNotEmpty
+    ?
+    PieChart(
       dataMap: widget.dataMap,
       colorList: SmallPieChartcolorList,
       chartRadius: size.width/3,
       chartValuesOptions: const ChartValuesOptions(showChartValueBackground: false,showChartValuesInPercentage: true,),
       legendOptions: const LegendOptions(showLegends: false,legendShape: BoxShape.rectangle,),
 
-    );
+    )
+    :
+        const SizedBox()
+    ;
   }
 }

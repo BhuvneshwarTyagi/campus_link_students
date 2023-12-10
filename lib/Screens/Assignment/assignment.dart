@@ -218,7 +218,7 @@ class _AssignmentState extends State<Assignment> {
                                                   CircleAvatar(
                                                     backgroundColor: Colors.transparent,
                                                     radius: size.width*0.045,
-                                                    child: Download(
+                                                    child: DownloadButton(
                                                         downloadUrl: snapshot.data!.data()?["Assignment-${index + 1}"]["Assignment"],
                                                         pdfName: "Assignment-${index + 1}.${snapshot.data!.data()?["Assignment-${index + 1}"]["Document-type"]}",
                                                         path: "/Campus Link/$selectedSubject/Assignment",
