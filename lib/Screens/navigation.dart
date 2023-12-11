@@ -1,42 +1,39 @@
 import 'dart:io';
-
 import 'package:alarm/alarm.dart';
-import 'package:alarm/model/alarm_settings.dart';
-import 'package:alarm/service/notification.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Constraints.dart';
 import 'package:campus_link_student/Database/database.dart';
 import 'package:campus_link_student/Registration/registration.dart';
+import 'package:campus_link_student/Screens/Leader_board/Leader_Board.dart';
 import 'package:campus_link_student/Screens/psycoTest.dart';
-import 'package:campus_link_student/main.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_alarm_clock/flutter_alarm_clock.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 import 'Assignment/assignment.dart';
+import 'Notes/notes.dart';
 import 'attendance.dart';
 import 'Chat_tiles/chat_list.dart';
 import 'feedbackScreen.dart';
 import 'marks.dart';
-import 'Notes/notes.dart';
+import 'Notes/notes_list.dart';
 import 'Perfomance/performance.dart';
 import 'Profile_Page/profile_page.dart';
 
-class navigation extends StatefulWidget {
-  const navigation({Key? key}) : super(key: key);
+class Navigation extends StatefulWidget {
+  const Navigation({Key? key}) : super(key: key);
 
   @override
-  State<navigation> createState() => _navigationState();
+  State<Navigation> createState() => _NavigationState();
 }
 
-class _navigationState extends State<navigation> {
-  List<Widget>All_Pages=[const Assignment(),const Notes(),const Attendance(),const Marks(), Performance()];
+class _NavigationState extends State<Navigation> {
+  List<Widget>All_Pages=[const Assignment(),const NotesList(),const Attendance(),const Marks(), Performance()];
   PageController page_controller=PageController();
   List<String>cuu_title=["Assingments","Notes","Attendeance","Marks","Performance"];
   var curr_index=0;
@@ -120,7 +117,7 @@ class _navigationState extends State<navigation> {
                     child: const chatsystem(),
                     type: PageTransitionType.rightToLeftJoined,
                     duration: const Duration(milliseconds: 350),
-                    childCurrent: const navigation(),
+                    childCurrent: const Navigation(),
                   ),
                 );
               },
@@ -184,7 +181,7 @@ class _navigationState extends State<navigation> {
                       child: const chatsystem(),
                       type: PageTransitionType.rightToLeftJoined,
                       duration: const Duration(milliseconds: 350),
-                      childCurrent: const navigation(),
+                      childCurrent: const Navigation(),
                     ),
                   );
                 },
@@ -335,7 +332,7 @@ class _navigationState extends State<navigation> {
                       child: const Profile_page(),
                       type: PageTransitionType.rightToLeftJoined,
                       duration: const Duration(milliseconds: 350),
-                      childCurrent: const navigation(),
+                      childCurrent: const Navigation(),
                     ),
                   );
 
@@ -351,7 +348,7 @@ class _navigationState extends State<navigation> {
                       child: const StudentDetails(),
                       type: PageTransitionType.rightToLeftJoined,
                       duration: const Duration(milliseconds: 350),
-                      childCurrent: const navigation(),
+                      childCurrent: const Navigation(),
                     ),
                   );
 
@@ -367,7 +364,7 @@ class _navigationState extends State<navigation> {
                       child: const feedbackQuiz(),
                       type: PageTransitionType.rightToLeftJoined,
                       duration: const Duration(milliseconds: 350),
-                      childCurrent: const navigation(),
+                      childCurrent: const Navigation(),
                     ),
                   );
                 },
@@ -385,7 +382,7 @@ class _navigationState extends State<navigation> {
                       child: const PsychometricTest(),
                       type: PageTransitionType.rightToLeftJoined,
                       duration: const Duration(milliseconds: 350),
-                      childCurrent: const navigation(),
+                      childCurrent: const Navigation(),
                     ),
                   );
                 },
@@ -547,7 +544,7 @@ class _navigationState extends State<navigation> {
                 decoration: const BoxDecoration(
                   color: Colors.transparent,
                   image: DecorationImage(
-                    image: AssetImage("assets/images/mark_icon.png"),
+                    image: AssetImage("assets/images/leaderboard.png"),
                     fit: BoxFit.contain,
                   ),
                 )),
@@ -585,7 +582,7 @@ class _navigationState extends State<navigation> {
             const Assignment(),
             const Notes(),
             const Attendance(),
-            const Marks(),
+            const OverAllLeaderBoard(),
             Performance()
           ],
         ),

@@ -42,7 +42,7 @@ class _QuizscoreState extends State<Quizscore> {
           elevation: 0,
           title:  Center(
             child: AutoSizeText(
-              '$subject_filter Leaderboard Quiz ${widget.quizId}',
+              '${widget.selectedSubject} Leaderboard Quiz ${widget.quizId}',
               style: const TextStyle(
                   color: Colors.black,
                   fontSize: 25,

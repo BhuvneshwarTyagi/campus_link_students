@@ -54,7 +54,7 @@ class _MainPageState extends State<MainPage> {
 
               return
                 loaded ?
-                const navigation()
+                const Navigation()
                     :
                 const loading(text: "Retrieving data from the server please wait",);
             }
