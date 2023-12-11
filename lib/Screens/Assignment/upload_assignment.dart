@@ -12,14 +12,13 @@ import 'package:page_transition/page_transition.dart';
 import '../../Constraints.dart';
 
 class uploadAssignment extends StatefulWidget {
-  uploadAssignment(
+  const uploadAssignment(
       {super.key,
         required this.selectedSubject,
-        required this.assignmentNumber});
-  String selectedSubject;
-  int assignmentNumber;
-  int totalSubmittedAssignment=0;
-
+        required this.assignmentNumber, required this.totalSubmittedAssignment});
+  final String selectedSubject;
+  final int assignmentNumber;
+  final int totalSubmittedAssignment;
   @override
   State<uploadAssignment> createState() => _uploadAssignmentState();
 }
@@ -27,7 +26,8 @@ class uploadAssignment extends StatefulWidget {
 class _uploadAssignmentState extends State<uploadAssignment> {
   late final FilePickerResult? filePath;
   bool fileSelected = false;
-  int assignmentCount = 0;
+
+
 
   TimeOfDay selectedTime = TimeOfDay.now();
 
@@ -37,19 +37,8 @@ class _uploadAssignmentState extends State<uploadAssignment> {
         .of(context)
         .size;
 
-    return ElevatedButton(
-
-        style: ElevatedButton.styleFrom(backgroundColor:Colors.transparent,
-            shape: const RoundedRectangleBorder(
-                    borderRadius:
-                    BorderRadius.all(
-                        Radius
-                            .circular(
-
-                            20),
-                    ),
-            ),  ),
-        onPressed: (){
+    return ListTile(
+      onTap: (){
 
           showModalBottomSheet(
 
@@ -303,13 +292,24 @@ class _uploadAssignmentState extends State<uploadAssignment> {
             );
           },);
         },
-        child:AutoSizeText(
+      title: AutoSizeText(
             "Submit",
-            style: GoogleFonts.gfsDidot(
-                fontWeight: FontWeight.w600,
+            style: GoogleFonts.courgette(
                 fontSize:
-                size.height * 0.03)
+                size.width * 0.04)
 
-        ));
+        ),
+      leading: SizedBox(
+        width: size.width*0.1,
+        child: Image.asset("assets/images/upload-icon.png"),
+      ),
+      trailing: AutoSizeText(
+          "${widget.totalSubmittedAssignment}",
+          style: GoogleFonts.courgette(
+              fontSize:
+              size.width * 0.04)
+
+      ),
+    );
   }
 }

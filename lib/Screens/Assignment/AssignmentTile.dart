@@ -11,9 +11,10 @@ import 'package:path_provider/path_provider.dart';
 import '../Chat_tiles/PdfViewer.dart';
 import '../Notes/download_tile.dart';
 import 'assignment.dart';
+import 'individual_assignment_leaderboard.dart';
 
 class AssignmentTile extends StatefulWidget {
-  const AssignmentTile({super.key, required this.subject, required this.index, required this.assignmentUrl, required this.docType, required this.docSize, required this.uploadTime, required this.deadline});
+  const AssignmentTile({super.key, required this.subject, required this.index, required this.assignmentUrl, required this.docType, required this.docSize, required this.uploadTime, required this.deadline, required this.status, required this.count});
   final String subject;
   final int index;
   final String assignmentUrl;
@@ -21,6 +22,8 @@ class AssignmentTile extends StatefulWidget {
   final String docSize;
   final String uploadTime;
   final String deadline;
+  final String status;
+  final int count;
   @override
   State<AssignmentTile> createState() => _AssignmentTileState();
 }
@@ -77,170 +80,169 @@ class _AssignmentTileState extends State<AssignmentTile> {
             );
           }
         },
-        child: SizedBox(
-          height: size.height*0.235,
-          width: size.width*0.9,
-          child: Card(
-            elevation: 30,
-            shape: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black87,width: 2),
-            ),
-            child: Column(
-              children: [
-                Expanded(
+        child: Card(
+          elevation: 30,
+          shape: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black87,width: 2),
+          ),
+          child: Column(
+            children: [
+              SizedBox(
+                width: size.width,
+                child: Stack(
+                  children: [
 
-                  child: SizedBox(
-
-                    height: size.height*0.12,
-                    width: size.width*0.9,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                    SizedBox(
+                      height: size.height*0.107,
+                    width: size.width,
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(height: size.height*0.008,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-
-                            CircleAvatar(
-                                backgroundColor: Colors.transparent,
-                                radius: size.width*0.045,
-                                child: DownloadButton(
-                                  downloadUrl: widget.assignmentUrl,
-                                  pdfName: "Assignment-${widget.index + 1}.${widget.docType}",
-                                  path: "/Campus Link/${widget.subject}/Assignment",
-                                )
-
-                            ),
-                            SizedBox(
-                              width: size.width*0.02,
-                            )
-                          ],
-                        ),
-                        AutoSizeText(
-                          widget.subject,
-                          style: GoogleFonts.courgette(
-                              color: Colors.black,
-                              fontSize: size.height*0.02,
-                              fontWeight: FontWeight.w400
-                          ),
-                        ),
-                        AutoSizeText(
-                          "Assignment : ${widget.index+1}",
-                          style: GoogleFonts.courgette(
-                              color: Colors.black,
-                              fontSize: size.height*0.02,
-                              fontWeight: FontWeight.w400
-                          ),
-                        ),
-
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.only( left: size.height*0.01,right: size.height*0.008,top: size.height*0.006),
-                    height: size.height*0.107,
-                    color:  const Color.fromRGBO(60, 99, 100, 1),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
                         Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             AutoSizeText(
-                              "Assignment : ${widget.index + 1}(${widget.docSize}MB)",
+                              widget.subject,
                               style: GoogleFonts.courgette(
                                   color: Colors.black,
-                                  fontSize: size.height*0.018,
+                                  fontSize: size.height*0.02,
                                   fontWeight: FontWeight.w400
                               ),
                             ),
                             AutoSizeText(
-                              "Deadline :${widget.deadline}",
+                              "Assignment : ${widget.index+1}",
                               style: GoogleFonts.courgette(
                                   color: Colors.black,
-                                  fontSize: size.height*0.018,
+                                  fontSize: size.height*0.02,
                                   fontWeight: FontWeight.w400
                               ),
                             ),
-                            AutoSizeText(
-                              "Before :${widget.uploadTime}",
-                              style: GoogleFonts.courgette(
-                                  color: Colors.black,
-                                  fontSize: size.height*0.018,
-                                  fontWeight: FontWeight.w400
-                              ),
-                            ),
+
                           ],
                         ),
-
-
-                        Container(
-                          height: size.height * 0.045,
-                          width: size.width * 0.2,
-                          decoration: BoxDecoration(
-                              color: Colors.transparent,
-                              borderRadius:
-                              BorderRadius.all(
-                                  Radius.circular(size.width*0.068)),
-                              border: Border.all(
-                                  color: Colors.black,
-                                  width: 1)),
-                          child:uploadAssignment(
-                              selectedSubject:
-                              widget.subject,
-                              assignmentNumber:
-                              widget.index + 1),
-
-                          // ElevatedButton(
-                          //     style: ElevatedButton.styleFrom(
-                          //         shape:
-                          //         const RoundedRectangleBorder(
-                          //             borderRadius:
-                          //             BorderRadius.all(
-                          //                 Radius
-                          //                     .circular(
-                          //                     20))),
-                          //         backgroundColor:
-                          //         Colors.transparent),
-                          //     onPressed: () {
-                          //       Navigator.push(
-                          //           context,
-                          //           PageTransition(
-                          //             child: uploadAssignment(
-                          //                 selectedSubject:
-                          //                 selectedSubject,
-                          //                 assignmentNumber:
-                          //                 index + 1),
-                          //             type: PageTransitionType
-                          //                 .bottomToTopJoined,
-                          //             duration: const Duration(
-                          //                 milliseconds: 200),
-                          //             childCurrent:
-                          //             const Assignment(),
-                          //           ));
-                          //     },
-                          //     child: AutoSizeText(
-                          //       "Submit",
-                          //       style: GoogleFonts.gfsDidot(
-                          //           fontWeight: FontWeight.w600,
-                          //           fontSize:
-                          //           size.height * 0.03),
-                          //     )),
+                        SizedBox(
+                          height: size.height*0.09,
+                            width: size.width*0.2,
+                            child: widget.status == "Accepted"
+                                ?
+                            Image.asset("assets/images/approved.png")
+                                :
+                            widget.status == "Rejected"
+                                ?
+                            Image.asset("assets/images/rejected.png")
+                                :
+                            const SizedBox()
                         ),
                       ],
                     ),
                   ),
-                )
+                    Positioned(
+                      right: 10,
+                      top: 10,
+                      child: DownloadButton(
+                        downloadUrl: widget.assignmentUrl,
+                        pdfName: "Assignment-${widget.index + 1}.${widget.docType}",
+                        path: "/Campus Link/${widget.subject}/Assignment",
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                color:  const Color.fromRGBO(60, 99, 100, 1),
+                child: ExpansionTile(
+                  title: AutoSizeText(
+                    "Assignment : ${widget.index + 1}(${widget.docSize}MB)",
+                    style: GoogleFonts.courgette(
+                        color: Colors.black,
+                        fontSize: size.height*0.018,
+                        fontWeight: FontWeight.w400
+                    ),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+
+                      AutoSizeText(
+                        "Deadline :${widget.deadline}",
+                        style: GoogleFonts.courgette(
+                            color: Colors.black,
+                            fontSize: size.height*0.018,
+                            fontWeight: FontWeight.w400
+                        ),
+                      ),
+                      AutoSizeText(
+                        "Before :${widget.uploadTime}",
+                        style: GoogleFonts.courgette(
+                            color: Colors.black,
+                            fontSize: size.height*0.018,
+                            fontWeight: FontWeight.w400
+                        ),
+                      ),
+                    ],
+                  ),
+                  children: [
+                    Card(
+                      color: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      child: uploadAssignment(
+                        selectedSubject: widget.subject,
+                        assignmentNumber: widget.index + 1,
+                        totalSubmittedAssignment: widget.count,
+                      ),
+
+                    ),
+                    Card(
+
+                      color: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      child: ListTile(
+                        leading: SizedBox(
+                          width: size.width*0.1,
+                          child: Image.asset("assets/images/leaderboard.png"),
+                        ),
+                        title: AutoSizeText(
+                          "Leaderboard",
+                          style: GoogleFonts.courgette(
+                              color: Colors.black,
+                              fontSize: size.height*0.018,
+                              fontWeight: FontWeight.w400
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.push(context,
+                              PageTransition(
+                                  child: IndividualAssignmentLeaderboard(
+                                    index: widget.index,
+                                    subject: widget.subject,
+                                  ),
+                                  type: PageTransitionType.bottomToTopJoined,
+                                childCurrent: AssignmentTile(
+                                  subject: widget.subject,
+                                  assignmentUrl: widget.assignmentUrl,
+                                  deadline: widget.deadline,
+                                  docSize: widget.docSize,
+                                  docType: widget.docType,
+                                  index: widget.index,
+                                  status: widget.status,
+                                  uploadTime: widget.uploadTime,
+                                  count: widget.count,
+                                ),
+                              ),
+                          );
+                        },
+                      ),
+                    )
+                  ],
+                ),
+              ),
 
 
-              ],
-            ),
+
+            ],
           ),
         ),
       ),

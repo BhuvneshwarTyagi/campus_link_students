@@ -4,6 +4,7 @@ import 'package:campus_link_student/Screens/Assignment/Leaderboard.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../Constraints.dart';
+import 'individual_assignment_leaderboard.dart';
 
 class Assignment extends StatefulWidget {
   const Assignment({Key? key}) : super(key: key);
@@ -17,6 +18,8 @@ class _AssignmentState extends State<Assignment> with TickerProviderStateMixin{
   late TabController _tabController;
   int currTab=0;
   List<Widget> tabs=[];
+  int index=0;
+  String selectedSubject="";
   @override
   void initState() {
     // TODO: implement initState
@@ -201,27 +204,18 @@ class _AssignmentState extends State<Assignment> with TickerProviderStateMixin{
         ),
 
       ),
-      body: SizedBox(
-        height: size.height,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            children: [
-              // Divider(
-              //   color: Colors.black,
-              //   height: MediaQuery.of(context).size.height * 0.015,
-              //   thickness: MediaQuery.of(context).size.height * 0.003,
-              // ),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            SizedBox(
+              height: size.height*0.01,
+            ),
 
-              SizedBox(
-                height: size.height*0.01,
-              ),
-
-              Center(child: tabs[currTab])
+            tabs[currTab]
 
 
-            ],
-          ),
+          ],
         ),
       ),
     );
