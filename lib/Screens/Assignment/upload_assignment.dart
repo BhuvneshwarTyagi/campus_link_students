@@ -237,7 +237,7 @@ class _uploadAssignmentState extends State<uploadAssignment> {
                                     "Document_Type": filePath?.files[0].extension,
                                     "File_Size": filePath?.files[0].size,
                                     "Time": stamp,
-                                    "Status": " ",
+                                    "Status": "Pending",
                                     "PdfUrl": pdfURL,
                                     "Name": usermodel["Name"],
                                     "Roll-No": usermodel["Rollnumber"],

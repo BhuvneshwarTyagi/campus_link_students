@@ -1,14 +1,9 @@
-import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Screens/Assignment/AssignmentTile.dart';
-import 'package:campus_link_student/Screens/Assignment/upload_assignment.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:path_provider/path_provider.dart';
 import '../../Constraints.dart';
 import '../loadingscreen.dart';
 
@@ -144,7 +139,7 @@ class _AssignmentListState extends State<AssignmentList> {
                         ?
                     int.parse("${snapshot.data!.data()?["Assignment-${index+1}"]["Submitted-by"].length}")
                         :
-                    0,
+                    0, assignedOn: snapshot.data!.data()?["Assignment-${index+1}"]["Assign-Date"],
                   );
                 },
               )

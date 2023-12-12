@@ -28,280 +28,285 @@ class _AssignmentsOverAllLeaderBoardState extends State<AssignmentsOverAllLeader
   @override
   Widget build(BuildContext context) {
     Size size=MediaQuery.of(context).size;
-    return Column(
-      children: [
-        SizedBox(
-          height: size.height * 0.11,
-          width: size.width * 1,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: subjects.length,
-            padding: EdgeInsets.only(top: size.height*0.01),
-            itemBuilder: (context, index) {
-              return Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                        left: size.width * 0.016,
-                        right: size.width * 0.016),
-                    child: Column(
-                      children: [
-                        InkWell(
-                          onTap: () async {
-                            setState(() {
-                              selectedSubject = subjects[index];
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(image: AssetImage("assets/images/celebration.gif"),fit: BoxFit.fill)
+      ),
+      child: Column(
+        children: [
+          SizedBox(
+            height: size.height * 0.11,
+            width: size.width * 1,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: subjects.length,
+              padding: EdgeInsets.only(top: size.height*0.01),
+              itemBuilder: (context, index) {
+                return Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: size.width * 0.016,
+                          right: size.width * 0.016),
+                      child: Column(
+                        children: [
+                          InkWell(
+                            onTap: () async {
+                              setState(() {
+                                selectedSubject = subjects[index];
 
-                              print(selectedSubject);
-                            });
+                                print(selectedSubject);
+                              });
 
-                          },
-                          child: Container(
-                            height: size.height * 0.068,
-                            width: size.width * 0.2,
-                            decoration: BoxDecoration(
-                                color: Colors.black87,
-                                shape: BoxShape.circle,
-                                border: subjects[index]== selectedSubject
-                                    ? Border.all(
-                                    color: Colors.greenAccent, width: 2)
-                                    : Border.all(
-                                    color: Colors.white,
-                                    width: 1)),
-                            child: Center(
-                              child: AutoSizeText(
-                                "${subjects[index][0]}",
-                                style: GoogleFonts.openSans(
-                                    fontSize: 23,
-                                    fontWeight: FontWeight.w600,
-                                    color:  subjects[index]== selectedSubject
-                                        ? Colors.greenAccent
-                                        : Colors.white),
+                            },
+                            child: Container(
+                              height: size.height * 0.068,
+                              width: size.width * 0.2,
+                              decoration: BoxDecoration(
+                                  color: Colors.black87,
+                                  shape: BoxShape.circle,
+                                  border: subjects[index]== selectedSubject
+                                      ? Border.all(
+                                      color: Colors.greenAccent, width: 2)
+                                      : Border.all(
+                                      color: Colors.white,
+                                      width: 1)),
+                              child: Center(
+                                child: AutoSizeText(
+                                  "${subjects[index][0]}",
+                                  style: GoogleFonts.openSans(
+                                      fontSize: 23,
+                                      fontWeight: FontWeight.w600,
+                                      color:  subjects[index]== selectedSubject
+                                          ? Colors.greenAccent
+                                          : Colors.white),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: size.height * 0.006,
-                        ),
-                        AutoSizeText(
-                          "${subjects[index]}",
-                          style: GoogleFonts.openSans(
-                              fontWeight: FontWeight.w600,
-                              color:  subjects[index]== selectedSubject
-                                  ? Colors.greenAccent
-                                  : Colors.black),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-        const Divider(
-          height: 1.5,
-          color: Colors.black87,
-          indent: 8,
-          thickness: 1.5,
-          endIndent: 8,
-        ),
-        SizedBox(
-          height: size.height*0.7,
-          child: StreamBuilder(
-            stream: FirebaseFirestore
-                .instance
-                .collection("Assignment")
-                .doc(
-                "${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $selectedSubject"
-            )
-                .snapshots(),
-            builder: (context, snapshot) {
-
-              return snapshot.hasData && load && result.isNotEmpty && snapshot.data!.exists
-                  ?
-              SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    TopThree(
-                      data: [
-                        {
-                          "Name" : result[0]['Name'],
-                          "Email" : result[0]['Email'],
-                          "Submitted" : result[0]['Score'],
-                        },
-                        {
-                          "Name" : result[1]['Name'],
-                          "Email" : result[1]['Email'],
-                          "Submitted" : result[1]['Score'],
-                        },
-                        {
-                          "Name" : result[2]['Name'],
-                          "Email" : result[2]['Email'],
-                          "Submitted" : result[2]['Score'],
-                        }
-                      ],
-                    ),
-                    SizedBox(
-                      height: size.height * 0.02,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            AutoSizeText("Average Submission/Assignment: ",
-                              style: GoogleFonts.tiltNeon(
-                                  color: Colors.black,
-                                  fontSize: size.width*0.05
-                              ),),
-                            AutoSizeText("$averageSubmission",
-                              style: GoogleFonts.tiltNeon(
-                                  color: Colors.green[900],
-                                  fontSize: size.width*0.06
-                              ),),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: size.height * 0.022,
-                    ),
-                    Column(
-                        children: [
                           SizedBox(
-                              height: size.height * 0.095*(result.length),
-                              child: ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: result.length,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: EdgeInsets.all(size.height * 0.008),
-                                    child: SizedBox(
-                                      height: size.height * 0.08,
-                                      child: Row(
-                                        children: [
-                                          SizedBox(
-                                            width: size.width * 0.1,
-                                            child: Center(
-                                                child: AutoSizeText(
-                                                    "${index+1}",
-                                                    style: GoogleFonts.tiltNeon(
-                                                        fontSize: size.height*0.03,
-                                                        color: Colors.black
-                                                    )
-                                                )),
-                                          ),
-                                          Container(
-                                            height: size.height * 0.07,
-                                            width: size.width * 0.8,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(color: Colors.black,width: 1.5),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(size.width * 0.08)),
-                                              color: result[index]["Score"]*2 < snapshot.data!.data()?["Total_Assignment"] ? Colors.red[400] : Colors.green,
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                  EdgeInsets.all(size.height * 0.006),
-                                                  child: StreamBuilder(
-                                                    stream: FirebaseFirestore.instance.collection("Students").doc(result[index]["Email"]).snapshots(),
-                                                    builder: (context, studentsnapshot) {
-                                                      return studentsnapshot.hasData
-                                                          ?
-                                                      CircleAvatar(
-                                                          radius: size.width * 0.06,
-                                                          backgroundColor: Colors.green[900],
-                                                          child:  studentsnapshot.data!.data()?["Profile_URL"] !="null" && studentsnapshot.data!.data()?["Profile_URL"] != null
-                                                              ?
-                                                          CircleAvatar(
-                                                            radius: size.width * 0.055,
-                                                            backgroundImage: NetworkImage(studentsnapshot.data!.data()?["Profile_URL"]),
-                                                          )
-                                                              :
-                                                          CircleAvatar(
-                                                            radius: size.width * 0.055,
-                                                            backgroundImage: const AssetImage("assets/images/unknown.png"),
-                                                          )
-                                                      )
-                                                          :
-                                                      const SizedBox();
-                                                    }
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                    child:Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        AutoSizeText(
-                                                          result[index]["Name"],
-                                                          style: GoogleFonts.tiltNeon(
-                                                              color: Colors.black,
-                                                              fontSize: size.width * 0.045),
-                                                          maxLines: 1,
-                                                          textAlign: TextAlign.left,
-                                                        ),
-                                                        AutoSizeText(
-                                                          result[index]["Rollnumber"],
-                                                          style: GoogleFonts.tiltNeon(
-                                                              color: Colors.black,
-                                                              fontSize: size.width * 0.036),
-                                                          maxLines: 1,
-                                                          textAlign: TextAlign.left,
-                                                        ),
-                                                      ],
-                                                    )
-                                                ),
-                                                AutoSizeText(
-                                                  "${result[index]["Score"]} / ${snapshot.data!.data()?["Total_Assignment"]}",
-                                                  style: const TextStyle(
-                                                    color:Color.fromARGB(255, 10, 52, 84),
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width: size.width*0.04,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-
-                              )
+                            height: size.height * 0.006,
                           ),
-                        ])
-                  ],
-                ),
-              )
-                  :
-              SizedBox(
-                height: size.height,
-                width: size.width,
-                child: Center(
-                  child: AutoSizeText(
-                    "No Assignment assigned till now.\nPlease come back later",
-                    style: GoogleFonts.tiltNeon(
-                        fontSize: 20,
-                        color: Colors.black
+                          AutoSizeText(
+                            "${subjects[index]}",
+                            style: GoogleFonts.openSans(
+                                fontWeight: FontWeight.w600,
+                                color:  subjects[index]== selectedSubject
+                                    ? Colors.greenAccent
+                                    : Colors.black),
+                          )
+                        ],
+                      ),
                     ),
-                    maxLines: 2,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              );
-            }
+                  ],
+                );
+              },
             ),
-        ),
-      ],
+          ),
+          const Divider(
+            height: 1.5,
+            color: Colors.black87,
+            indent: 8,
+            thickness: 1.5,
+            endIndent: 8,
+          ),
+          SizedBox(
+            height: size.height*0.7,
+            child: StreamBuilder(
+              stream: FirebaseFirestore
+                  .instance
+                  .collection("Assignment")
+                  .doc(
+                  "${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $selectedSubject"
+              )
+                  .snapshots(),
+              builder: (context, snapshot) {
+
+                return snapshot.hasData && load && result.isNotEmpty && snapshot.data!.exists
+                    ?
+                SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    children: [
+                      TopThree(
+                        data: [
+                          {
+                            "Name" : result[0]['Name'],
+                            "Email" : result[0]['Email'],
+                            "Submitted" : result[0]['Score'],
+                          },
+                          {
+                            "Name" : result[1]['Name'],
+                            "Email" : result[1]['Email'],
+                            "Submitted" : result[1]['Score'],
+                          },
+                          {
+                            "Name" : result[2]['Name'],
+                            "Email" : result[2]['Email'],
+                            "Submitted" : result[2]['Score'],
+                          }
+                        ],
+                      ),
+                      SizedBox(
+                        height: size.height * 0.02,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              AutoSizeText("Average Submission/Assignment: ",
+                                style: GoogleFonts.tiltNeon(
+                                    color: Colors.black,
+                                    fontSize: size.width*0.05
+                                ),),
+                              AutoSizeText("$averageSubmission",
+                                style: GoogleFonts.tiltNeon(
+                                    color: Colors.green[900],
+                                    fontSize: size.width*0.06
+                                ),),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: size.height * 0.022,
+                      ),
+                      Column(
+                          children: [
+                            SizedBox(
+                                height: size.height * 0.095*(result.length),
+                                child: ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: result.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: EdgeInsets.all(size.height * 0.008),
+                                      child: SizedBox(
+                                        height: size.height * 0.08,
+                                        child: Row(
+                                          children: [
+                                            SizedBox(
+                                              width: size.width * 0.1,
+                                              child: Center(
+                                                  child: AutoSizeText(
+                                                      "${index+1}",
+                                                      style: GoogleFonts.tiltNeon(
+                                                          fontSize: size.height*0.03,
+                                                          color: Colors.black
+                                                      )
+                                                  )),
+                                            ),
+                                            Container(
+                                              height: size.height * 0.07,
+                                              width: size.width * 0.8,
+                                              decoration: BoxDecoration(
+                                                border: Border.all(color: Colors.black,width: 1.5),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(size.width * 0.08)),
+                                                color: result[index]["Score"]*2 < snapshot.data!.data()?["Total_Assignment"] ? Colors.red[400] : Colors.green,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                    EdgeInsets.all(size.height * 0.006),
+                                                    child: StreamBuilder(
+                                                      stream: FirebaseFirestore.instance.collection("Students").doc(result[index]["Email"]).snapshots(),
+                                                      builder: (context, studentsnapshot) {
+                                                        return studentsnapshot.hasData
+                                                            ?
+                                                        CircleAvatar(
+                                                            radius: size.width * 0.06,
+                                                            backgroundColor: Colors.green[900],
+                                                            child:  studentsnapshot.data!.data()?["Profile_URL"] !="null" && studentsnapshot.data!.data()?["Profile_URL"] != null
+                                                                ?
+                                                            CircleAvatar(
+                                                              radius: size.width * 0.055,
+                                                              backgroundImage: NetworkImage(studentsnapshot.data!.data()?["Profile_URL"]),
+                                                            )
+                                                                :
+                                                            CircleAvatar(
+                                                              radius: size.width * 0.055,
+                                                              backgroundImage: const AssetImage("assets/images/unknown.png"),
+                                                            )
+                                                        )
+                                                            :
+                                                        const SizedBox();
+                                                      }
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                      child:Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          AutoSizeText(
+                                                            result[index]["Name"],
+                                                            style: GoogleFonts.tiltNeon(
+                                                                color: Colors.black,
+                                                                fontSize: size.width * 0.045),
+                                                            maxLines: 1,
+                                                            textAlign: TextAlign.left,
+                                                          ),
+                                                          AutoSizeText(
+                                                            result[index]["Rollnumber"],
+                                                            style: GoogleFonts.tiltNeon(
+                                                                color: Colors.black,
+                                                                fontSize: size.width * 0.036),
+                                                            maxLines: 1,
+                                                            textAlign: TextAlign.left,
+                                                          ),
+                                                        ],
+                                                      )
+                                                  ),
+                                                  AutoSizeText(
+                                                    "${result[index]["Score"]} / ${snapshot.data!.data()?["Total_Assignment"]}",
+                                                    style: const TextStyle(
+                                                      color:Color.fromARGB(255, 10, 52, 84),
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: size.width*0.04,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+
+                                )
+                            ),
+                          ])
+                    ],
+                  ),
+                )
+                    :
+                SizedBox(
+                  height: size.height,
+                  width: size.width,
+                  child: Center(
+                    child: AutoSizeText(
+                      "No Assignment assigned till now.\nPlease come back later",
+                      style: GoogleFonts.tiltNeon(
+                          fontSize: 20,
+                          color: Colors.black
+                      ),
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+              }
+              ),
+          ),
+        ],
+      ),
     );
   }
 

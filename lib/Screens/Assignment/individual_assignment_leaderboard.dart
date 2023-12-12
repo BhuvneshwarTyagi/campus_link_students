@@ -21,6 +21,7 @@ class _IndividualAssignmentLeaderboardState extends State<IndividualAssignmentLe
     Size size=MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
+        image: const DecorationImage(image: AssetImage("assets/images/celebration.gif"),fit: BoxFit.fill),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -280,7 +281,6 @@ class _IndividualAssignmentLeaderboardState extends State<IndividualAssignmentLe
       return a["Score"].compareTo(b["Score"]);
     },
     );
-    result=result.reversed.toList();
     result.sort((a,b) {
       if(a["Score"]==b["Score"])
       {
@@ -290,7 +290,16 @@ class _IndividualAssignmentLeaderboardState extends State<IndividualAssignmentLe
         return 0;
       }
     });
-
+    result.sort((a,b) {
+      if(a["Quiz-Time"]==b["Quiz-Time"])
+      {
+        return a["Rollnumber"].compareTo(b["Rollnumber"]);
+      }
+      else{
+        return 0;
+      }
+    });
+    result=result.reversed.toList();
     print(result);
   }
 }

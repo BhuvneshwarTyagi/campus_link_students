@@ -1,7 +1,9 @@
 import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:campus_link_student/Constraints.dart';
+import 'package:campus_link_student/Screens/Assignment/countDown.dart';
 import 'package:campus_link_student/Screens/Assignment/upload_assignment.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,7 +16,7 @@ import 'assignment.dart';
 import 'individual_assignment_leaderboard.dart';
 
 class AssignmentTile extends StatefulWidget {
-  const AssignmentTile({super.key, required this.subject, required this.index, required this.assignmentUrl, required this.docType, required this.docSize, required this.uploadTime, required this.deadline, required this.status, required this.count});
+  const AssignmentTile({super.key, required this.subject, required this.index, required this.assignmentUrl, required this.docType, required this.docSize, required this.uploadTime, required this.deadline, required this.status, required this.count, required this.assignedOn});
   final String subject;
   final int index;
   final String assignmentUrl;
@@ -24,6 +26,7 @@ class AssignmentTile extends StatefulWidget {
   final String deadline;
   final String status;
   final int count;
+  final Timestamp assignedOn;
   @override
   State<AssignmentTile> createState() => _AssignmentTileState();
 }
@@ -34,6 +37,7 @@ class _AssignmentTileState extends State<AssignmentTile> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     setsystemppath();
   }
   @override
@@ -152,11 +156,12 @@ class _AssignmentTileState extends State<AssignmentTile> {
               Container(
                 color:  const Color.fromRGBO(60, 99, 100, 1),
                 child: ExpansionTile(
+                  iconColor: Colors.black,
                   title: AutoSizeText(
                     "Assignment : ${widget.index + 1}(${widget.docSize}MB)",
                     style: GoogleFonts.courgette(
                         color: Colors.black,
-                        fontSize: size.height*0.018,
+                        fontSize: size.width*0.05,
                         fontWeight: FontWeight.w400
                     ),
                   ),
@@ -165,26 +170,32 @@ class _AssignmentTileState extends State<AssignmentTile> {
                     CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-
                       AutoSizeText(
-                        "Deadline :${widget.deadline}",
-                        style: GoogleFonts.courgette(
+                        "Assigned on: ${widget.assignedOn.toDate()}",
+                        style: GoogleFonts.tiltNeon(
                             color: Colors.black,
-                            fontSize: size.height*0.018,
-                            fontWeight: FontWeight.w400
+                            fontSize: size.width*0.04
                         ),
                       ),
+                      (widget.status == "" )
+                          ?
+                      CountDownTimer(
+                         deadline: widget.deadline,
+                      )
+                          :
                       AutoSizeText(
-                        "Before :${widget.uploadTime}",
-                        style: GoogleFonts.courgette(
-                            color: Colors.black,
-                            fontSize: size.height*0.018,
-                            fontWeight: FontWeight.w400
-                        ),
+                        widget.status == "Pending" ? "Status Pending" : widget.status,
+                        style: GoogleFonts.tiltNeon(
+                        color: widget.status == "Pending" ? Colors.orange : widget.status == "Rejected" ? Colors.red : Colors.green,
+                        fontSize: size.width*0.04
                       ),
+                      )
+                      ,
                     ],
                   ),
                   children: [
+                    widget.status == ""
+                        ?
                     Card(
                       color: Colors.transparent,
                       shadowColor: Colors.transparent,
@@ -194,7 +205,9 @@ class _AssignmentTileState extends State<AssignmentTile> {
                         totalSubmittedAssignment: widget.count,
                       ),
 
-                    ),
+                    )
+                        :
+                    const SizedBox(),
                     Card(
 
                       color: Colors.transparent,
@@ -229,13 +242,14 @@ class _AssignmentTileState extends State<AssignmentTile> {
                                   index: widget.index,
                                   status: widget.status,
                                   uploadTime: widget.uploadTime,
-                                  count: widget.count,
+                                  count: widget.count, assignedOn: widget.assignedOn,
                                 ),
                               ),
                           );
                         },
                       ),
-                    )
+                    ),
+
                   ],
                 ),
               ),

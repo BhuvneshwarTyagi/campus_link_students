@@ -53,19 +53,14 @@ class TopThree extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    top: ((size.height * 0.12) - (size.width * 0.03)),
-                    left: ((size.width * 0.107) - (size.width * 0.03)),
-                    child: CircleAvatar(
-                      radius: size.width * 0.03,
-                      backgroundColor: Colors.black,
-                      child: CircleAvatar(
-                        radius: size.width * 0.026,
-                        child: const SizedBox(
-                          child: AutoSizeText(
-                            '2',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
+                    top: size.height * 0.08,
+                    right: size.width*0.001,
+                    child: Transform.rotate(
+                      angle: -0.3,
+                      child: SizedBox(
+                          width: size.width*0.3,
+                          height: size.height*0.05,
+                          child: Image.asset("assets/images/Browncrown.png")
                       ),
                     ),
                   ),
@@ -144,20 +139,12 @@ class TopThree extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        top: ((size.height * 0.05) - (size.width * 0.03)),
-                        left: ((size.width * 0.147) - (size.width * 0.03)),
-                        child: CircleAvatar(
-                          radius: size.width * 0.03,
-                          backgroundColor: Colors.black,
-                          child: CircleAvatar(
-                            radius: size.width * 0.026,
-                            child: const SizedBox(
-                              child: AutoSizeText(
-                                '1',
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
+                        top: size.height * 0.018,
+                        right: size.width*0.02,
+                        child: SizedBox(
+                          width: size.width*0.3,
+                          height: size.height*0.05,
+                          child: Image.asset("assets/images/Goldcrown.png")
                         ),
                       ),
                     ],
@@ -234,19 +221,13 @@ class TopThree extends StatelessWidget {
                       ),
 
                       Positioned(
-                        top: ((size.height * 0.12) - (size.width * 0.03)),
-                        left: ((size.width * 0.107) - (size.width * 0.03)),
-                        child: CircleAvatar(
-                          radius: size.width * 0.03,
-                          backgroundColor: Colors.black,
-                          child: CircleAvatar(
-                            radius: size.width * 0.026,
-                            child: const SizedBox(
-                              child: AutoSizeText(
-                                '3',
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
+                        top: size.height * 0.085,
+                        child: Transform.rotate(
+                          angle: 0.3,
+                          child: SizedBox(
+                              width: size.width*0.3,
+                              height: size.height*0.05,
+                              child: Image.asset("assets/images/Silvercrown.png")
                           ),
                         ),
                       ),
