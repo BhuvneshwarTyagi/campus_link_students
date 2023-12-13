@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Screens/Assignment/countDown.dart';
 import 'package:campus_link_student/Screens/Feedback/feedback.dart';
+import 'package:campus_link_student/Screens/Notes/Raise_Query_Notes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
@@ -122,26 +123,26 @@ class _NotesTileState extends State<NotesTile> {
                 ),
               ),
               ExpansionTile(
-                collapsedBackgroundColor: const Color.fromRGBO(56, 33, 101,1),
-                backgroundColor: const Color.fromRGBO(56, 33, 101,1),
+                collapsedBackgroundColor: const Color.fromRGBO(60, 99, 100, 1),
+                backgroundColor: const Color.fromRGBO(60, 99, 100, 1),
                 title: Row(
                   children: [
                     AutoSizeText(
                       widget.fileName,
-                      style: GoogleFonts.exo(
-                        fontSize: size.height*0.02,
-                        color: Colors.white70,
+                      style: GoogleFonts.tiltNeon(
+                        fontSize: size.width*0.045,
+                        color: Colors.black,
                         fontWeight: FontWeight.w500
                       ),
                     maxLines: 1,
                     ),
                     AutoSizeText(
 
-                      " (${(int.parse(widget.size ?? "")/1048576).toStringAsFixed(2)} MB)",
+                      "   (${(int.parse(widget.size ?? "")/1048576).toStringAsFixed(2)} MB)",
 
-                      style: GoogleFonts.exo(
-                          fontSize: size.height*0.016,
-                          color: Colors.white70,
+                      style: GoogleFonts.tiltNeon(
+                          fontSize: size.width*0.035,
+                          color: Colors.black87,
                           fontWeight: FontWeight.w500),),
                   ],
                 ),
@@ -151,9 +152,9 @@ class _NotesTileState extends State<NotesTile> {
                   children: [
                     AutoSizeText(
                       "Uploaded on: ${(widget.stamp.toDate()).toString().split(" ")[0]}",
-                      style: GoogleFonts.exo(
-                          fontSize: size.height*0.016,
-                          color: Colors.white70,
+                      style: GoogleFonts.tiltNeon(
+                          fontSize: size.width*0.035,
+                          color: Colors.black87,
                           fontWeight: FontWeight.w500),),
                     widget.deadline.seconds !=0
                         ?
@@ -177,7 +178,7 @@ class _NotesTileState extends State<NotesTile> {
                             AutoSizeText(
                               "Score :${widget.Score}/${widget.totalQuestion}",
                               style: GoogleFonts.poppins(
-                                  color: Colors.white70,
+                                  color: Colors.black87,
                                   fontSize: size.height*0.015
                               ),
                             ),
@@ -186,7 +187,7 @@ class _NotesTileState extends State<NotesTile> {
                               backgroundColor: Colors.black,
                               color: Colors.green,
                               value: int.parse(widget.Score)/int.parse(widget.totalQuestion),
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
+                              borderRadius: const BorderRadius.all(Radius.circular(10)),
                             ),
                           ],
                         ),
@@ -201,7 +202,7 @@ class _NotesTileState extends State<NotesTile> {
                           "Leaderboard",
                           style: GoogleFonts.tiltNeon(
                               fontSize: size.width * 0.045,
-                              color: Colors.white70
+                              color: Colors.black87
                           ),
                         ),
                         onTap: () {
@@ -266,7 +267,7 @@ class _NotesTileState extends State<NotesTile> {
                           "Leaderboard",
                           style: GoogleFonts.tiltNeon(
                               fontSize: size.width * 0.045,
-                              color: Colors.white70
+                              color: Colors.black87
                           ),
                         ),
                         onTap: () {
@@ -296,7 +297,7 @@ class _NotesTileState extends State<NotesTile> {
                       "Feedback",
                       style: GoogleFonts.tiltNeon(
                           fontSize: size.height*0.02,
-                          color: Colors.white70,
+                          color: Colors.black87,
                           fontWeight: FontWeight.w500
                       ),
                       maxLines: 1,
@@ -310,43 +311,76 @@ class _NotesTileState extends State<NotesTile> {
                       },));
                     },
                   ),
-                  AutoSizeText(
-                    "Video Lectures",
-                    style: GoogleFonts.tiltNeon(
-                        fontSize: size.width*0.05,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w400,
+                  ListTile(
+                    leading: SizedBox(
+                      width: size.width*0.1,
+                      child: Image.asset("assets/images/query.png"),
                     ),
-
-                    maxLines: 3,
+                    title: AutoSizeText(
+                      "Raise query",
+                      style: GoogleFonts.tiltNeon(
+                          fontSize: size.height*0.02,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500
+                      ),
+                      maxLines: 1,
+                    ),
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return NotesQuery(
+                          index: widget.index+1,
+                          subject: widget.selectedSubject,
+                        );
+                      },));
+                    },
                   ),
+
                   SizedBox(
-                    height: size.height*0.07 * widget.videolinks.length,
+                    height: widget.videolinks.isNotEmpty ? size.width*0.06 + (size.height*0.07 * widget.videolinks.length ) : 0,
                     child: ListView.builder(
                       itemCount: widget.videolinks.length,
                       itemBuilder: (context, index) {
-                        return ListTile(
-                          leading: SizedBox(
-                            width: size.width*0.1,
-                            child: Image.asset("assets/images/link.png"),
-                          ),
-                          title: AutoSizeText(
-                            widget.videolinks[index],
-                            style: GoogleFonts.tiltNeon(
+                        return Column(
+                          children: [
+                            index==0
+                                ?
+                            AutoSizeText(
+                              "Video Lectures",
+                              style: GoogleFonts.tiltNeon(
                                 fontSize: size.width*0.05,
-                                color: Colors.blue,
+                                color: Colors.black,
                                 fontWeight: FontWeight.w400,
-                                decoration: TextDecoration.underline
-                            ),
+                              ),
 
-                            maxLines: 3,
-                          ),
-                          onTap: () async {
-                            final Uri url = Uri.parse(widget.videolinks[index]);
-                            if (!await launchUrl(url)) {
-                              throw Exception('Could not launch $url');
-                            }
-                          },
+                              maxLines: 3,
+                            )
+                                :
+                            const SizedBox(),
+
+                            ListTile(
+                              leading: SizedBox(
+                                width: size.width*0.1,
+                                child: Image.asset("assets/images/link.png"),
+                              ),
+                              title: AutoSizeText(
+                                widget.videolinks[index],
+                                style: GoogleFonts.tiltNeon(
+                                    fontSize: size.width*0.05,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w400,
+                                    decoration: TextDecoration.underline
+                                ),
+
+                                maxLines: 3,
+                              ),
+                              onTap: () async {
+                                final Uri url = Uri.parse(widget.videolinks[index]);
+                                if (!await launchUrl(url)) {
+                                  throw Exception('Could not launch $url');
+                                }
+                              },
+                            ),
+                          ],
                         );
                       },
                     ),

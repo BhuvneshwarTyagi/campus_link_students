@@ -1,6 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:campus_link_student/Screens/Assignment/Assignment_List.dart';
-import 'package:campus_link_student/Screens/Assignment/Leaderboard.dart';
 import 'package:campus_link_student/Screens/Notes/NotesLeaderboard.dart';
 import 'package:campus_link_student/Screens/Notes/notes_list.dart';
 import 'package:flutter/material.dart';
@@ -60,19 +58,19 @@ class _NotesState extends State<Notes> with TickerProviderStateMixin{
                   SizedBox(
                     height: size.height*0.05,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         SizedBox(
                           width: size.width*0.1,
-                          child: Image.asset("assets/images/assignment.png"),
+                          child: Image.asset("assets/images/notes_icon.png"),
                         ),
                         SizedBox(
-                          width: size.width*0.02,
+                          width: size.width*0.01,
                         ),
                         FittedBox(
                           fit: BoxFit.cover,
                           child: AutoSizeText(
-                            "Assignments",
+                            "Notes",
                             style: GoogleFonts.tiltNeon(
                                 fontSize: size.height * 0.025,
                                 fontWeight: FontWeight.w500,

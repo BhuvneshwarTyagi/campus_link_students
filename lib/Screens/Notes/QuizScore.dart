@@ -36,36 +36,42 @@ class _QuizscoreState extends State<Quizscore> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
-    return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          elevation: 0,
-          title:  Center(
-            child: AutoSizeText(
-              '${widget.selectedSubject} Leaderboard Quiz ${widget.quizId}',
-              style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold),
+    return Container(
+      decoration: BoxDecoration(
+        image: const DecorationImage(image: AssetImage("assets/images/celebration.gif"),fit: BoxFit.fill),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color.fromRGBO(86, 149, 178, 1),
+            const Color.fromRGBO(68, 174, 218, 1),
+            Colors.deepPurple.shade300
+          ],
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            centerTitle: true,
+            elevation: 0,
+            title:  Center(
+              child: AutoSizeText(
+                '${widget.selectedSubject} Leaderboard Quiz ${widget.quizId}',
+                style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.arrow_back_ios_new_outlined,color: Colors.black,),
             ),
           ),
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back,color: Colors.black,),
-          ),
-        ),
-        body: Container(
-          decoration:  const BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [
-                    Color.fromRGBO(89, 152, 207, 1),
-                    Color.fromRGBO(178, 227, 235, 1)
-
-                  ])
-          ),
-          child:load && snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"]!=null && snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"].length>=3
+          body: load && snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"]!=null && snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"].length>=3
             ?
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -361,13 +367,6 @@ class _QuizscoreState extends State<Quizscore> {
 
                           )
                       ),
-                      Divider(
-                        color: Colors.black,
-                        height: MediaQuery.of(context).size.height * 0.03,
-                        thickness: MediaQuery.of(context).size.height * 0.003,
-                        endIndent: 8,
-                        indent: 8,
-                      ),
                       SizedBox(
                           height: size.height * 0.096*(unattemptedStudents.length),
                           child: ListView.builder(
@@ -375,81 +374,96 @@ class _QuizscoreState extends State<Quizscore> {
                             itemCount:unattemptedStudents.length,
                             itemBuilder: (context, index) {
 
-                              return Padding(
-                                padding: EdgeInsets.all(size.height * 0.008),
-                                child: SizedBox(
-                                  height: size.height * 0.08,
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                        width: size.width * 0.1,
-                                        child: Center(
-                                            child: AutoSizeText(
-                                                "${index+1}",
-                                              style: TextStyle(
-                                                fontSize: size.height*0.03,
-                                                color: Colors.white
-                                              ),
-                                            )),
-                                      ),
-                                      Container(
-                                          height: size.height * 0.07,
-                                          width: size.width * 0.8,
-                                          decoration: BoxDecoration(
-                                            border: Border.all(),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(size.width * 0.08)),
-                                            color: const Color.fromARGB(255, 228, 243, 247),
+                              return Column(
+                                children: [
+                                  index==0
+                                      ?
+                                  Divider(
+                                    color: Colors.black,
+                                    height: MediaQuery.of(context).size.height * 0.03,
+                                    thickness: MediaQuery.of(context).size.height * 0.003,
+                                    endIndent: 8,
+                                    indent: 8,
+                                  )
+                                  :
+                                  const SizedBox(),
+                                  Padding(
+                                    padding: EdgeInsets.all(size.height * 0.008),
+                                    child: SizedBox(
+                                      height: size.height * 0.08,
+                                      child: Row(
+                                        children: [
+                                          SizedBox(
+                                            width: size.width * 0.1,
+                                            child: Center(
+                                                child: AutoSizeText(
+                                                    "${index+1}",
+                                                  style: TextStyle(
+                                                    fontSize: size.height*0.03,
+                                                    color: Colors.white
+                                                  ),
+                                                )),
                                           ),
-                                          child: Row(
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                  EdgeInsets.all(size.height * 0.006),
-                                                  child: CircleAvatar(
-                                                    radius: size.width * 0.06,
-                                                    backgroundColor: Colors.black,
-                                                    child:  allEmailsWithLink[unattemptedStudents[index]["Email"]]!="null"
-                                                        ?
-                                                    CircleAvatar(
-                                                      radius: size.width * 0.1,
-                                                      backgroundImage: NetworkImage("${allEmailsWithLink[unattemptedStudents[index]["Email"]]}"),
-                                                    ):
-                                                    AutoSizeText(
-                                                      unattemptedStudents[index]["Name"][0],
-                                                      textAlign: TextAlign.center,
-                                                    ),),
-                                                ),
-                                                SizedBox(
-                                                    width: size.width * 0.45,
-                                                    child:Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                      children: [
+                                          Container(
+                                              height: size.height * 0.07,
+                                              width: size.width * 0.8,
+                                              decoration: BoxDecoration(
+                                                border: Border.all(),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(size.width * 0.08)),
+                                                color: const Color.fromARGB(255, 228, 243, 247),
+                                              ),
+                                              child: Row(
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                      EdgeInsets.all(size.height * 0.006),
+                                                      child: CircleAvatar(
+                                                        radius: size.width * 0.06,
+                                                        backgroundColor: Colors.black,
+                                                        child:  allEmailsWithLink[unattemptedStudents[index]["Email"]]!="null"
+                                                            ?
+                                                        CircleAvatar(
+                                                          radius: size.width * 0.1,
+                                                          backgroundImage: NetworkImage("${allEmailsWithLink[unattemptedStudents[index]["Email"]]}"),
+                                                        ):
                                                         AutoSizeText(
-                                                          unattemptedStudents[index]["Name"],
-                                                          style: TextStyle(
-                                                              fontSize: size.width * 0.045),
-                                                          maxLines: 1,
-                                                          textAlign: TextAlign.left,
-                                                        ),
-                                                        AutoSizeText(
-                                                          unattemptedStudents[index]["Roll-number"],
-                                                          style: TextStyle(
-                                                              fontSize: size.width * 0.036),
-                                                          maxLines: 1,
-                                                          textAlign: TextAlign.left,
+                                                          unattemptedStudents[index]["Name"][0],
+                                                          textAlign: TextAlign.center,
+                                                        ),),
+                                                    ),
+                                                    SizedBox(
+                                                        width: size.width * 0.45,
+                                                        child:Column(
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            AutoSizeText(
+                                                              unattemptedStudents[index]["Name"],
+                                                              style: TextStyle(
+                                                                  fontSize: size.width * 0.045),
+                                                              maxLines: 1,
+                                                              textAlign: TextAlign.left,
+                                                            ),
+                                                            AutoSizeText(
+                                                              unattemptedStudents[index]["Roll-number"],
+                                                              style: TextStyle(
+                                                                  fontSize: size.width * 0.036),
+                                                              maxLines: 1,
+                                                              textAlign: TextAlign.left,
+                                                            )
+                                                          ],
                                                         )
-                                                      ],
-                                                    )
-                                                ),
-                                                const AutoSizeText("UA",
-                                                    style: TextStyle(
-                                                        color:Colors.red,
-                                                        fontWeight: FontWeight.w500)),
-                                              ])),
-                                    ],
+                                                    ),
+                                                    const AutoSizeText("UA",
+                                                        style: TextStyle(
+                                                            color:Colors.red,
+                                                            fontWeight: FontWeight.w500)),
+                                                  ])),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                ],
                               );
                             },
 
@@ -463,8 +477,8 @@ class _QuizscoreState extends State<Quizscore> {
               :
               const SizedBox(
                 child: Center(child: Text("Less then three Submissions Please Wait..")),
-              )
-        ));
+              )),
+    );
   }
 
  void fetchtData()

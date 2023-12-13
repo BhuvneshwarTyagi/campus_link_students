@@ -60,6 +60,18 @@ class _FeedbackPageState extends State<FeedbackPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: AutoSizeText(
+                        "Note: Your identity will not be shown to the teachers but for security reasons we are storing your details.",
+                        style: GoogleFonts.tiltNeon(
+                          fontSize: size.width*0.04,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  ),
               SizedBox(
                 height: size.height * 0.02,
               ),
