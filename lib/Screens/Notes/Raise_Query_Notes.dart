@@ -59,8 +59,10 @@ class _NotesQueryState extends State<NotesQuery> {
                     ),
                   );
                   //chatController.initialMessageList.clear();
-                  for (var msg in snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"]) {
+                  int count = snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Count"] ?? 0;
+                  for (int i= count ; i<snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length;i++ ) {
                     print("insideloop");
+                    var msg = snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"][i];
                     final message1 = Message(
 
                         id: msg['Stamp'].toDate().toString(),
@@ -78,6 +80,9 @@ class _NotesQueryState extends State<NotesQuery> {
                         )
                     );
                     chatController.initialMessageList.add(message1);
+                  }
+                  if(count != snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length){
+                    updatecount(snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length);
                   }
                 }
               }
@@ -353,4 +358,10 @@ class _NotesQueryState extends State<NotesQuery> {
       "Pending" ,
     });
   }
+  updatecount(int len) async {
+    await FirebaseFirestore.instance.collection("Notes").doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.subject}").update({
+      "Notes-${widget.index}.Query.${usermodel["Email"].toString().split("@")[0]}.Count": len
+    });
+  }
+
 }

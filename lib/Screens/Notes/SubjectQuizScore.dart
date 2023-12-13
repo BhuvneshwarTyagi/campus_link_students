@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../Constraints.dart';
+import '../Assignment/Top3_Leaderboard_tile.dart';
 
 class subjectQuizScore extends StatefulWidget {
    subjectQuizScore({Key? key,required this.subject}) : super(key: key);
@@ -117,62 +118,25 @@ class _subjectQuizScore_2State extends State<subjectQuizScore_2> {
                 SizedBox(
                   width: size.width * 0.07,
                 ),
-                SizedBox(
-                    width: size.width * 0.214,
-                    child: Column(children: [
-                      SizedBox(
-                          height: ((size.height * 0.12) + (size.width * 0.214)),
-                          child: Stack(children: [
-                            Positioned(
-                                bottom: 0,
-                                left: 0,
-                                child: CircleAvatar(
-                                  backgroundColor: Colors.black,
-                                  radius: size.width * 0.107,
-                                  child: allEmailsWithLink[result[1]["Email"]]!="null"
-                                      ?
-                                  CircleAvatar(
-                                    radius: size.width * 0.1,
-                                    backgroundImage: NetworkImage("${allEmailsWithLink[result[1]["Email"]]}"),
-                                  ):
-                                  AutoSizeText(
-                                    "${result[1]["Name"]}\n ${result[1]["Rollnumber"]}",
-                                    textAlign: TextAlign.center,
-                                  ),
-                                )),
-                            Positioned(
-                                top: ((size.height * 0.12) -
-                                    (size.width * 0.03)),
-                                left: ((size.width * 0.107) -
-                                    (size.width * 0.03)),
-                                child: CircleAvatar(
-                                    radius: size.width * 0.03,
-                                    backgroundColor: Colors.black,
-                                    child: CircleAvatar(
-                                        radius: size.width * 0.026,
-                                        child: const SizedBox(
-                                            child: AutoSizeText(
-                                              '2',
-                                              textAlign: TextAlign.center,
-                                            )))))
-                          ])),
-                      Center(
-                          child: SizedBox(
-                              width: size.width * 0.2,
-                              child: AutoSizeText(
-                                "${result[1]["Name"]}\n ${result[1]["Rollnumber"]}",
-                                style: TextStyle(
-                                    fontSize: size.width * 0.04,
-                                    fontWeight: FontWeight.bold),
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                //minFontSize: size.width * 0.03,
-                              ))),
-                      AutoSizeText("${result[1]["Score"].toString()} / 10",
-                          style: const TextStyle(
-                              color: Color.fromARGB(255, 10, 52, 84),
-                              fontWeight: FontWeight.w500))
-                    ])),
+                TopThree(
+                  data: [
+                    {
+                      "Name" : result[0]['Name'],
+                      "Email" : result[0]['Email'],
+                      "Submitted" : result[0]['Score'],
+                    },
+                    {
+                      "Name" : result[1]['Name'],
+                      "Email" : result[1]['Email'],
+                      "Submitted" : result[1]['Score'],
+                    },
+                    {
+                      "Name" : result[2]['Name'],
+                      "Email" : result[2]['Email'],
+                      "Submitted" : result[2]['Score'],
+                    }
+                  ],
+                ),
                 SizedBox(
                   width: size.width * 0.069,
                 ),

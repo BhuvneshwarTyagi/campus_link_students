@@ -1,4 +1,5 @@
 
+import 'package:campus_link_student/Screens/Assignment/Top3_Leaderboard_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -77,187 +78,24 @@ class _QuizscoreState extends State<Quizscore> {
             scrollDirection: Axis.vertical,
             child: Column(
               children: [
-                SizedBox(
-                    height: size.height * 0.32,
-                    child: Row(children: [
-                      SizedBox(
-                        width: size.width * 0.07,
-                      ),
-                      SizedBox(
-                          width: size.width * 0.214,
-                          child: Column(children: [
-                            SizedBox(
-                                height: ((size.height * 0.12) + (size.width * 0.214)),
-                                child: Stack(children: [
-                                  Positioned(
-                                      bottom: 0,
-                                      left: 0,
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.black,
-                                        radius: size.width * 0.107,
-                                        child: allEmailsWithLink[result[1]["Email"]]!="null"
-                                        ?
-                                        CircleAvatar(
-                                          radius: size.width * 0.1,
-                                          backgroundImage: NetworkImage("${allEmailsWithLink[result[1]["Email"]]}"),
-                                        ):
-                                        AutoSizeText(
-                                          "${result[1]["Name-Rollnumber"].toString().split("-")[0]}\n ${result[1]["Name-Rollnumber"].toString().split("-")[1]}",
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      )),
-                                  Positioned(
-                                      top: ((size.height * 0.12) -
-                                          (size.width * 0.03)),
-                                      left: ((size.width * 0.107) -
-                                          (size.width * 0.03)),
-                                      child: CircleAvatar(
-                                          radius: size.width * 0.03,
-                                          backgroundColor: Colors.black,
-                                          child: CircleAvatar(
-                                              radius: size.width * 0.026,
-                                              child: const SizedBox(
-                                                  child: AutoSizeText(
-                                                    '2',
-                                                    textAlign: TextAlign.center,
-                                                  )))))
-                                ])),
-                            Center(
-                                child: SizedBox(
-                                    width: size.width * 0.2,
-                                    child: AutoSizeText(
-                                      "${result[1]["Name-Rollnumber"].toString().split("-")[0]}\n ${result[1]["Name-Rollnumber"].toString().split("-")[1]}",
-                                      style: TextStyle(
-                                          fontSize: size.width * 0.04,
-                                          fontWeight: FontWeight.bold),
-                                      maxLines: 2,
-                                      textAlign: TextAlign.center,
-                                      //minFontSize: size.width * 0.03,
-                                    ))),
-                             AutoSizeText("${result[1]["Score"].toString()} / 10",
-                                style: const TextStyle(
-                                    color: Color.fromARGB(255, 10, 52, 84),
-                                    fontWeight: FontWeight.w500))
-                          ])),
-                      SizedBox(
-                        width: size.width * 0.069,
-                      ),
-                      SizedBox(
-                          width: size.width * 0.294,
-                          child: Column(children: [
-                            SizedBox(
-                                height:
-                                ((size.height * 0.05) + (size.width * 0.294)),
-                                child: Stack(children: [
-                                  Positioned(
-                                      bottom: 0,
-                                      left: 0,
-                                      child: CircleAvatar(
-                                          radius: size.width * 0.147,
-                                          backgroundColor: Colors.black,
-                                          child:  allEmailsWithLink[result[0]["Email"]]!="null"
-                                              ?
-                                          CircleAvatar(
-                                            radius: size.width * 0.147,
+                TopThree(data: [
+                  {
+                    "Name" : result[0]['Name'] ?? '',
+                    "Email" : result[0]['Email'] ?? '',
+                    "Submitted" : result[0]['Score'] ?? 0,
+                  },
+                  {
+                    "Name" : result[1]['Name'] ?? '',
+                    "Email" : result[1]['Email'] ?? '',
+                    "Submitted" : result[1]['Score'] ?? 0,
+                  },
+                  {
+                    "Name" : result[2]['Name'] ?? '',
+                    "Email" : result[2]['Email'] ?? '',
+                    "Submitted" : result[2]['Score'] ?? 0,
+                  }
+                ],),
 
-                                            backgroundImage: NetworkImage("${allEmailsWithLink[result[0]["Email"]]}"),
-                                          ):
-                                          AutoSizeText(
-                                            "${result[0]["Name-Rollnumber"].toString().split("-")[0]}\n ${result[0]["Name-Rollnumber"].toString().split("-")[1]}",
-                                            textAlign: TextAlign.center,
-                                          ),)),
-                                  Positioned(
-                                      top: ((size.height * 0.05) -
-                                          (size.width * 0.03)),
-                                      left: ((size.width * 0.147) -
-                                          (size.width * 0.03)),
-                                      child: CircleAvatar(
-                                          radius: size.width * 0.03,
-                                          backgroundColor: Colors.black,
-                                          child: CircleAvatar(
-                                              radius: size.width * 0.026,
-                                              child: const SizedBox(
-                                                  child: AutoSizeText(
-                                                    '1',
-                                                    textAlign: TextAlign.center,
-                                                  )))))
-                                ])),
-                            Center(
-                                child: SizedBox(
-                                    width: size.width * 0.24,
-                                    child: AutoSizeText(
-                                      "${result[0]["Name-Rollnumber"].toString().split("-")[0]}\n ${result[0]["Name-Rollnumber"].toString().split("-")[1]}",
-                                      style: TextStyle(
-                                          fontSize: size.width * 0.04,
-                                          fontWeight: FontWeight.bold),
-                                      maxLines: 2,
-                                      textAlign: TextAlign.center,
-                                      //minFontSize: size.width * 0.03,
-                                    ))),
-                             AutoSizeText("${result[0]["Score"].toString()} / 10",
-                                style: const TextStyle(
-                                    color: Color.fromARGB(255, 10, 52, 84),
-                                    fontWeight: FontWeight.w500))
-                          ])),
-                      SizedBox(
-                        width: size.width * 0.069,
-                      ),
-                      SizedBox(
-                          width: size.width * 0.214,
-                          child: Column(children: [
-                            SizedBox(
-                              height: ((size.height * 0.12) + (size.width * 0.214)),
-                              child: Stack(children: [
-                                Positioned(
-                                    bottom: 0,
-                                    left: 0,
-                                    child: CircleAvatar(
-                                        backgroundColor: Colors.black,
-                                        radius: size.width * 0.107,
-                                        child:  allEmailsWithLink[result[2]["Email"]]!="null"
-                                            ?
-                                        CircleAvatar(
-                                          radius: size.width * 0.1,
-                                          backgroundImage: NetworkImage("${allEmailsWithLink[result[2]["Email"]]}"),
-                                        ):
-                                        AutoSizeText(
-                                          result[2]["Name-Rollnumber"].toString().split("-")[0],
-                                          textAlign: TextAlign.center,
-                                        ),)),
-                                Positioned(
-                                    top: ((size.height * 0.12) -
-                                        (size.width * 0.03)),
-                                    left: ((size.width * 0.107) -
-                                        (size.width * 0.03)),
-                                    child: CircleAvatar(
-                                        radius: size.width * 0.03,
-                                        backgroundColor: Colors.black,
-                                        child: CircleAvatar(
-                                            radius: size.width * 0.026,
-                                            child: const SizedBox(
-                                                child: AutoSizeText(
-                                                  '3',
-                                                  textAlign: TextAlign.center,
-                                                )))))
-                              ]),
-                            ),
-                            SizedBox(
-                                width: size.width * 0.2,
-                                child: AutoSizeText(
-                                  "${result[2]["Name-Rollnumber"].toString().split("-")[0]}\n ${result[2]["Name-Rollnumber"].toString().split("-")[1]}",
-                                  style: TextStyle(
-                                      fontSize: size.width * 0.04,
-                                      fontWeight: FontWeight.bold),
-                                  maxLines: 2,
-                                  textAlign: TextAlign.center,
-                                  //minFontSize: size.width * 0.03,
-                                )),
-                             AutoSizeText("${result[2]["Score"].toString()} / 10",
-                                style: const TextStyle(
-                                    color: Color.fromARGB(255, 10, 52, 84),
-                                    fontWeight: FontWeight.w500))
-                          ]))
-                    ])),
                 SizedBox(
                   height: size.height * 0.02,
                 ),

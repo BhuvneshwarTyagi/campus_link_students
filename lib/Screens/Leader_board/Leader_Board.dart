@@ -326,37 +326,35 @@ class _OverAllLeaderBoardState extends State<OverAllLeaderBoard> {
 
                         ),),
                         children: [
-                          SizedBox(
-                            height: size.height*0.15,
-                            child: ListView.builder(
-                              itemCount: result[index]["Sessional_record"].length,
-                                itemBuilder: (context, index1) {
-                                  return ListTile(
+                          ListView.builder(
+                            itemCount: result[index]["Sessional_record"].length,
+                              shrinkWrap: true,
+                              itemBuilder: (context, index1) {
+                                return ListTile(
 
-                                    title: AutoSizeText(
-                                      "Sessional ${index1+1} marks",
-                                      style: GoogleFonts.tiltNeon(
-                                        color: Colors.black54,
-                                        fontSize: size.width*0.045,
-                                      ),
-                                    ),
-                                    trailing: AutoSizeText("${result[index]["Sessional_record"][index1]["obtainedMarks"]}/${result[index]["Sessional_record"][index1]["totalMarks"]}",style: GoogleFonts.tiltNeon(
-                                      color: result[index]["AssignmentScore"] < 50
-                                          ?
-                                      Colors.red[600]
-                                          :
-                                      result[index]["AssignmentScore"] < 75
-                                          ?
-                                      Colors.orangeAccent[300]
-                                          :
-                                      Colors.green[900]
-                                      ,
+                                  title: AutoSizeText(
+                                    "Sessional ${index1+1} marks",
+                                    style: GoogleFonts.tiltNeon(
+                                      color: Colors.black54,
                                       fontSize: size.width*0.045,
+                                    ),
+                                  ),
+                                  trailing: AutoSizeText("${result[index]["Sessional_record"][index1]["obtainedMarks"]}/${result[index]["Sessional_record"][index1]["totalMarks"]}",style: GoogleFonts.tiltNeon(
+                                    color: result[index]["AssignmentScore"] < 50
+                                        ?
+                                    Colors.red[600]
+                                        :
+                                    result[index]["AssignmentScore"] < 75
+                                        ?
+                                    Colors.orangeAccent[300]
+                                        :
+                                    Colors.green[900]
+                                    ,
+                                    fontSize: size.width*0.045,
 
-                                    ),),
-                                  );
-                                },),
-                          )
+                                  ),),
+                                );
+                              },)
                         ],
                       )
                     ],

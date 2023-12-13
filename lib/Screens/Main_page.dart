@@ -72,31 +72,34 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> fetchuser() async{
     if(!loaded && Platform.isAndroid){
-      await FirebaseMessaging.instance.getToken().then((token) async {
-        await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
-          'Token' : token,
-        }).whenComplete(() async {
-          await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
-            setState(() {
-              usermodel=value.data()!;
-              if(usermodel["Subject"]==null){
-                Navigator.push(context, PageTransition(
-                    child: const StudentDetails(),
-                    type: PageTransitionType.bottomToTop,
-                  duration: const Duration(milliseconds: 400),
-                  childCurrent: const MainPage()
-                ),
-                );
-              }
-              if (kDebugMode) {
-                print(usermodel);
-              }
-              loaded=true;
-            });
-          });
+      await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).get().then((value){
+        setState(() {
+          usermodel=value.data()!;
+          print(usermodel);
+          if(usermodel["Subject"]==null){
+            Navigator.push(context, PageTransition(
+                child: const StudentDetails(),
+                type: PageTransitionType.bottomToTop,
+                duration: const Duration(milliseconds: 400),
+                childCurrent: const MainPage()
+            ),
+            );
+          }
+          if (kDebugMode) {
+            print(usermodel);
+          }
+          loaded=true;
         });
-
       });
+      // await FirebaseMessaging.instance.getToken().then((token) async {
+      //   await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
+      //     'Token' : token,
+      //   }).whenComplete(() async {
+      //     print("utffgjkg.................");
+      //     ///paste it here again
+      //   });
+      //
+      // });
     }
     if(!loaded && Platform.isIOS){
       await FirebaseMessaging.instance.getAPNSToken().then((token) async {
