@@ -15,6 +15,15 @@ class FeedbackPage extends StatefulWidget {
 
 class _FeedbackPageState extends State<FeedbackPage> {
   TextEditingController feed = TextEditingController();
+  List feedbackItem = [];
+  int? selectedIndex;
+  List<String>TextItem=["The explanations are clear and accessible",
+    "Well-organized with clear headings and subheadings.",
+    "Highly relevant to the course curriculum.",
+    "Comprehensive coverage with enriching insights.",
+    "Engaging with real-world examples and visuals."];
+
+
   double rate = 0;
   int emoji=1;
   @override
@@ -122,41 +131,43 @@ class _FeedbackPageState extends State<FeedbackPage> {
                   ),
                 ],
               ),
-              Card(
-                shape: OutlineInputBorder(
-                  borderSide: BorderSide(
-                      width: size.width * 0.003, color: Colors.grey),
-                  borderRadius: BorderRadius.circular(size.width * 0.02),
-                ),
-                child: TextField(
-                  controller: feed,
-                  onTapOutside: (event) {
-                    FocusScopeNode currentFocus = FocusScope.of(context);
-                    if (!currentFocus.hasPrimaryFocus) {
-                      currentFocus.unfocus();
-                    }
-                  },
-                  cursorColor: Colors.black,
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                      focusColor: Colors.white,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: size.width * 0.003, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(size.width * 0.02),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            width: size.width * 0.005, color: Colors.black),
-                        borderRadius: BorderRadius.circular(size.width * 0.02),
-                      ),
+                  SizedBox(
+                    height: size.height * 0.01,
                   ),
-                  style: GoogleFonts.tiltNeon(
-                    color: Colors.black,
-                    fontSize: size.width*0.045
-                  ),
-                  maxLines: 7,
-                ),
+              SizedBox(
+                height: size.height*0.4,
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: 5,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        elevation: 30,
+                        color: feedbackItem.contains(TextItem[index])
+                            ?
+                        Colors.green.shade300
+                            :
+                        Colors.white,
+                        child: ListTile(
+                          onTap: (){
+                            setState(() {
+                              feedbackItem.contains(TextItem[index])
+                                  ?
+                              feedbackItem.remove(TextItem[index])
+                                  :
+                              feedbackItem.add(TextItem[index]);
+                            });
+                          },
+                          title: Text(
+                            TextItem[index],
+                            style: GoogleFonts.tiltNeon(
+                                fontSize: size.width*0.045,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
               ),
               SizedBox(
                 height: size.height * 0.04,
@@ -169,6 +180,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 ),
                 child: InkWell(
                     onTap: () async {
+                      print("Feedback is $feedbackItem");
                       await FirebaseFirestore
                           .instance
                           .collection("Notes")
@@ -185,8 +197,10 @@ class _FeedbackPageState extends State<FeedbackPage> {
                         "Notes-${widget.index}.Feedback.${usermodel["Email"].toString().split("@")[0]}" : {
                           "By" : usermodel["Email"],
                           "Rating" : rate,
-                          "Description" : feed.text.toString().trim()
+                          "Description" : feedbackItem
                         }
+                      }).onError((error, stackTrace) {
+                        print("Error is  ${error.toString()}");
                       });
                       showDialog(
                           context: context,
@@ -275,3 +289,11 @@ class _FeedbackPageState extends State<FeedbackPage> {
     );
   }
 }
+
+
+
+
+
+
+
+

@@ -323,10 +323,10 @@ class _QuizscoreState extends State<Quizscore> {
   {
     FirebaseFirestore.instance.collection("Notes").doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.selectedSubject}").get().then((value) {
       snapshot=value;
-    }).whenComplete(() {
+    }).whenComplete(() async {
       if(snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"]!=null)
         {
-          calculateResult().whenComplete(() {
+          await calculateResult().whenComplete(() {
             setState(() {
               load=true;
             });
@@ -341,7 +341,6 @@ class _QuizscoreState extends State<Quizscore> {
    for(var email in  snapshot.data()?["Notes-${widget.quizId}"]["Submitted by"])
      {
        Map<String,dynamic>data={};
-
        data["Name-Rollnumber"]="${email.toString().split("-")[1]}-${email.toString().split("-")[2]}";
        data["Score"]=snapshot.data()?["Notes-${widget.quizId}"]["Response"][email]["Score"];
        data["Quiz-Time"]=snapshot.data()?["Notes-${widget.quizId}"]["Response"][email]["TimeStamp"];

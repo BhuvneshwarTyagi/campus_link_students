@@ -911,8 +911,8 @@ submit(BuildContext context,String subject,int notesId) async {
       .doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} $subject")
       .update({
     "${usermodel["Email"]}":{"Score":FieldValue.increment(score),"Time":FieldValue.increment(totalMinutes)},
-    "Notes-${notesId}.Submitted by":FieldValue.arrayUnion(["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]),
-    "Notes-${notesId}.Response.${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}":responseMap
+    "Notes-$notesId.Submitted by":FieldValue.arrayUnion([(usermodel["Email"].toString().split("@")[0])]),
+    "Notes-$notesId.Response.${usermodel["Email"].toString().split("@")[0]}":responseMap
   }).whenComplete(() {
     _start = 0;
      minute=0;

@@ -5,6 +5,7 @@ import 'package:campus_link_student/Constraints.dart';
 import 'package:campus_link_student/Database/database.dart';
 import 'package:campus_link_student/Registration/registration.dart';
 import 'package:campus_link_student/Screens/Leader_board/Leader_Board.dart';
+import 'package:campus_link_student/Screens/Sessional%20Marks/View%20Marks.dart';
 import 'package:campus_link_student/Screens/psycoTest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -38,7 +39,7 @@ class _NavigationState extends State<Navigation> {
   List<String>cuu_title=["Assingments","Notes","Attendeance","Marks","Performance"];
   var curr_index=0;
   bool profile_update=false;
-
+  int confimations = usermodel["Confirmation"] != null ? usermodel["Confirmations"].length : 0;
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +188,16 @@ class _NavigationState extends State<Navigation> {
                 },
                 icon: const Icon(Icons.send_outlined),
               );
-            },)
+            },),
+            Builder(
+              builder: (context) => IconButton(
+                icon: Icon(
+                    Icons.doorbell_outlined,
+                  color: confimations == 0 ? Colors.black : Colors.red,
+                ),
+                onPressed: () => Scaffold.of(context).openEndDrawer(),
+              ),
+            ),
           ],
           iconTheme: const IconThemeData(color: Colors.black),
           backgroundColor: Colors.black38,
@@ -315,13 +325,7 @@ class _NavigationState extends State<Navigation> {
                     ],
                   )
               ),
-              ListTile(
-                leading: const Icon(Icons.home,color: Colors.black,),
-                title: const Text("Home"),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
+
               ListTile(
                 leading: const Icon(Icons.account_box_outlined,color: Colors.black,),
                 title: const Text("My Profile"),
@@ -366,6 +370,17 @@ class _NavigationState extends State<Navigation> {
                       duration: const Duration(milliseconds: 350),
                       childCurrent: const Navigation(),
                     ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.question_answer_rounded,color: Colors.black,),
+                title: const Text("Sessional Marks"),
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const ViewMarks();
+                  },
+                  ),
                   );
                 },
               ),
@@ -501,6 +516,18 @@ class _NavigationState extends State<Navigation> {
 
             ],
           ),
+        ),
+        endDrawer: Drawer(
+          child: confimations ==0
+              ?
+          ListView.builder(
+            itemCount: confimations,
+            itemBuilder: (context, index) {
+              return SizedBox();
+              },
+          )
+              :
+          AutoSizeText("No Alters / Confirmations pending",style: GoogleFonts.tiltNeon(color: Colors.black),),
         ),
         bottomNavigationBar: CurvedNavigationBar(
           index: curr_index,

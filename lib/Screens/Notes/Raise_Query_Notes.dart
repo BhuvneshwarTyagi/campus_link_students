@@ -17,7 +17,7 @@ class NotesQuery extends StatefulWidget {
 
 class _NotesQueryState extends State<NotesQuery> {
   TextEditingController msgController = TextEditingController();
-
+  bool load= false;
   final chatController = ChatController(
     initialMessageList: [],
     scrollController: ScrollController(),
@@ -47,8 +47,8 @@ class _NotesQueryState extends State<NotesQuery> {
             builder: (context, snapshot) {
               print(">>>>>>>>>>>>>>>>>>>Chat");
               if(snapshot.hasData){
-                if(snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]!=null){
-                  print("reloaded");
+                if(!load && snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]!=null){
+                  print("loaded");
                   //chatController.chatUsers.clear();
 
                   chatController.chatUsers.add(
@@ -59,8 +59,8 @@ class _NotesQueryState extends State<NotesQuery> {
                     ),
                   );
                   //chatController.initialMessageList.clear();
-                  int count = snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Count"] ?? 0;
-                  for (int i= count ; i<snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length;i++ ) {
+                  int count =snapshot.data!.data()!["Notes-${widget.index}"]["Query"] ==null ? 0 : snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Count"] ?? 0;
+                  for (int i= 0 ; i<(snapshot.data!.data()!["Notes-${widget.index}"]["Query"] ==null ? 0 :snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length);i++ ) {
                     print("insideloop");
                     var msg = snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"][i];
                     final message1 = Message(
@@ -81,8 +81,50 @@ class _NotesQueryState extends State<NotesQuery> {
                     );
                     chatController.initialMessageList.add(message1);
                   }
-                  if(count != snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length){
-                    updatecount(snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length);
+                  if(snapshot.data!.data()!["Notes-${widget.index}"]["Query"] != null && count != snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length){
+                    updateCount(snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length);
+                  }
+                  load=true;
+                }
+
+
+
+                if(load && snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]!=null){
+                  print("reloaded");
+                  //chatController.chatUsers.clear();
+
+                  chatController.chatUsers.add(
+                    ChatUser(
+                      id: snapshot.data!.data()?["Teacher"]["Email"],
+                      name: snapshot.data!.data()?["Teacher"]['Name'],
+                      profilePhoto: snapshot.data!.data()?["Teacher"]["Profile_URL"],
+                    ),
+                  );
+                  //chatController.initialMessageList.clear();
+                  int count = snapshot.data!.data()!["Notes-${widget.index}"]["Query"] ==null ? 0 :snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Count"] ?? 0;
+                  for (int i= count ; i<(snapshot.data!.data()!["Notes-${widget.index}"]["Query"] ==null ? 0 : snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length);i++ ) {
+                    print("insideloop");
+                    var msg = snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"][i];
+                    final message1 = Message(
+
+                        id: msg['Stamp'].toDate().toString(),
+                        message: msg['text'],
+                        createdAt: msg['Stamp'].toDate(),
+                        sendBy: msg['UID'],
+                        messageType: MessageType.text,
+                        replyMessage: ReplyMessage(
+                          message: msg['ReplyMessage'],
+                          messageId: msg["ReplyMessageId"] ?? "",
+                          messageType: MessageType.text,
+                          replyTo: msg['ReplyTo'],
+                          replyBy: msg['ReplyBy'],
+                          voiceMessageDuration: Duration(seconds: msg['ReplyVoiceDuration'] ?? 0),
+                        )
+                    );
+                    chatController.initialMessageList.add(message1);
+                  }
+                  if(snapshot.data!.data()!["Notes-${widget.index}"]["Query"] !=null && count != snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length){
+                    updateCount(snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length);
                   }
                 }
               }
@@ -113,12 +155,38 @@ class _NotesQueryState extends State<NotesQuery> {
                       },
                       icon: const Icon(Icons.arrow_back_ios_new),
                     ),
+                    actions: [
+                      PopupMenuButton(
+                       onSelected: (value) {
+                         value == "Solved" ? querySolved() : reOpen();
+                       },
+                        itemBuilder: (context) {
+                          return [
+                            snapshot.data!.data()?["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]['Status'] =="Solved" ?
+                            const PopupMenuItem(
+                                value: "Reopen",
+                                child: Text("Reopen Query")
+                            )
+                                :
+                            const PopupMenuItem(
+                              value: "Solved",
+                              child: Text("Query Solved")
+                          ),
+                        ];
+                      },
+                      ),
+                    ],
                   ),
                   profileCircleConfig: ProfileCircleConfiguration(
                     circleRadius: size.width*0.035,
                     profileImageUrl: usermodel["Profile_URL"],
                   ),
                   chatBackgroundConfig: ChatBackgroundConfiguration(
+                    ///time color
+                    messageTimeIconColor: const Color.fromRGBO(3, 178, 183, 1),
+                    messageTimeTextStyle: GoogleFonts.tiltNeon(
+                      color: const Color.fromRGBO(3, 178, 183, 1),
+                    ),
                       backgroundColor: Colors.black38,
                       defaultGroupSeparatorConfig: DefaultGroupSeparatorConfiguration(
                           textStyle: GoogleFonts.tiltNeon(
@@ -126,20 +194,20 @@ class _NotesQueryState extends State<NotesQuery> {
                             //const Color.fromRGBO(150, 150, 150, 1),
                             fontWeight: FontWeight.w500,
                             fontSize: size.width*0.035,
-                          )
+                          ),
                       )
                   ),
                   currentUser: currentUser,
                   chatController: chatController,
                   onSendTap: (message, replyMessage, messageType) {
                     sendMsg(
-                        snapshot.data!.data()?["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Status"],
+                        snapshot.data!.data()?["Notes-${widget.index}"]["Query"] ==null ? "Pending":  snapshot.data!.data()?["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Status"],
                       message,
                       replyMessage,
                       messageType
                     );
                   },
-                  featureActiveConfig: const FeatureActiveConfig(
+                  featureActiveConfig: FeatureActiveConfig(
                       lastSeenAgoBuilderVisibility: true,
                       enableOtherUserProfileAvatar: true,
                       enablePagination: true,
@@ -150,7 +218,7 @@ class _NotesQueryState extends State<NotesQuery> {
                       enableChatSeparator: true,
                       enableReactionPopup: true,
                       enableReplySnackBar: true,
-                      enableTextField: true
+                      enableTextField: snapshot.data!.data()!["Notes-${widget.index}"]["Query"] != null ? (snapshot.data!.data()?["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]['Status'] =="Solved" ? false : true ) : true
                   ),
                   loadingWidget:  const loading(text: "Syncronizing with the server please wait..."),
                   reactionPopupConfig: ReactionPopupConfiguration(
@@ -167,7 +235,7 @@ class _NotesQueryState extends State<NotesQuery> {
                   ),
                   sendMessageConfig: SendMessageConfiguration(
                       closeIconColor: const Color.fromRGBO(3, 178, 183, 1),
-                      imagePickerConfiguration: ImagePickerConfiguration(),
+                      imagePickerConfiguration: const ImagePickerConfiguration(),
                       imagePickerIconsConfig: const ImagePickerIconsConfiguration(
                         cameraIconColor: Color.fromRGBO(3, 178, 183, 1),
                         galleryIconColor: Color.fromRGBO(3, 178, 183, 1),
@@ -194,7 +262,6 @@ class _NotesQueryState extends State<NotesQuery> {
                     maxWidth: size.width*0.6,
                     receiptsWidgetConfig: const ReceiptsWidgetConfig(
                       showReceiptsIn: ShowReceiptsIn.all,
-
                     ),
                     outgoingChatBubbleConfig: ChatBubble(
                         senderNameTextStyle: GoogleFonts.aBeeZee(
@@ -318,7 +385,9 @@ class _NotesQueryState extends State<NotesQuery> {
 
   Future<void> sendMsg(String status,String message, ReplyMessage replyMessage,MessageType messageType) async{
     final check = await FirebaseFirestore.instance.collection("Notes").doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.subject}").get();
+    if(check.data()?["Notes-${widget.index}"]["QueryBy"].isnotcontan(usermodel["Email"])){
 
+    }
 
     check.data()?[usermodel["Email"].toString().split("@")[0]] ==null
         ?
@@ -358,10 +427,47 @@ class _NotesQueryState extends State<NotesQuery> {
       "Pending" ,
     });
   }
-  updatecount(int len) async {
+  updateCount(int len) async {
     await FirebaseFirestore.instance.collection("Notes").doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.subject}").update({
       "Notes-${widget.index}.Query.${usermodel["Email"].toString().split("@")[0]}.Count": len
     });
   }
-
+  querySolved() async {
+    await FirebaseFirestore.instance.collection("Notes").doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.subject}").update({
+      "Notes-${widget.index}.Query.${usermodel["Email"].toString().split("@")[0]}.Status" : "Solved"
+    });
+  }
+  reOpen() async {
+    await FirebaseFirestore.instance.collection("Notes").doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.subject}").update({
+      "Notes-${widget.index}.Query.${usermodel["Email"].toString().split("@")[0]}.Status" : "Running"
+    });
+  }
+  Future<void> addQueryToTeacherDoc() async {
+    await FirebaseFirestore.instance.collection("Teachers Id").doc(
+        "${usermodel["University"].toString().split(" ")[0]} "
+            "${usermodel["College"].toString().split(" ")[0]} "
+            "${usermodel["Course"].toString().split(" ")[0]} "
+            "${usermodel["Branch"].toString().split(" ")[0]} "
+            "${usermodel["Year"].toString().split(" ")[0]} "
+            "${usermodel["Section"].toString().split(" ")[0]} "
+            "${widget.subject}"
+    ).get().then((value) async {
+      await FirebaseFirestore.instance.collection("Teachers").doc(value.data()?["Email"]).update({
+        "Querys" : FieldValue.arrayUnion([{
+          "from" : "${usermodel["University"].toString().split(" ")[0]} "
+              "${usermodel["College"].toString().split(" ")[0]} "
+              "${usermodel["Course"].toString().split(" ")[0]} "
+              "${usermodel["Branch"].toString().split(" ")[0]} "
+              "${usermodel["Year"].toString().split(" ")[0]} "
+              "${usermodel["Section"].toString().split(" ")[0]} ",
+          "Subject" : widget.subject,
+          "Notes" : widget.index,
+          "description" : "Chat",
+          "by" : usermodel["Email"],
+          "Type" : "Notes",
+          "Time" : DateTime.now()
+        }])
+      });
+    });
+  }
 }

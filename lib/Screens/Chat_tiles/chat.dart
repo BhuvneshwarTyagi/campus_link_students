@@ -287,6 +287,10 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   chatBackgroundConfig: ChatBackgroundConfiguration(
                       backgroundColor: Colors.black38,
+                      messageTimeIconColor: const Color.fromRGBO(3, 178, 183, 1),
+                      messageTimeTextStyle: GoogleFonts.tiltNeon(
+                        color: const Color.fromRGBO(3, 178, 183, 1),
+                      ),
                     defaultGroupSeparatorConfig: DefaultGroupSeparatorConfiguration(
                       textStyle: GoogleFonts.tiltNeon(
                           color: const Color.fromRGBO(211, 211, 211, 1),
