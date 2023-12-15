@@ -1,24 +1,11 @@
-import 'dart:io';
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:campus_link_student/Screens/Assignment/countDown.dart';
-import 'package:campus_link_student/Screens/Feedback/feedback.dart';
-import 'package:campus_link_student/Screens/Notes/Raise_Query_Notes.dart';
+
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../../Constraints.dart';
-import '../Chat_tiles/PdfViewer.dart';
-import 'QuizScore.dart';
-import 'QuizScreen.dart';
-import 'download_tile.dart';
-import 'notes_list.dart';
+import 'NotesFront.dart';
 
 class NotesTile extends StatefulWidget {
-  const NotesTile({super.key, required this.deadline, required this.selectedSubject, required this.index, required this.fileName, required this.size, required this.stamp, required this.submittedBy, required this.quizCreated, required this.downloadUrl, required this.Score, required this.totalQuestion, required this.videolinks, required this.description});
+  const NotesTile({super.key, required this.deadline, required this.selectedSubject, required this.index, required this.fileName, required this.size, required this.stamp, required this.submittedBy, required this.quizCreated, required this.downloadUrl, required this.Score, required this.totalQuestion, required this.videolinks, required this.description, required this.userFieldExist});
   final Timestamp deadline;
   final String selectedSubject ;
   final int index;
@@ -32,385 +19,63 @@ class NotesTile extends StatefulWidget {
   final String Score;
   final String totalQuestion;
   final List<dynamic> videolinks;
+  final bool userFieldExist;
   @override
   State<NotesTile> createState() => _NotesTileState();
 }
 
 class _NotesTileState extends State<NotesTile> {
-  bool isExpanded = false;
-  String systempath='';
-  DateTime currDate = DateTime.now();
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    setsystemppath();
-  }
+
+  bool showFront=true;
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return Card(
-      shape: const OutlineInputBorder(
-        borderSide: BorderSide(
-          color: Colors.black,
-          width: 1.5,
-        )
-      ),
-      child: Stack(
 
-        children: [
-          Column(
-            children: [
-              InkWell(
-                onTap: (){
-                  File file=File("$systempath/Campus Link/${widget.selectedSubject}/Notes/${widget.fileName}");
-                  if(file.existsSync())
-                  {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        child: PdfViewer(document: "$systempath/Campus Link/${widget.selectedSubject}/Notes/${widget.fileName}",name: widget.fileName),
-                        type: PageTransitionType.bottomToTopJoined,
-                        duration: const Duration(milliseconds: 200),
-                        alignment: Alignment.bottomCenter,
-                        childCurrent: const NotesList(),
-                      ),
-                    );
-                  }
-                  else{
-                    InAppNotifications.instance
-                      ..titleFontSize = 14.0
-                      ..descriptionFontSize = 14.0
-                      ..textColor = Colors.black
-                      ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
-                      ..shadow = true
-                      ..animationStyle = InAppNotificationsAnimationStyle.scale;
-                    InAppNotifications.show(
-                      // title: '',
-                      duration: const Duration(seconds: 2),
-                      description: "Please download the notes first",
-                      // leading: const Icon(
-                      //   Icons.error_outline_outlined,
-                      //   color: Colors.red,
-                      //   size: 55,
-                      // )
-                    );
-                  }
-                },
-                child: SizedBox(
-                  height: size.height*0.11,
-                  width: size.width*0.93,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      AutoSizeText(
-                        widget.selectedSubject,
-                        style: GoogleFonts.courgette(
-                            color: Colors.black,
-                            fontSize: size.height*0.02,
-                            fontWeight: FontWeight.w400
-                        ),
-                      ),
-                      AutoSizeText(
-                        "Notes : ${widget.index + 1}",
-                        style: GoogleFonts.courgette(
-                            color: Colors.black,
-                            fontSize: size.height*0.023,
-                            fontWeight: FontWeight.w400
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              ExpansionTile(
-                collapsedBackgroundColor: const Color.fromRGBO(60, 99, 100, 1),
-                backgroundColor: const Color.fromRGBO(60, 99, 100, 1),
-                title: Row(
-                  children: [
-                    AutoSizeText(
-                      widget.description,
-                      style: GoogleFonts.tiltNeon(
-                        fontSize: size.width*0.045,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w500
-                      ),
-                    maxLines: 1,
-                    ),
-                    AutoSizeText(
-
-                      "   (${(int.parse(widget.size ?? "")/1048576).toStringAsFixed(2)} MB)",
-
-                      style: GoogleFonts.tiltNeon(
-                          fontSize: size.width*0.035,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w500),),
-                  ],
-                ),
-                iconColor: Colors.black,
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AutoSizeText(
-                      "Uploaded on: ${(widget.stamp.toDate()).toString().split(" ")[0]}",
-                      style: GoogleFonts.tiltNeon(
-                          fontSize: size.width*0.035,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w500),),
-                    widget.deadline.seconds !=0
-                        ?
-                    CountDownTimer(deadline: "${widget.deadline.toDate().day}-${widget.deadline.toDate().month}-${widget.deadline.toDate().year}")
-                        :
-                        const SizedBox()
-                  ],
-                ),
-                children: [
-                  widget.submittedBy.contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")
-                      ?
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: size.width*0.05),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            AutoSizeText(
-                              "Score :${widget.Score}/${widget.totalQuestion}",
-                              style: GoogleFonts.poppins(
-                                  color: Colors.black87,
-                                  fontSize: size.height*0.015
-                              ),
-                            ),
-                            LinearProgressIndicator(
-                              minHeight: size.height*0.01,
-                              backgroundColor: Colors.black,
-                              color: Colors.green,
-                              value: int.parse(widget.Score)/int.parse(widget.totalQuestion),
-                              //borderRadius: const BorderRadius.all(Radius.circular(10)),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: size.height*0.015,),
-                      ListTile(
-                        leading: SizedBox(
-                          width: size.width*0.1,
-                          child: Image.asset("assets/images/leaderboard.png"),
-                        ),
-                        title: AutoSizeText(
-                          "Leaderboard",
-                          style: GoogleFonts.tiltNeon(
-                              fontSize: size.width * 0.045,
-                              color: Colors.black87
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.push(context,
-                              PageTransition(
-                                  child: Quizscore(
-                                    quizId: widget.index + 1, selectedSubject: widget.selectedSubject,),
-                                  type: PageTransitionType
-                                      .bottomToTopJoined,
-                                  childCurrent: const NotesList(),
-                                  duration: const Duration(
-                                      milliseconds: 300)
-                              )
-                          );
-                        },
-                      )
-                    ],
-                  )
-                      :
-                  widget.quizCreated==true
-                      ?
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      widget.submittedBy.contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")
-                          ?
-                      const SizedBox()
-                          :
-                      ListTile(
-                        title: AutoSizeText(
-
-                          "Take Quiz",
-                          style: GoogleFonts.tiltNeon(
-                              fontSize: size.height * 0.022,
-                              color: Colors.white
-                          ),
-
-
-                        ),
-                        onTap: (){
-
-                          Navigator.push(context,
-                              PageTransition(
-                                  child: QuizScreen(subject: widget.selectedSubject, notesId: widget.index+1,
-                                  ),
-                                  type: PageTransitionType
-                                      .bottomToTopJoined,
-                                  childCurrent: const NotesList(),
-                                  duration: const Duration(
-                                      milliseconds: 300)
-                              )
-                          );
-
-                        },
-                      ),
-                      ListTile(
-                        leading: SizedBox(
-                          width: size.width*0.1,
-                          child: Image.asset("assets/images/leaderboard.png"),
-                        ),
-                        title: AutoSizeText(
-                          "Leaderboard",
-                          style: GoogleFonts.tiltNeon(
-                              fontSize: size.width * 0.045,
-                              color: Colors.black87
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.push(context,
-                              PageTransition(
-                                  child: Quizscore(
-                                    quizId: widget.index + 1, selectedSubject: widget.selectedSubject,),
-                                  type: PageTransitionType
-                                      .bottomToTopJoined,
-                                  childCurrent: const NotesList(),
-                                  duration: const Duration(
-                                      milliseconds: 300)
-                              )
-                          );
-                        },
-                      )
-                    ],
-                  )
-                      :
-                  const SizedBox(),
-                  ListTile(
-                    leading: SizedBox(
-                      width: size.width*0.1,
-                      child: Image.asset("assets/images/feedback.png"),
-                    ),
-                    title: AutoSizeText(
-                      "Feedback",
-                      style: GoogleFonts.tiltNeon(
-                          fontSize: size.height*0.02,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w500
-                      ),
-                      maxLines: 1,
-                    ),
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return FeedbackPage(
-                          index: widget.index+1,
-                          subject: widget.selectedSubject,
-                        );
-                      },));
-                    },
-                  ),
-                  ListTile(
-                    leading: SizedBox(
-                      width: size.width*0.1,
-                      child: Image.asset("assets/images/query.png"),
-                    ),
-                    title: AutoSizeText(
-                      "Raise query",
-                      style: GoogleFonts.tiltNeon(
-                          fontSize: size.height*0.02,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w500
-                      ),
-                      maxLines: 1,
-                    ),
-                    onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return NotesQuery(
-                          index: widget.index+1,
-                          subject: widget.selectedSubject,
-                        );
-                      },));
-                    },
-                  ),
-
-                  SizedBox(
-                    height: widget.videolinks.isNotEmpty ? size.width*0.06 + (size.height*0.07 * widget.videolinks.length ) : 0,
-                    child: ListView.builder(
-                      itemCount: widget.videolinks.length,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          children: [
-                            index==0
-                                ?
-                            AutoSizeText(
-                              "Video Lectures",
-                              style: GoogleFonts.tiltNeon(
-                                fontSize: size.width*0.05,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w400,
-                              ),
-
-                              maxLines: 3,
-                            )
-                                :
-                            const SizedBox(),
-
-                            ListTile(
-                              leading: SizedBox(
-                                width: size.width*0.1,
-                                child: Image.asset("assets/images/link.png"),
-                              ),
-                              title: AutoSizeText(
-                                widget.videolinks[index],
-                                style: GoogleFonts.tiltNeon(
-                                    fontSize: size.width*0.05,
-                                    color: Colors.blue,
-                                    fontWeight: FontWeight.w400,
-                                    decoration: TextDecoration.underline
-                                ),
-
-                                maxLines: 3,
-                              ),
-                              onTap: () async {
-                                final Uri url = Uri.parse(widget.videolinks[index]);
-                                if (!await launchUrl(url)) {
-                                  throw Exception('Could not launch $url');
-                                }
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  )
-                ],
-              ),
-            ],
-          ),
-
-          Positioned(
-              top: 10,
-              right: size.width*0.055,
-              child: DownloadButton(downloadUrl: widget.downloadUrl, pdfName: widget.fileName, path: "/Campus Link/${widget.selectedSubject}/Notes"))
-
-        ],
-      ),
+    return AnimatedSwitcher(
+      switchInCurve: Curves.linear,
+    duration: const Duration(milliseconds: 500),
+      transitionBuilder: __transitionBuilder,
+      child: showFront
+          ?
+      Front(
+        index: widget.index,
+        Score: widget.Score,
+        downloadUrl: widget.downloadUrl,
+        quizCreated: widget.quizCreated,
+        stamp: widget.stamp,
+        size: widget.size,
+        fileName: widget.fileName,
+        deadline: widget.deadline,
+        description: widget.description,
+        selectedSubject: widget.selectedSubject,
+        submittedBy: widget.submittedBy,
+        totalQuestion: widget.totalQuestion,
+        userFieldExist: widget.userFieldExist,
+        videolinks: widget.videolinks,
+      )
+          :
+      IconButton(
+        key: const ValueKey(false),
+          onPressed: (){
+            setState(() {
+              showFront = !showFront;
+            });
+          },
+          icon: const Icon(Icons.flip_rounded,color: Colors.black,)),
     );
   }
-  setsystemppath() async {
-    Directory? directory;
-    if(Platform.isAndroid){
-      Directory? directory = await getExternalStorageDirectory();
 
-      systempath = directory!.path.toString().substring(0, 19);
-
-    }
-    if(Platform.isIOS){
-      directory= await getApplicationDocumentsDirectory();
-      systempath = directory.path;
-    }
-  }
+}
+Widget __transitionBuilder(Widget widget, Animation<double> animation) {
+  final rotateAnim = Tween(begin: pi, end: 0.0).animate(animation);
+  return AnimatedBuilder(
+    animation: rotateAnim,
+    child: widget,
+    builder: (context, widget) {
+      return Transform(
+        transform: Matrix4.rotationY(0),
+        alignment: Alignment.center,
+        child: widget,
+      );
+    },
+  );
 }

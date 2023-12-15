@@ -6,14 +6,14 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../Constraints.dart';
 
-class myPost extends StatefulWidget {
-  const myPost({Key? key}) : super(key: key);
+class MyPost extends StatefulWidget {
+  const MyPost({Key? key}) : super(key: key);
 
   @override
-  State<myPost> createState() => _myPostState();
+  State<MyPost> createState() => _MyPostState();
 }
 
-class _myPostState extends State<myPost> {
+class _MyPostState extends State<MyPost> {
   bool isLike=false;
   @override
   Widget build(BuildContext context) {

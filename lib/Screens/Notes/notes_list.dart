@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:campus_link_student/Screens/Notes/NotesFront.dart';
 import 'package:campus_link_student/Screens/Notes/NotesTile.dart';
 import 'package:campus_link_student/Screens/loadingscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -124,7 +125,7 @@ class _NotesListState extends State<NotesList> {
                   itemBuilder: (context, index) {
                     Timestamp deadline=snapshot.data!.data()?["Notes-${index+1}"]["Deadline"] ?? Timestamp(0, 0);
 
-                    return NotesTile(
+                    return Front(
                       deadline: deadline,
                       selectedSubject: selectedSubject,
                       index: index,
@@ -150,6 +151,7 @@ class _NotesListState extends State<NotesList> {
                           :
                       snapshot.data!.data()?["Notes-${index+1}"]["Additional_Link"],
                       description: snapshot.data!.data()?["Notes-${index+1}"]["Notes_description"],
+                      userFieldExist: snapshot.data!.data()?[usermodel["Email"].toString().split("@")[0]] != null ? true : false,
                     );
 
                   },)

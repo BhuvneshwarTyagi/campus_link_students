@@ -6,15 +6,15 @@ import '../../Constraints.dart';
 import 'liked_posts.dart';
 import 'my_posts.dart';
 
-class userProfilePage extends StatefulWidget {
-  const userProfilePage({Key? key,}) : super(key: key);
+class UserProfilePage extends StatefulWidget {
+  const UserProfilePage({Key? key,}) : super(key: key);
 
   @override
-  State<userProfilePage> createState() => _userProfilePageState();
+  State<UserProfilePage> createState() => _UserProfilePageState();
 }
 
-class _userProfilePageState extends State<userProfilePage>  with TickerProviderStateMixin{
-  List<Widget> tabs=[const myPost(),const likedPost()];
+class _UserProfilePageState extends State<UserProfilePage>  with TickerProviderStateMixin{
+  List<Widget> tabs=[const MyPost(),const LikedPost()];
   late TabController _tabController;
   int currTab=0;
   @override
@@ -24,12 +24,12 @@ class _userProfilePageState extends State<userProfilePage>  with TickerProviderS
     super.initState();
     _tabController=TabController(length: 2, vsync: this);
   }
+  @override
   Widget build(BuildContext context) {
     Size size=MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.blueGrey,
+      backgroundColor: Colors.transparent,
       body: SizedBox(
-        height: size.height*1,
         width: size.width,
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -41,20 +41,6 @@ class _userProfilePageState extends State<userProfilePage>  with TickerProviderS
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  /*CircleAvatar(
-                    radius: size.width * 0.15,
-                    backgroundImage:
-                    usermodel["Profile_URL"].toString()!= "null" ? NetworkImage(usermodel["Profile_URL"],scale: 8) : null,
-                    // backgroundColor: Colors.teal.shade300,
-                    child: usermodel["Profile_URL"].toString() == "null"
-                        ? AutoSizeText(
-                      usermodel["Name"].substring(0, 1),
-                      style: GoogleFonts.exo(
-                          fontSize: size.height * 0.03,
-                          fontWeight: FontWeight.w600),
-                    )
-                        : null,
-                  ),*/
                   SizedBox(
                     width: size.width*0.022,
                   ),
@@ -83,16 +69,6 @@ class _userProfilePageState extends State<userProfilePage>  with TickerProviderS
                           null,
                         ),
                       ),
-                     /* Positioned(
-                        bottom: -5,
-                        right: 1,
-                        child: IconButton(
-                          icon: Icon(Icons.camera_enhance,size:size.height*0.033 ,color: Colors.black,),
-                          onPressed: (){
-
-                          } ,
-                        ),
-                      )*/
                     ],
                   ),
                   SizedBox(
@@ -240,7 +216,7 @@ class _userProfilePageState extends State<userProfilePage>  with TickerProviderS
               ),
               Container(
                 height: size.height*1,
-                color: Colors.blueGrey,
+                color: Colors.transparent,
                 child: tabs[currTab],
               )
 

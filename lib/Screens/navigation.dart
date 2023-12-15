@@ -38,7 +38,7 @@ class _NavigationState extends State<Navigation> {
   List<Widget> All_Pages = [
     const Assignment(),
     const NotesList(),
-    const newPost(),
+    const NewPost(),
     const Marks(),
     Performance()
   ];
@@ -648,7 +648,7 @@ class _NavigationState extends State<Navigation> {
             children: [
               const Assignment(),
               const Notes(),
-              const newPost(),
+              const NewPost(),
               const OverAllLeaderBoard(),
               Performance()
             ],

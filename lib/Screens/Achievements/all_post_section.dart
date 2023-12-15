@@ -1,111 +1,75 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Screens/Achievements/post_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
-
 import '../../Constraints.dart';
-import 'user_profile.dart';
 import 'add_post.dart';
 
-class achievementPage extends StatefulWidget {
-  const achievementPage({Key? key}) : super(key: key);
+class AchievementPage extends StatefulWidget {
+  const AchievementPage({Key? key}) : super(key: key);
 
   @override
-  State<achievementPage> createState() => _achievementPageState();
+  State<AchievementPage> createState() => _AchievementPageState();
 }
 
-class _achievementPageState extends State<achievementPage> {
+class _AchievementPageState extends State<AchievementPage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.blueGrey,
-      body: Container(
-        width: size.width * 1,
-        color: Colors.black45,
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection("Achievements")
-              .orderBy("Time-Stamp", descending: true)
-              .orderBy("Likes", descending: true)
-              .snapshots(),
-          builder: (context, snapshot) {
-            return snapshot.data!=null
-                ? ListView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    scrollDirection: Axis.vertical,
+      backgroundColor: Colors.transparent,
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection("Achievements")
+            .orderBy("Time-Stamp", descending: true)
+            .orderBy("Likes", descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          return snapshot.data!=null
+              ?
+          ListView.builder(
+                  itemCount: snapshot.data!.docs.length,
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
 
-                    itemBuilder: (context, index) {
-                      return snapshot.data!.docs[index].data()["Liked by"]!=null
-                         ?
-                      !snapshot.data!.docs[index].data()["Liked by"].contains(usermodel["Email"])
-                      ?
-                      SizedBox(
-                        /*height: size.height*1,
-                          width: size.width*1,*/
-                        child: PostTile(
-                          email: snapshot.data?.docs[index].data()["Email"],
-                          postImageUrl: snapshot.data!.docs[index].data()["Image-URL"].toString(),
-                          likes: snapshot.data?.docs[index].data()["Likes"],
-                          name: snapshot.data?.docs[index].data()["Name"],
-                          stamp: snapshot.data!.docs[index].data()["Time-Stamp"],
-                          topicName: snapshot.data?.docs[index].data()["Topic"],
-                          topicDescription: snapshot.data?.docs[index]
-                              .data()["Topic-Description"],
-                          postedBy:
-                          snapshot.data!.docs[index].data()["Post by"],
-                          doc: snapshot.data!.docs[index].data()["doc"],
-                          userProfile:snapshot.data!.docs[index].data()["Profile_URL"].toString(),
-                          alreadyLiked:
-                          snapshot.data!.docs[index].data()["Like by"]!=null
-                            ?
-                          snapshot.data!.docs[index].data()["Like by"].contains(usermodel["Email"])
-                          :
-                          false,
-                        ),
-                      )
+                  itemBuilder: (context, index) {
+                    return snapshot.data!.docs[index].data()["Liked by"]!=null
+                        &&
+                        !snapshot.data!.docs[index].data()["Liked by"].contains(usermodel["Email"])
+                        &&
+                        (snapshot.data!.docs[index].data()["Disliked by"]==null ||  !snapshot.data!.docs[index].data()["Disliked by"].contains(usermodel["Email"]))
+                    ?
+                    PostTile(
+                      email: snapshot.data?.docs[index].data()["Email"],
+                      postImageUrl: snapshot.data!.docs[index].data()["Image-URL"].toString(),
+                      likes: snapshot.data?.docs[index].data()["Likes"],
+                      name: snapshot.data?.docs[index].data()["Name"],
+                      stamp: snapshot.data!.docs[index].data()["Time-Stamp"],
+                      topicName: snapshot.data?.docs[index].data()["Topic"],
+                      topicDescription: snapshot.data?.docs[index]
+                          .data()["Topic-Description"],
+                      postedBy:
+                      snapshot.data!.docs[index].data()["Post by"],
+                      doc: snapshot.data!.docs[index].data()["doc"],
+                      userProfile:snapshot.data!.docs[index].data()["Profile_URL"].toString(),
+                      alreadyLiked:
+                      snapshot.data!.docs[index].data()["Like by"]!=null
+                        ?
+                      snapshot.data!.docs[index].data()["Like by"].contains(usermodel["Email"])
                       :
-                      SizedBox()
-                          :
-                      SizedBox(
-                        /*height: size.height*1,
-                          width: size.width*1,*/
-                        child: Padding(
-                          padding:  EdgeInsets.all(size.height*0.005),
-                          child: PostTile(
-                            email: snapshot.data?.docs[index].data()["Email"],
-                            postImageUrl: snapshot.data!.docs[index].data()["Image-URL"].toString(),
-                            likes: snapshot.data?.docs[index].data()["Likes"],
-                            name: snapshot.data?.docs[index].data()["Name"],
-                            stamp: snapshot.data!.docs[index].data()["Time-Stamp"],
-                            topicName: snapshot.data?.docs[index].data()["Topic"],
-                            topicDescription: snapshot.data?.docs[index]
-                                .data()["Topic-Description"],
-                            postedBy:
-                            snapshot.data!.docs[index].data()["Post by"],
-                            doc: snapshot.data!.docs[index].data()["doc"],
-                            userProfile:snapshot.data!.docs[index].data()["Profile_URL"].toString(),
-                            alreadyLiked:
-                            snapshot.data!.docs[index].data()["Like by"]!=null
-                                ?
-                            snapshot.data!.docs[index].data()["Like by"].contains(usermodel["Email"])
-                            :
-                            false,
-                          ),
-                        ),
-                      );
+                      false,
+                    )
+                    :
+                    const SizedBox();
 
 
 
 
-                    },
-                  )
-                : const SizedBox();
-          },
-        ),
+                  },
+                )
+              :
+          const SizedBox();
+        },
       ),
       floatingActionButton: Container(
         height: size.height*0.072,
@@ -121,7 +85,7 @@ class _achievementPageState extends State<achievementPage> {
               type: PageTransitionType.bottomToTopJoined,
               duration: const Duration(milliseconds: 400),
               alignment: Alignment.bottomCenter,
-              childCurrent: const achievementPage(),
+              childCurrent: const AchievementPage(),
             ),);
           },
             child: Icon(Icons.add,size: size.height*0.04,color: Colors.white70,weight: 5,)),
