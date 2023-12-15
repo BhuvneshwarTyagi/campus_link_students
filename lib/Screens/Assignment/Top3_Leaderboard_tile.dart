@@ -60,7 +60,7 @@ class TopThree extends StatelessWidget {
                       child: SizedBox(
                           width: size.width*0.3,
                           height: size.height*0.05,
-                          child: Image.asset("assets/images/Browncrown.png")
+                          child: Image.asset("assets/images/Silvercrown.png")
                       ),
                     ),
                   ),
@@ -227,7 +227,7 @@ class TopThree extends StatelessWidget {
                           child: SizedBox(
                               width: size.width*0.3,
                               height: size.height*0.05,
-                              child: Image.asset("assets/images/Silvercrown.png")
+                              child: Image.asset("assets/images/Browncrown.png")
                           ),
                         ),
                       ),

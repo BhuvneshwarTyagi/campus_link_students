@@ -308,6 +308,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         onPressed: () async{
                           if(nameController.text.trim().isNotEmpty){
                             String temp = await signin(email.text.trim(), password.text.trim());
+
                             if(temp=='1'){
                               InAppNotifications.instance
                                 ..titleFontSize = 22.0
@@ -337,7 +338,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   ?
                               await FirebaseFirestore.instance.collection("Student_record").doc("Email").update({
                                 "Email" : FieldValue.arrayUnion([email.text.trim().toString()]),
-                              }).whenComplete(() => Navigator.push(
+                              })
+                                  .whenComplete(() async {
+                                await FirebaseAuth.instance.signOut().whenComplete((){
+                                  Navigator.push(
                                       context,
                                       PageTransition(
                                         child: const SignInScreen(),
@@ -346,20 +350,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         childCurrent: const SignUpScreen(),
                                       )
 
-                                  ))
+                                  );
+                                });
+
+                              })
                                :
                               await FirebaseFirestore.instance.collection("Student_record").doc("Email").set({
                                 "Email" : FieldValue.arrayUnion([email.text.trim().toString()]),
-                              }).whenComplete(() => Navigator.push(
-                                  context,
-                                  PageTransition(
-                                    child: const SignInScreen(),
-                                    type: PageTransitionType.rightToLeftJoined,
-                                    duration: const Duration(milliseconds: 350),
-                                    childCurrent: const SignUpScreen(),
-                                  )
+                              }).whenComplete(() async {
+                                await FirebaseAuth.instance.signOut().whenComplete(() {
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        child: const SignInScreen(),
+                                        type: PageTransitionType.rightToLeftJoined,
+                                        duration: const Duration(milliseconds: 350),
+                                        childCurrent: const SignUpScreen(),
+                                      )
 
-                              ))
+                                  );
+                                });
+                              })
                               ;
                             }
 

@@ -18,11 +18,12 @@ import 'download_tile.dart';
 import 'notes_list.dart';
 
 class NotesTile extends StatefulWidget {
-  const NotesTile({super.key, required this.deadline, required this.selectedSubject, required this.index, required this.fileName, required this.size, required this.stamp, required this.submittedBy, required this.quizCreated, required this.downloadUrl, required this.Score, required this.totalQuestion, required this.videolinks});
+  const NotesTile({super.key, required this.deadline, required this.selectedSubject, required this.index, required this.fileName, required this.size, required this.stamp, required this.submittedBy, required this.quizCreated, required this.downloadUrl, required this.Score, required this.totalQuestion, required this.videolinks, required this.description});
   final Timestamp deadline;
   final String selectedSubject ;
   final int index;
   final String fileName;
+  final String description;
   final String size;
   final Timestamp stamp;
   final List<dynamic> submittedBy;
@@ -128,7 +129,7 @@ class _NotesTileState extends State<NotesTile> {
                 title: Row(
                   children: [
                     AutoSizeText(
-                      widget.fileName,
+                      widget.description,
                       style: GoogleFonts.tiltNeon(
                         fontSize: size.width*0.045,
                         color: Colors.black,

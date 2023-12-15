@@ -145,10 +145,11 @@ class _NotesListState extends State<NotesList> {
                           :
                       "0",
                       videolinks: snapshot.data!.data()?["Notes-${index+1}"]["Total_Question"]==null
-                      ?
+                          ?
                       []
-                      :
+                          :
                       snapshot.data!.data()?["Notes-${index+1}"]["Additional_Link"],
+                      description: snapshot.data!.data()?["Notes-${index+1}"]["Notes_description"],
                     );
 
                   },)

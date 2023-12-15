@@ -171,7 +171,7 @@ class _AssignmentTileState extends State<AssignmentTile> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       AutoSizeText(
-                        "Assigned on: ${widget.assignedOn.toDate()}",
+                        "Assigned on: ${widget.assignedOn.toDate().toString().split(".")[0]}",
                         style: GoogleFonts.tiltNeon(
                             color: Colors.black,
                             fontSize: size.width*0.04

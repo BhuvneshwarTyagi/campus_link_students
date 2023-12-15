@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:campus_link_student/Database/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Constraints.dart';
 import '../Registration/Login.dart';
@@ -60,7 +62,20 @@ class _MainPageState extends State<MainPage> {
             }
             else{
               FirebaseAuth.instance.currentUser!.sendEmailVerification();
-              return const Verify();
+              FirebaseAuth.instance.signOut();
+              InAppNotifications.instance
+                ..titleFontSize = 14.0
+                ..descriptionFontSize = 14.0
+                ..textColor = Colors.black
+                ..backgroundColor =
+                const Color.fromRGBO(150, 150, 150, 1)
+                ..shadow = true
+                ..animationStyle =
+                    InAppNotificationsAnimationStyle.scale;
+              InAppNotifications.show(
+                  duration: const Duration(seconds: 2),
+                  description: "Please verify your email id first",);
+              return const SignInScreen();
             }
           }
           else{

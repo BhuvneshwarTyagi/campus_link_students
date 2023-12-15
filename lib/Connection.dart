@@ -91,7 +91,7 @@ class _InternetcheckState extends State<Internetcheck> {
           case ConnectivityResult.wifi:
             return widget.widget;
             default:
-              return const Center(child:Text("oops Gand marao error"));
+              return const Center(child:Text("Internet Connection error!"));
         }
       default:
         return const No_internet();
