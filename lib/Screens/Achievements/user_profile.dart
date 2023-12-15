@@ -1,0 +1,253 @@
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../Constraints.dart';
+import 'liked_posts.dart';
+import 'my_posts.dart';
+
+class userProfilePage extends StatefulWidget {
+  const userProfilePage({Key? key,}) : super(key: key);
+
+  @override
+  State<userProfilePage> createState() => _userProfilePageState();
+}
+
+class _userProfilePageState extends State<userProfilePage>  with TickerProviderStateMixin{
+  List<Widget> tabs=[const myPost(),const likedPost()];
+  late TabController _tabController;
+  int currTab=0;
+  @override
+
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _tabController=TabController(length: 2, vsync: this);
+  }
+  Widget build(BuildContext context) {
+    Size size=MediaQuery.of(context).size;
+    return Scaffold(
+      backgroundColor: Colors.blueGrey,
+      body: SizedBox(
+        height: size.height*1,
+        width: size.width,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            children: [
+              SizedBox(
+                height: size.height*0.01,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  /*CircleAvatar(
+                    radius: size.width * 0.15,
+                    backgroundImage:
+                    usermodel["Profile_URL"].toString()!= "null" ? NetworkImage(usermodel["Profile_URL"],scale: 8) : null,
+                    // backgroundColor: Colors.teal.shade300,
+                    child: usermodel["Profile_URL"].toString() == "null"
+                        ? AutoSizeText(
+                      usermodel["Name"].substring(0, 1),
+                      style: GoogleFonts.exo(
+                          fontSize: size.height * 0.03,
+                          fontWeight: FontWeight.w600),
+                    )
+                        : null,
+                  ),*/
+                  SizedBox(
+                    width: size.width*0.022,
+                  ),
+                  Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: size.height*0.065,
+                        backgroundColor: Colors.black,
+                        child: CircleAvatar(
+                          radius: size.height*0.062,
+
+                          backgroundImage:usermodel["Profile_URL"]!=null?
+
+                          NetworkImage(usermodel["Profile_URL"])
+                              :
+                          null,
+                          // backgroundColor: Colors.teal.shade300,
+                          child: usermodel["Profile_URL"]==null?
+                          AutoSizeText(
+                            usermodel["Name"].toString().substring(0,1),
+                            style: GoogleFonts.exo(
+                                fontSize: size.height * 0.05,
+                                fontWeight: FontWeight.w600),
+                          )
+                              :
+                          null,
+                        ),
+                      ),
+                     /* Positioned(
+                        bottom: -5,
+                        right: 1,
+                        child: IconButton(
+                          icon: Icon(Icons.camera_enhance,size:size.height*0.033 ,color: Colors.black,),
+                          onPressed: (){
+
+                          } ,
+                        ),
+                      )*/
+                    ],
+                  ),
+                  SizedBox(
+                    width: size.width*0.3,
+                  ),
+                   Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                     children: [
+                       Column(
+                         children: [
+                           Container(
+                             height: size.height*0.041,
+                             width: size.height*0.041,
+                             color: Colors.transparent,
+                             child: AutoSizeText(
+                               "10",
+                               style: GoogleFonts.exo(
+                                   fontSize: size.height*0.026,
+                                   color: Colors.white,
+                                 fontWeight: FontWeight.w500
+                               ),
+                             ),
+
+                           ),
+                           SizedBox(
+                             height: size.height*0.012,
+                           ),
+                           Container(
+                               height: size.height*0.041,
+                               width: size.height*0.041,
+                               color: Colors.transparent,
+                               child:AutoSizeText(
+                                 "Like",style: GoogleFonts.aBeeZee(
+                                   fontSize: size.height*0.03
+                               ),
+                               )
+                             /* Image.asset("assets/icon/like.png",fit: BoxFit.cover,scale: 5,),*/
+                           )
+                         ],
+                       ),
+                       SizedBox(
+                         width: size.width*0.09,
+                       ),
+                       Column(
+                         children: [
+                           Container(
+                             height: size.height*0.041,
+                             width: size.height*0.041,
+                             color: Colors.transparent,
+                             child: AutoSizeText(
+                               "7",
+                               style: GoogleFonts.exo(
+                                   fontSize: size.height*0.026,
+                                   color: Colors.white,
+                                 fontWeight: FontWeight.w500
+                               ),
+                             ),
+
+                           ),
+                           SizedBox(
+                             height: size.height*0.012,
+                           ),
+                           Container(
+                             height: size.height*0.041,
+                             width: size.height*0.041,
+                             color: Colors.transparent,
+                             child:AutoSizeText(
+                               "Post",style: GoogleFonts.aBeeZee(
+                               fontSize: size.height*0.035
+                             ),
+                             )
+                            /* Image.asset("assets/icon/like.png",fit: BoxFit.cover,scale: 5,),*/
+                           )
+                         ],
+                       )
+                     ],
+                   )
+                ],
+              ),
+              SizedBox(
+                height: size.height*0.023,
+              ),
+              TabBar(
+                indicatorColor: Colors.black,
+                labelColor: Colors.green,
+
+                controller: _tabController,
+                onTap: (value) {
+                  setState(() {
+                    currTab=value;
+                  });
+                },
+                tabs: [
+                  SizedBox(
+                    height: size.height*0.05,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          width: size.width*0.06,
+                          child: Image.asset("assets/icon/post.png"),
+                        ),
+                        SizedBox(
+                          width: size.width*0.02,
+                        ),
+                        FittedBox(
+                          fit: BoxFit.cover,
+                          child: AutoSizeText(
+                            "My Posts",
+                            style: GoogleFonts.tiltNeon(
+                                fontSize: size.height * 0.025,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height*0.05,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          width: size.width*0.064,
+                          child: Image.asset("assets/icon/like.png"),
+                        ),
+                        FittedBox(
+                          fit: BoxFit.cover,
+                          child: AutoSizeText(
+                            "Liked Posts",
+                            style: GoogleFonts.tiltNeon(
+                                fontSize: size.height * 0.025,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
+              ),
+              Container(
+                height: size.height*1,
+                color: Colors.blueGrey,
+                child: tabs[currTab],
+              )
+
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

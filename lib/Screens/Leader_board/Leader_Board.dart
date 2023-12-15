@@ -431,7 +431,6 @@ class _OverAllLeaderBoardState extends State<OverAllLeaderBoard> {
     averagePerformance=allStudentsPerformancesum/allStudentsdata.docs.length;
     sortResult();
     setState(() {
-
       result;
       load=true;
     });
@@ -494,10 +493,6 @@ class _OverAllLeaderBoardState extends State<OverAllLeaderBoard> {
     });
     return data;
   }
-
-
-
-
   Future<Map<String, dynamic>> calculateAssignment(QueryDocumentSnapshot<Map<String, dynamic>> email,Map<String,dynamic> data, DocumentSnapshot<Map<String, dynamic>> snap) async {
     int totalAssignment=0;
     int assignmentSubmitted=0;

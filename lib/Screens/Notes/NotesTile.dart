@@ -188,7 +188,7 @@ class _NotesTileState extends State<NotesTile> {
                               backgroundColor: Colors.black,
                               color: Colors.green,
                               value: int.parse(widget.Score)/int.parse(widget.totalQuestion),
-                              borderRadius: const BorderRadius.all(Radius.circular(10)),
+                              //borderRadius: const BorderRadius.all(Radius.circular(10)),
                             ),
                           ],
                         ),

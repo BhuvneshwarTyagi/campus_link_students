@@ -10,7 +10,7 @@ import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Constraints.dart';
 import '../Registration/Login.dart';
-import '../Registration/Verify Email.dart';
+
 import '../Registration/registration.dart';
 import 'loadingscreen.dart';
 import 'navigation.dart';
