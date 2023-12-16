@@ -8,17 +8,16 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 
 import '../../Constraints.dart';
 
-class AssignmentPerformance extends StatefulWidget {
-  const AssignmentPerformance({super.key, required this.AssignmentdataMap});
-  final Map<String,double> AssignmentdataMap;
-
+class QuizPerformance extends StatefulWidget {
+  const QuizPerformance({super.key, required this.quizdataMap});
+  final Map<String,double> quizdataMap;
 
 
   @override
-  State<AssignmentPerformance> createState() => _AssignmentPerformanceState();
+  State<QuizPerformance> createState() => _QuizPerformanceState();
 }
 
-class _AssignmentPerformanceState extends State<AssignmentPerformance> {
+class _QuizPerformanceState extends State<QuizPerformance> {
 
   List<Color> SmallPieChartcolorList=[
     const Color(0xffD95AF3),
@@ -32,11 +31,11 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
   bool isExpanded1 = false;
   bool isExpanded2 = false;
   bool isExpanded3 = false;
-   List<dynamic> subjects = usermodel["Subject"];
+  List<dynamic> subjects = usermodel["Subject"];
 
   bool data=false;
 
-@override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
@@ -58,7 +57,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
             alignment: Alignment.centerLeft,
             child: Padding(
               padding:  EdgeInsets.only(left: size.width*0.05),
-              child: AutoSizeText("Overall assignment performance",
+              child: AutoSizeText("Overall quiz performance",
                 style: GoogleFonts.tiltNeon(
                     fontSize: size.width*0.05,
                     color: Colors.black,
@@ -71,7 +70,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
           Card(
             child: Padding(
               padding:  const EdgeInsets.all(8),
-              child: AutoSizeText("This chart shows that how much your each subject contributes in your overall assignment performance",
+              child: AutoSizeText("This chart shows that how much your each subject contributes in your overall quiz performance",
                 style: GoogleFonts.tiltNeon(
                     fontSize: size.width*0.035,
                     color: Colors.deepOrange,
@@ -86,7 +85,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
 
-              piechart(dataMap: widget.AssignmentdataMap,),
+              piechart(dataMap: widget.quizdataMap,),
 
               SizedBox(width: size.width*0.05,),
               SizedBox(
@@ -129,7 +128,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
             alignment: Alignment.centerLeft,
             child: Padding(
               padding:  EdgeInsets.only(left: size.width*0.05),
-              child: AutoSizeText("Subject wise assignment performance",
+              child: AutoSizeText("Subject wise quiz performance",
                 style: GoogleFonts.tiltNeon(
                     fontSize: size.width*0.04,
                     color: Colors.black
@@ -145,7 +144,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
                 width: size.width*0.7,
                 child: GridView.builder(
 
-                  itemCount: widget.AssignmentdataMap.length,
+                  itemCount: widget.quizdataMap.length,
 
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 1, // number of items in each row
@@ -157,10 +156,10 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
                     return  CircularPercentIndicator(
                       radius: size.height*0.035,
                       lineWidth: 2,
-                      percent: widget.AssignmentdataMap[usermodel["Subject"][index]] ?? 0,
+                      percent: widget.quizdataMap[usermodel["Subject"][index]] ?? 0,
 
                       backgroundColor: Colors.grey,
-                      center:  AutoSizeText("${(widget.AssignmentdataMap[usermodel["Subject"][index]]!*100).toStringAsFixed(2)}%",
+                      center:  AutoSizeText("${(widget.quizdataMap[usermodel["Subject"][index]]!*100).toStringAsFixed(2)}%",
                           style: GoogleFonts.gfsDidot(
                               fontSize: size.height*0.01,
                               fontWeight: FontWeight.w400
@@ -191,7 +190,7 @@ class _AssignmentPerformanceState extends State<AssignmentPerformance> {
 
 
 
-  
+
 }
 
 

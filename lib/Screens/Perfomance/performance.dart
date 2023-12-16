@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:campus_link_student/Screens/Perfomance/quiz_performance.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,28 +13,27 @@ import 'marks_perfomance.dart';
 
 
 
-Map<String,double> AssignmentdataMap={};
-List <dynamic>persentage=[];
+
 class Performance extends StatefulWidget{
+  const Performance({super.key});
+
   @override
   State<Performance> createState() =>_pieChart();
 
 }
 class _pieChart extends State<Performance>{
-  Map<String, double> BigdataMap = {
-    "Attendance": 18.47,
-    "Marks": 17.70,
-    "Assignment": 4.25,
-    "Others": 3.51,
-
-  };
+  Map<String,double> AssignmentdataMap={};
+  List <dynamic> percentage=[];
+  Map<String,double> quizDataMap={};
   double overallAttendancePercent=0;
+
   List<String> monthListForAttendance=[];
+
   Map<String,double> attendanceDataMapforOverAllPerformance={};
   List<Map<String,dynamic>> dataMapList=[];
 
 
- late DocumentSnapshot<Map<String, dynamic>> snapshot1;
+
   List<Color> BigColorList = [
     const Color(0xffD95AF3),
     const Color(0xff3EE094),
@@ -61,26 +61,27 @@ class _pieChart extends State<Performance>{
     ]
   ];
 
-
   int circleNo=1;
   bool isCircleExpanded = false;
   bool isExpanded1 = false;
   bool isExpanded2 = false;
   bool isExpanded3 = false;
-  bool data=false;
+  bool isExpanded4 = false;
+  double overallpercent=0.0;
+  double quizPercent =0;
 
-     double overallpersent=0.0;
-  int total=0;
-  int submit=0;
+  Map<String, double> BigdataMap = {};
 
+  double sessionalOverallperformance =0;
+  Map<String,double> sessionalSubjectwiseperformance ={};
   @override
   void initState() {
     // TODO: implement initState
 
     super.initState();
+
     generateattendancedata();
     overallAssignmentdata();
-    //assignmentdata();
   }
   @override
   Widget build(BuildContext context) {
@@ -100,7 +101,7 @@ class _pieChart extends State<Performance>{
           ],
         ),
       ),
-      child: Scaffold(
+      child: dataLoaded ?  Scaffold(
         backgroundColor: Colors.transparent,
 
         body: SingleChildScrollView(
@@ -145,18 +146,26 @@ class _pieChart extends State<Performance>{
                         isExpanded1=!isExpanded1;
                         isExpanded2=false;
                         isExpanded3=false;
+                        isExpanded4=false;
                         break;
                       case 1:
                         isExpanded2=!isExpanded2;
                         isExpanded1=false;
                         isExpanded3=false;
+                        isExpanded4=false;
                         break;
                       case 2:
                         isExpanded3=!isExpanded3;
                         isExpanded1=false;
                         isExpanded2=false;
+                        isExpanded4=false;
                         break;
-
+                      case 3:
+                        isExpanded4=!isExpanded4;
+                        isExpanded1=false;
+                        isExpanded2=false;
+                        isExpanded3=false;
+                        break;
                     }
 
                   });
@@ -195,7 +204,7 @@ class _pieChart extends State<Performance>{
                     backgroundColor:Colors.transparent,
                     headerBuilder: (BuildContext context, bool isExpanded) {
                       return ListTile(
-                        title: AutoSizeText("Marks",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
+                        title: AutoSizeText("Sessional Performance",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
                         subtitle: LinearPercentIndicator(
                           width:size.width*0.7,
                           lineHeight: size.height*0.005,
@@ -204,7 +213,9 @@ class _pieChart extends State<Performance>{
                         ),
                       );
                     },
-                    body:const MarksPerformance(),
+                    body: MarksPerformance(
+                       MarksdataMap: sessionalSubjectwiseperformance,
+                    ),
                     isExpanded:isExpanded2,
 
                   ),
@@ -215,12 +226,12 @@ class _pieChart extends State<Performance>{
                     backgroundColor:Colors.transparent,
                     headerBuilder: (BuildContext context, bool isExpanded) {
                       return ListTile(
-                        title: AutoSizeText("Assignment",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
+                        title: AutoSizeText("Assignment Performance",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
                         subtitle: LinearPercentIndicator(
                           width:size.width*0.7,
                           lineHeight: size.height*0.005,
-                          percent: overallpersent,
-                          progressColor: Colors.red,
+                          percent: overallpercent,
+                          progressColor: overallpercent<60 ? Colors.red : overallpercent >=80 ? Colors.deepOrange : Colors.green,
                         )
 
                         ,
@@ -229,9 +240,38 @@ class _pieChart extends State<Performance>{
 
                       ;
                     },
-                    body:  AssignmentPerformance(AssignmentdataMap: AssignmentdataMap, persentage: persentage, overallAttendancePercent: overallpersent,),
+                    body:  AssignmentPerformance(
+                      AssignmentdataMap: AssignmentdataMap,
+                    ),
 
                     isExpanded:isExpanded3,
+
+                  ),
+                  ExpansionPanel(
+
+                    canTapOnHeader: true,
+                    backgroundColor:Colors.transparent,
+                    headerBuilder: (BuildContext context, bool isExpanded) {
+                      return ListTile(
+                        title: AutoSizeText("Quiz Performance",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
+                        subtitle: LinearPercentIndicator(
+                          width:size.width*0.7,
+                          lineHeight: size.height*0.005,
+                          percent: quizPercent,
+                          progressColor: overallpercent<60 ? Colors.red : overallpercent >=80 ? Colors.deepOrange : Colors.green,
+                        )
+
+                        ,
+                      )
+
+
+                      ;
+                    },
+                    body:  QuizPerformance(
+                      quizdataMap: quizDataMap,
+                    ),
+
+                    isExpanded:isExpanded4,
 
                   )
 
@@ -244,7 +284,7 @@ class _pieChart extends State<Performance>{
             ],
           ),
         ),
-      ),
+      ) : const SizedBox(),
     );
 
   }
@@ -340,73 +380,120 @@ class _pieChart extends State<Performance>{
 
     }
     print("setting data loaded to ture");
-    setState(() {
-      dataLoaded=true;
-      overallAttendancePercent=overallAttendance/overallLecture;
-    });
+
+    overallAttendancePercent=overallAttendance/overallLecture;
+    await overallAssignmentdata();
 
   }
 
-
-  overallAssignmentdata( ) async {
-
+  quizData() async {
+    int total=0;
+    int score=0;
     for(int i=0;i<usermodel["Subject"].length;i++)
     {
+      int subtotal=0;
+      int subobtain=0;
       String subName = usermodel["Subject"][i];
-      print("Subjects are");
-      print(usermodel["Subject"]);
-    await  FirebaseFirestore
-          .instance.collection("Assignment")
-        .doc("${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]} $subName",)
+      await  FirebaseFirestore
+          .instance.collection("Notes")
+          .doc("${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]} $subName")
           .get().then((value){
-            setState(() {
-              snapshot1=value;
-            });
-            print("value is ${value.data()}");
-            print(" Total Submitted Assignmentv${value.data()?["Total_Submitted_Assignment"][usermodel["Email"].toString()
-                .split("@")[0]]}");
+        if(value.data()!=null){
+            for(int notes=1;notes<= value.data()?["Total_Notes"];notes++){
+              if(value.data()?["Notes-$notes"]["Quiz_Created"] && value.data()?["Notes-$notes"]["Submitted by"] != null && value.data()?["Notes-$notes"]["Submitted by"].contains("${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}")){
+                subtotal +=  int.parse("${value.data()?["Notes-$notes"]["Total_Question"]}");
+                subobtain += int.parse("${value.data()?["Notes-$notes"]["Response"]["${usermodel["Email"].toString().split("@")[0]}-${usermodel["Name"]}-${usermodel["Rollnumber"]}"]["Score"]}");
+
+
+              }
+            }
+
+          quizDataMap[subName] = subobtain/subtotal;
+        }
+        else{
+          quizDataMap[subName] = 0;
+        }
 
       }
-      ).whenComplete(() {
-      print("value is ${snapshot1.data()}");
-        if(snapshot1.data()!=null){
-          if(snapshot1.data()?["Total_Submitted_Assignment"][usermodel["Email"].toString()
-              .split("@")[0]]==null){
-            setState(() {
-
-              persentage.add(0.0);
-              total=total+int.parse("${snapshot1.data()?["Total_Assignment"]}");
-              print("Total is ${total}");
-              print("Submit is ${submit}");
-            });
-          }
-          else {
-            setState(() {
-              AssignmentdataMap.addAll({subName:  double.parse("${snapshot1.data()?["Total_Submitted_Assignment"][usermodel["Email"].toString()
-                  .split("@")[0]]}"),});
-              persentage.add((int.parse("${snapshot1.data()?["Total_Submitted_Assignment"][usermodel["Email"].toString()
-                  .split("@")[0]]}"))/int.parse("${snapshot1.data()?["Total_Assignment"]}") );
-
-              total=total+int.parse("${snapshot1.data()?["Total_Assignment"]}");
-              print("Total is ${total}");
-              submit=submit+int.parse("${snapshot1.data()?["Total_Submitted_Assignment"][usermodel["Email"].toString()
-                  .split("@")[0]]}");
-              print("Submit is ${submit}");
-            });
-
-          }
-
-
-
-
-
-        }
-      });
+      );
+      total+=subtotal;
+      score+=subobtain;
     }
-  setState(() {
-    overallpersent=submit/total;
-    print(" overall persentage ${overallpersent}");
-  });
+    setState(() {
+      quizPercent=score/total;
+      dataLoaded=true;
+      BigdataMap={
+
+        "Attendance": overallAttendancePercent,
+        "Sessional": 0.3,
+        "Assignment": overallpercent,
+        "Quiz": 0.51,
+      };
+    });
+  }
+
+  overallAssignmentdata() async {
+
+    int total=0;
+    int submit=0;
+    for(int i=0;i<usermodel["Subject"].length;i++)
+    {
+      int subjectsubmit=0;
+      int  subjecttotal=0;
+      String subName = usermodel["Subject"][i];
+    await  FirebaseFirestore
+          .instance.collection("Assignment")
+        .doc("${usermodel["University"].toString().split(" ")[0]} ${usermodel["College"].toString().split(" ")[0]} ${usermodel["Course"].toString().split(" ")[0]} ${usermodel["Branch"].toString().split(" ")[0]} ${usermodel["Year"].toString().split(" ")[0]} ${usermodel["Section"].toString().split(" ")[0]} $subName")
+          .get().then((value){
+      if(value.data()!=null){
+        total = total + int.parse("${value.data()?["Total_Assignment"] != null ? value.data()!["Total_Assignment"] : 1}");
+        subjecttotal = int.parse("${value.data()?["Total_Assignment"] != null ? value.data()!["Total_Assignment"] : 1}");
+       for(int j=1;j<= value.data()?["Total_Assignment"];j++){
+         if(value.data()?["Assignment-$j"]["Submitted-by"] != null && value.data()?["Assignment-$j"]["Submitted-by"].contains(usermodel["Email"])){
+
+             print(value.data()!["Assignment-$j"]["submitted-Assignment"]);
+             submit  = submit + (value.data()?["Assignment-$j"]["submitted-Assignment"][usermodel["Email"].toString().split("@")[0]]["Status"] == "Accepted" ? 1 :0);
+           subjectsubmit  = subjectsubmit + (value.data()?["Assignment-$j"]["submitted-Assignment"][usermodel["Email"].toString().split("@")[0]]["Status"] == "Accepted" ? 1 :0);
+
+         }
+       }
+        AssignmentdataMap[subName] = subjectsubmit/subjecttotal;
+        percentage.add(subjectsubmit/subjecttotal);
+      }
+      else{
+        AssignmentdataMap[subName] = 0;
+        percentage.add(0);
+      }
+
+      }
+      );
+
+    }
+
+    overallpercent=submit/total;
+    sesionalData();
+
+  }
+
+  sesionalData() async {
+    int total=0;
+    int obtained=0;
+    for(int sub =0 ; sub < usermodel["Subject"].length; sub++){
+      String subj = usermodel["Subject"][sub];
+      int subtotal=0;
+      int subobtain=0;
+      int stop = usermodel["Marks"] != null && usermodel["Marks"][subj] !=null ? usermodel["Marks"][subj]["Total"] : 0 ;
+      for(int sessional = 1; sessional <= stop ; sessional++){
+        subtotal+= int.parse("${usermodel["Marks"][subj]["Sessional_${sessional}_total"]}");
+        subobtain+= int.parse("${usermodel["Marks"][subj]["Sessional_$sessional"]}");
+
+      }
+      sessionalSubjectwiseperformance[subj] = subobtain/(subtotal ==0 ? 1 : subtotal);
+      total+=subtotal;
+      obtained+=subobtain;
+    }
+    sessionalOverallperformance = total/(obtained ==0 ? 1 : obtained);
+    await quizData();
   }
 
 }

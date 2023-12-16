@@ -89,11 +89,11 @@ class _PageState extends State<PostTile> {
           SizedBox(height: size.height*0.01,),
           SizedBox(
             width: size.width,
-            height:widget.postImageUrl!="null"? size.height*0.5:size.height*0,
+            height:widget.postImageUrl!="null"? size.height*0.3:size.height*0,
             child:
             widget.postImageUrl.toString()!="null"
                 ?
-            Image.network(widget.postImageUrl,fit: BoxFit.cover,)
+            Image.network(widget.postImageUrl,fit: BoxFit.scaleDown,)
             :
             const SizedBox(),
           ),

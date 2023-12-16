@@ -31,6 +31,8 @@ class _MyPostState extends State<MyPost> {
           ?
           ListView.builder(
             itemCount: snapshot.data!.docs.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               return Padding(
                 padding:  EdgeInsets.only(top:size.height*0.004),
