@@ -19,11 +19,8 @@ import 'package:page_transition/page_transition.dart';
 import 'Achievements/achievement_page.dart';
 import 'Assignment/assignment.dart';
 import 'Notes/notes.dart';
-import 'attendance.dart';
 import 'Chat_tiles/chat_list.dart';
 import 'feedbackScreen.dart';
-import 'marks.dart';
-import 'Notes/notes_list.dart';
 import 'Perfomance/performance.dart';
 import 'Profile_Page/profile_page.dart';
 
@@ -35,13 +32,6 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation> {
-  List<Widget> All_Pages = [
-    const Assignment(),
-    const NotesList(),
-    const NewPost(),
-    const Marks(),
-    Performance()
-  ];
   PageController page_controller = PageController();
   List<String> cuu_title = [
     "Assignments",

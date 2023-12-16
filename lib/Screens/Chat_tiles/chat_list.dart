@@ -155,7 +155,9 @@ class _chatsystemState extends State<chatsystem> {
 
                         readCount= snapshot.data?.data()!["Messages"].length;
                         count= int.parse("${snapshot.data?.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]}");
-                        markFalse();
+                        if(snapshot.data!.data()?["${usermodel["Email"].toString().split("@")[0]}"]["Active"] == true){
+                          markFalse();
+                        }
                         if(snapshot.data!.data()!["Type"] == "Personal"){
                           if(snapshot.data!.data()!["Members"][0]==usermodel["Email"]){
                             Name=snapshot.data!.data()![snapshot.data!.data()!["Members"][1].toString().split("@")[0]]["Name"];

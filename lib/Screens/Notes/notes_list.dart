@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:campus_link_student/Screens/Notes/NotesFront.dart';
-import 'package:campus_link_student/Screens/Notes/NotesTile.dart';
 import 'package:campus_link_student/Screens/loadingscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';

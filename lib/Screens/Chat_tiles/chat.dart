@@ -112,6 +112,8 @@ class _ChatPageState extends State<ChatPage> {
                   }
                   loadChat=false;
                 }
+
+
                 if(!loadChat && snapshot.data!.data()!["Messages"].length != snapshot.data!.data()![usermodel["Email"].toString().split("@")[0]]["Read_Count"]){
                   print("..........inside");
                   chatController.chatUsers.clear();
@@ -1822,14 +1824,15 @@ class _ChatPageState extends State<ChatPage> {
   //   );
   // }
 
-  Widget date(DateTime date) {
-    return DateChip(
-      date: date,
-      color: Colors.white,
-    );
-  }
+  // Widget date(DateTime date) {
+  //   return DateChip(
+  //     date: date,
+  //     color: Colors.white,
+  //   );
+  // }
 
   countUpdate(int length) async {
+    print("updating count");
     await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
       "${usermodel["Email"].toString().split("@")[0]}.Read_Count" : length
     });
@@ -1853,6 +1856,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   reaction(Message msg,emoji,) async {
+    print("updating reaction");
     await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
       msg.createdAt.toString().split(".")[0] : FieldValue.arrayUnion([
         {"ReactionBy": usermodel['Email'], 'Emoji': emoji}
@@ -1861,16 +1865,19 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   markActive() async {
+    print("updating Active");
     await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
       "${usermodel["Email"].toString().split("@")[0]}.Active": true
     });
   }
   markFalse() async {
+    print("updating active false");
     await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
       "${usermodel["Email"].toString().split("@")[0]}.Active": false
     });
   }
   deleteMSG(Message msg) async {
+    print("deleting msg");
     print(".................<<<<<<${msg.sendBy}");
     try{
       await FirebaseFirestore.instance.collection("Messages").doc(widget.channel).update({
@@ -1894,6 +1901,7 @@ class _ChatPageState extends State<ChatPage> {
     //chatController.initialMessageList.remove(msg);
   }
   develered(AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) async {
+    print("updating delevered");
     print(" ..............here");
     int lastcount = snapshot.data!.data()?[usermodel["Email"].toString().split("@")[0]]["Read_Count"];
     int len = snapshot.data!.data()?["Messages"].length;

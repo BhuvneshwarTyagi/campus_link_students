@@ -304,6 +304,28 @@ class _OverAllLeaderBoardState extends State<OverAllLeaderBoard> {
 
                         ),),
                       ),
+                      ListTile(
+
+                        title: AutoSizeText("Quiz Score",style: GoogleFonts.tiltNeon(
+                          color: Colors.black54,
+                          fontSize: size.width*0.045,
+
+                        ),),
+                        trailing: AutoSizeText("${result[index]["AssignmentScore"].toStringAsFixed(2)}%",style: GoogleFonts.tiltNeon(
+                          color: result[index]["QuizMarksScore"] < 50
+                              ?
+                          Colors.red[600]
+                              :
+                          result[index]["QuizMarksScore"] < 75
+                              ?
+                          Colors.orangeAccent[300]
+                              :
+                          Colors.green[900]
+                          ,
+                          fontSize: size.width*0.045,
+
+                        ),),
+                      ),
                       ExpansionTile(
 
                         title: AutoSizeText("Sessional Marks",style: GoogleFonts.tiltNeon(
@@ -356,7 +378,7 @@ class _OverAllLeaderBoardState extends State<OverAllLeaderBoard> {
                                 );
                               },)
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -419,9 +441,12 @@ class _OverAllLeaderBoardState extends State<OverAllLeaderBoard> {
           print("Data from Assignement ////////////////////////: $data1");
           await calculateAttendance(email, data1).then((data2) async {
             print("Data from attendance ////////////////////////: $data2");
-            await calculateMarks(email, data2).then((value){
-              result.add(value);
-              allStudentsPerformancesum += value['Score'];
+            await calculateSessionalMarks(email, data2).then((value1) async {
+              await calculateQuizMarks(email,value1).then((value){
+                result.add(value);
+                allStudentsPerformancesum += value['Score'];
+              });
+
             });
 
         });
@@ -467,7 +492,7 @@ class _OverAllLeaderBoardState extends State<OverAllLeaderBoard> {
     });
     return data;
   }
-  Future<Map<String, dynamic>> calculateMarks(QueryDocumentSnapshot<Map<String, dynamic>> email,Map<String,dynamic> data) async {
+  Future<Map<String, dynamic>> calculateSessionalMarks(QueryDocumentSnapshot<Map<String, dynamic>> email,Map<String,dynamic> data) async {
     int obtainedMarks=0;
     int totalMarks=0;
     data["Sessional_record"] = [];
@@ -489,7 +514,6 @@ class _OverAllLeaderBoardState extends State<OverAllLeaderBoard> {
       data["TotalMarks"]=obtainedMarks;
       data["ObtainedMarks"] = totalMarks;
       data['Score']+=(obtainedMarks/totalMarks)*100;
-      data['Score']/=3;
     });
     return data;
   }
@@ -513,7 +537,42 @@ class _OverAllLeaderBoardState extends State<OverAllLeaderBoard> {
       data['Score']=(assignmentSubmitted/totalAssignment)*100;
     return data;
   }
+  Future<Map<String,dynamic>> calculateQuizMarks(QueryDocumentSnapshot<Map<String, dynamic>> email,Map<String,dynamic> data) async {
+    int obtainedMarks=0;
+    int totalMarks=0;
+    await FirebaseFirestore.instance.collection("Notes")
+        .doc(
+        "${usermodel["University"].toString().split(" ")[0]} "
+            "${usermodel["College"].toString().split(" ")[0]} "
+            "${usermodel["Course"].toString().split(" ")[0]} "
+            "${usermodel["Branch"].toString().split(" ")[0]} "
+            "${usermodel["Year"].toString().split(" ")[0]} "
+            "${usermodel["Section"].toString().split(" ")[0]} "
+            "${usermodel["Subject"][subjectIndex]}"
+    ).get().then((doc) {
+      print(doc.data());
+      for(int i=1;i<= doc.data()?["Total_Notes"] ; i++){
+        if(doc.data()?["Notes-$i"]["Quiz_Created"]){
+          totalMarks = doc.data()?["Notes-$i"]["Total_Question"];
+          obtainedMarks = doc.data()?["Notes-$i"]["Submitted by"].contains("${email.data()["Email"].toString().split("@")[0]}-${email.data()["Name"]}-${email.data()["Rollnumber"]}")
+              ?
+          doc.data()!["Notes-$i"]["Response"]["${email.data()["Email"].toString().split("@")[0]}-${email.data()["Name"]}-${email.data()["Rollnumber"]}"]["Score"]
+          :
+          0;
+        }
+      }
 
+
+    }).whenComplete(() {
+
+      data["QuizMarksScore"] = (obtainedMarks/totalMarks)*100;
+      data["QuizTotalMarks"]=obtainedMarks;
+      data["QuizObtainedMarks"] = totalMarks;
+      data['Score']+=(obtainedMarks/totalMarks)*100;
+      data['Score']/=4;
+    });
+    return data;
+  }
   sortResult(){
     result.sort((a, b) {
       return a["Score"].compareTo(b["Score"]);
