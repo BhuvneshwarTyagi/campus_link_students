@@ -91,7 +91,7 @@ class _MainPageState extends State<MainPage> {
         setState(() {
           usermodel=value.data()!;
           print(usermodel);
-          if(usermodel["Subject"]==null){
+          if(FirebaseAuth.instance.currentUser!.emailVerified && usermodel["Subject"]==null){
             Navigator.push(context, PageTransition(
                 child: const StudentDetails(),
                 type: PageTransitionType.bottomToTop,
@@ -106,15 +106,15 @@ class _MainPageState extends State<MainPage> {
           loaded=true;
         });
       });
-      // await FirebaseMessaging.instance.getToken().then((token) async {
-      //   await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
-      //     'Token' : token,
-      //   }).whenComplete(() async {
-      //     print("utffgjkg.................");
-      //     ///paste it here again
-      //   });
-      //
-      // });
+      await FirebaseMessaging.instance.getToken().then((token) async {
+        await FirebaseFirestore.instance.collection("Students").doc(FirebaseAuth.instance.currentUser!.email).update({
+          'Token' : token,
+        }).whenComplete(() async {
+          print("utffgjkg.................");
+          ///paste it here again
+        });
+
+      });
     }
     if(!loaded && Platform.isIOS){
       await FirebaseMessaging.instance.getAPNSToken().then((token) async {

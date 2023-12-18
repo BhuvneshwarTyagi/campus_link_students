@@ -13,6 +13,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inapp_notifications/flutter_inapp_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
@@ -391,14 +392,34 @@ class _NavigationState extends State<Navigation> {
                   ),
                   title: const Text("Sessional Marks"),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return const ViewMarks();
-                        },
-                      ),
-                    );
+                    if(usermodel["Subject"] != null){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return const ViewMarks();
+                          },
+                        ),
+                      );
+                    }
+                    else{
+                      InAppNotifications.instance
+                        ..titleFontSize = 35.0
+                        ..descriptionFontSize = 20.0
+                        ..textColor = Colors.black
+                        ..backgroundColor = const Color.fromRGBO(150, 150, 150, 1)
+                        ..shadow = true
+                        ..animationStyle = InAppNotificationsAnimationStyle.scale;
+                      InAppNotifications.show(
+                          title: 'Error',
+                          duration: const Duration(seconds: 2),
+                          description: "Please add the subjects first",
+                          leading: const Icon(
+                            Icons.clear,
+                            color: Colors.red,
+                            size: 30,
+                          ));
+                    }
                   },
                 ),
                 ListTile(

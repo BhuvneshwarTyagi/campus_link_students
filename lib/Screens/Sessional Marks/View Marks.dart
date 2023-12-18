@@ -14,7 +14,7 @@ class ViewMarks extends StatefulWidget {
 
 class _ViewMarksState extends State<ViewMarks> {
   List<dynamic> subjects = usermodel["Subject"];
-  String selectedSubject = usermodel["Subject"][0];
+  String selectedSubject = usermodel["Subject"] == null ? "" : usermodel["Subject"][0];
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -125,7 +125,7 @@ class _ViewMarksState extends State<ViewMarks> {
                 },
               ),
             ),
-            usermodel["Marks"][selectedSubject] != null
+            usermodel["Marks"] != null && usermodel["Marks"][selectedSubject] != null
                 ?
             ListView.builder(
               scrollDirection: Axis.vertical,

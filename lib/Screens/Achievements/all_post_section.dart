@@ -33,9 +33,9 @@ class _AchievementPageState extends State<AchievementPage> {
                   scrollDirection: Axis.vertical,
 
                   itemBuilder: (context, index) {
-                    return snapshot.data!.docs[index].data()["Liked by"]!=null
-                        &&
-                        !snapshot.data!.docs[index].data()["Liked by"].contains(usermodel["Email"])
+                    return (snapshot.data!.docs[index].data()["Liked by"] ==null
+                        ||
+                        !snapshot.data!.docs[index].data()["Liked by"].contains(usermodel["Email"]))
                         &&
                         (snapshot.data!.docs[index].data()["Disliked by"]==null ||  !snapshot.data!.docs[index].data()["Disliked by"].contains(usermodel["Email"]))
                     ?
@@ -60,7 +60,7 @@ class _AchievementPageState extends State<AchievementPage> {
                       false,
                     )
                     :
-                    const SizedBox();
+                    SizedBox();
 
 
 

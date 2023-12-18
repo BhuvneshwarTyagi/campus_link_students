@@ -59,8 +59,8 @@ class _NotesQueryState extends State<NotesQuery> {
                     ),
                   );
                   //chatController.initialMessageList.clear();
-                  int count =snapshot.data!.data()!["Notes-${widget.index}"]["Query"] ==null ? 0 : snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Count"] ?? 0;
-                  for (int i= 0 ; i<(snapshot.data!.data()!["Notes-${widget.index}"]["Query"] ==null ? 0 :snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length);i++ ) {
+                  int count =snapshot.data!.data()!["Notes-${widget.index}"]["Query"] ==null ? 0 : snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]] ==null ? 0 : snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Count"] ?? 0;
+                  for (int i= 0 ; i<(snapshot.data!.data()!["Notes-${widget.index}"]["Query"] ==null ? 0 :snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]] == null ?0 : snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length);i++ ) {
                     print("insideloop");
                     var msg = snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"][i];
                     final message1 = Message(
@@ -81,7 +81,7 @@ class _NotesQueryState extends State<NotesQuery> {
                     );
                     chatController.initialMessageList.add(message1);
                   }
-                  if(snapshot.data!.data()!["Notes-${widget.index}"]["Query"] != null && count != snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length){
+                  if(snapshot.data!.data()!["Notes-${widget.index}"]["Query"] != null && count != (snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]] == null ? 0 :snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length)){
                     updateCount(snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length);
                   }
                   load=true;
@@ -101,8 +101,8 @@ class _NotesQueryState extends State<NotesQuery> {
                     ),
                   );
                   //chatController.initialMessageList.clear();
-                  int count = snapshot.data!.data()!["Notes-${widget.index}"]["Query"] ==null ? 0 :snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Count"] ?? 0;
-                  for (int i= count ; i<(snapshot.data!.data()!["Notes-${widget.index}"]["Query"] ==null ? 0 : snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length);i++ ) {
+                  int count = snapshot.data!.data()!["Notes-${widget.index}"]["Query"] ==null ? 0 :(snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]] == null ?0 :snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Count"] )?? 0;
+                  for (int i= count ; i<(snapshot.data!.data()!["Notes-${widget.index}"]["Query"] ==null ? 0 : (snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]==null ?0:snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length));i++ ) {
                     print("insideloop");
                     var msg = snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"][i];
                     final message1 = Message(
@@ -123,7 +123,7 @@ class _NotesQueryState extends State<NotesQuery> {
                     );
                     chatController.initialMessageList.add(message1);
                   }
-                  if(snapshot.data!.data()!["Notes-${widget.index}"]["Query"] !=null && count != snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length){
+                  if(snapshot.data!.data()!["Notes-${widget.index}"]["Query"] !=null && count != (snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]] ==null ? 0 : snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length)){
                     updateCount(snapshot.data!.data()!["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Msg"].length);
                   }
                 }
@@ -201,7 +201,7 @@ class _NotesQueryState extends State<NotesQuery> {
                   chatController: chatController,
                   onSendTap: (message, replyMessage, messageType) {
                     sendMsg(
-                        snapshot.data!.data()?["Notes-${widget.index}"]["Query"] ==null ? "Pending":  snapshot.data!.data()?["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Status"],
+                        snapshot.data!.data()?["Notes-${widget.index}"]["Query"] ==null ? "Pending":  snapshot.data!.data()?["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]] == null ? "Pending" :snapshot.data!.data()?["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]["Status"],
                       message,
                       replyMessage,
                       messageType
@@ -218,7 +218,7 @@ class _NotesQueryState extends State<NotesQuery> {
                       enableChatSeparator: true,
                       enableReactionPopup: true,
                       enableReplySnackBar: true,
-                      enableTextField: snapshot.data!.data()!["Notes-${widget.index}"]["Query"] != null ? (snapshot.data!.data()?["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]['Status'] =="Solved" ? false : true ) : true
+                      enableTextField: snapshot.data!.data()!["Notes-${widget.index}"]["Query"] != null ? (snapshot.data!.data()?["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]] ==null ? true :(snapshot.data!.data()?["Notes-${widget.index}"]["Query"][usermodel["Email"].toString().split("@")[0]]['Status'] =="Solved" ? false : true) ) : true
                   ),
                   loadingWidget:  const loading(text: "Syncronizing with the server please wait..."),
                   reactionPopupConfig: ReactionPopupConfiguration(
@@ -385,7 +385,7 @@ class _NotesQueryState extends State<NotesQuery> {
 
   Future<void> sendMsg(String status,String message, ReplyMessage replyMessage,MessageType messageType) async{
     final check = await FirebaseFirestore.instance.collection("Notes").doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.subject}").get();
-    if(check.data()?["Notes-${widget.index}"]["QueryBy"].isnotcontan(usermodel["Email"])){
+    if(!check.data()?["Notes-${widget.index}"]["QueryBy"].contains(usermodel["Email"])){
 
     }
 

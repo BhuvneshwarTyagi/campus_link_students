@@ -162,7 +162,7 @@ class _FrontState extends State<Front> {
                           fontWeight: FontWeight.w500),),
                     widget.deadline.seconds !=0
                         ?
-                    widget.submittedBy.contains(usermodel["Email"])
+                    !widget.submittedBy.contains(usermodel["Email"])
                         ?
                     CountDownTimer(deadline: "${widget.deadline.toDate().day}-${widget.deadline.toDate().month}-${widget.deadline.toDate().year}")
                         :
@@ -347,9 +347,11 @@ class _FrontState extends State<Front> {
                       await FirebaseFirestore.instance.collection("Notes")
                           .doc("${usermodel["University"].split(" ")[0]} ${usermodel["College"].split(" ")[0]} ${usermodel["Course"].split(" ")[0]} ${usermodel["Branch"].split(" ")[0]} ${usermodel["Year"]} ${usermodel["Section"]} ${widget.selectedSubject}")
                           .update({
-                        "Email" : usermodel["Email"],
-                        "Name" : usermodel["Name"],
-                        "Profile_URL" : usermodel["Profile_URL"],
+                        usermodel["Email"].toString().split("@")[0]: {
+                          "Email": usermodel["Email"],
+                          "Name": usermodel["Name"],
+                          "Profile_URL": usermodel["Profile_URL"]
+                        },
                       }).whenComplete(() {
 
                         Navigator.push(context, MaterialPageRoute(builder: (context) {

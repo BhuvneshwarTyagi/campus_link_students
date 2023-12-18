@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -17,6 +18,10 @@ class _UserProfilePageState extends State<UserProfilePage>  with TickerProviderS
   List<Widget> tabs=[const MyPost(),const LikedPost()];
   late TabController _tabController;
   int currTab=0;
+  int myPostCount=0;
+  int likedPost=0;
+
+
   @override
 
   void initState() {
@@ -74,78 +79,109 @@ class _UserProfilePageState extends State<UserProfilePage>  with TickerProviderS
                   SizedBox(
                     width: size.width*0.3,
                   ),
-                   Row(
-                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                     children: [
-                       Column(
-                         children: [
-                           Container(
-                             height: size.height*0.041,
-                             width: size.height*0.041,
-                             color: Colors.transparent,
-                             child: AutoSizeText(
-                               "10",
-                               style: GoogleFonts.exo(
-                                   fontSize: size.height*0.026,
-                                   color: Colors.white,
-                                 fontWeight: FontWeight.w500
-                               ),
-                             ),
+                  SizedBox(
+                    height: size.height*0.095,
+                    width: size.width*0.35,
+                    child: StreamBuilder(
+                      stream:  FirebaseFirestore.instance
+                          .collection("Achievements")
+                          .where("Email",isEqualTo: usermodel["Email"])
+                          .orderBy("Time-Stamp", descending: true)
+                          .orderBy("Likes", descending: true)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if(snapshot.hasData) {
+                          likedPost = 0;
+                          myPostCount = 0;
+                          for (int i = 0; i < snapshot.data!.docs.length; i++) {
+                            if (snapshot.data!.docs[1].data()["Email"]==usermodel["Email"]) {
+                              myPostCount++;
+                            }
+                            if (snapshot.data!.docs[1].data()["Liked by"]!=null &&
+                                snapshot.data!.docs[1].data()["Liked by"]
+                                    .contains(usermodel["Email"])){
+                              likedPost++;
+                            }
+                          }
+                        }
+                        return snapshot.hasData && snapshot.data!=null?
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Column(
+                              children: [
+                                Container(
+                                  height: size.height*0.041,
+                                  width: size.height*0.041,
+                                  color: Colors.transparent,
+                                  child: AutoSizeText(
+                                    "$likedPost",
+                                    style: GoogleFonts.exo(
+                                        fontSize: size.height*0.026,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500
+                                    ),
+                                  ),
 
-                           ),
-                           SizedBox(
-                             height: size.height*0.012,
-                           ),
-                           Container(
-                               height: size.height*0.041,
-                               width: size.height*0.041,
-                               color: Colors.transparent,
-                               child:AutoSizeText(
-                                 "Like",style: GoogleFonts.aBeeZee(
-                                   fontSize: size.height*0.03
-                               ),
-                               )
-                             /* Image.asset("assets/icon/like.png",fit: BoxFit.cover,scale: 5,),*/
-                           )
-                         ],
-                       ),
-                       SizedBox(
-                         width: size.width*0.09,
-                       ),
-                       Column(
-                         children: [
-                           Container(
-                             height: size.height*0.041,
-                             width: size.height*0.041,
-                             color: Colors.transparent,
-                             child: AutoSizeText(
-                               "7",
-                               style: GoogleFonts.exo(
-                                   fontSize: size.height*0.026,
-                                   color: Colors.white,
-                                 fontWeight: FontWeight.w500
-                               ),
-                             ),
+                                ),
+                                SizedBox(
+                                  height: size.height*0.012,
+                                ),
+                                Container(
+                                    height: size.height*0.041,
+                                    width: size.height*0.041,
+                                    color: Colors.transparent,
+                                    child:AutoSizeText(
+                                      "Like",style: GoogleFonts.aBeeZee(
+                                        fontSize: size.height*0.03
+                                    ),
+                                    )
+                                  /* Image.asset("assets/icon/like.png",fit: BoxFit.cover,scale: 5,),*/
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              width: size.width*0.09,
+                            ),
+                            Column(
+                              children: [
+                                Container(
+                                  height: size.height*0.041,
+                                  width: size.height*0.041,
+                                  color: Colors.transparent,
+                                  child: AutoSizeText(
+                                    "$myPostCount",
+                                    style: GoogleFonts.exo(
+                                        fontSize: size.height*0.026,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500
+                                    ),
+                                  ),
 
-                           ),
-                           SizedBox(
-                             height: size.height*0.012,
-                           ),
-                           Container(
-                             height: size.height*0.041,
-                             width: size.height*0.041,
-                             color: Colors.transparent,
-                             child:AutoSizeText(
-                               "Post",style: GoogleFonts.aBeeZee(
-                               fontSize: size.height*0.035
-                             ),
-                             )
-                            /* Image.asset("assets/icon/like.png",fit: BoxFit.cover,scale: 5,),*/
-                           )
-                         ],
-                       )
-                     ],
-                   )
+                                ),
+                                SizedBox(
+                                  height: size.height*0.012,
+                                ),
+                                Container(
+                                    height: size.height*0.041,
+                                    width: size.height*0.041,
+                                    color: Colors.transparent,
+                                    child:AutoSizeText(
+                                      "Post",style: GoogleFonts.aBeeZee(
+                                        fontSize: size.height*0.035
+                                    ),
+                                    )
+                                  /* Image.asset("assets/icon/like.png",fit: BoxFit.cover,scale: 5,),*/
+                                )
+                              ],
+                            )
+                          ],
+                        )
+                            :
+                        const SizedBox();
+
+                      },),
+                  )
                 ],
               ),
               SizedBox(

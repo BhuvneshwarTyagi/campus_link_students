@@ -485,10 +485,10 @@ class _OverAllLeaderBoardState extends State<OverAllLeaderBoard> {
       }
     }).whenComplete(() {
 
-      data["AttendanceScore"] = (totalPresent/totalLecture)*100;
+      data["AttendanceScore"] = (totalPresent/totalLecture == 0 ? 1 : totalLecture);
       data["Attendance"]=totalPresent;
       data["TotalLecture"] = totalLecture;
-      data['Score']+=(totalPresent/totalLecture)*100;
+      data['Score']+=(totalPresent/totalLecture == 0 ? 1 : totalLecture);
     });
     return data;
   }
@@ -510,10 +510,10 @@ class _OverAllLeaderBoardState extends State<OverAllLeaderBoard> {
       }
     }).whenComplete(() {
 
-      data["MarksScore"] = (obtainedMarks/totalMarks)*100;
+      data["MarksScore"] = (obtainedMarks/totalMarks==0 ? 1 : totalMarks);
       data["TotalMarks"]=obtainedMarks;
       data["ObtainedMarks"] = totalMarks;
-      data['Score']+=(obtainedMarks/totalMarks)*100;
+      data['Score']+=(obtainedMarks/totalMarks==0 ? 1 : totalMarks);
     });
     return data;
   }
