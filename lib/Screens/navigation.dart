@@ -656,11 +656,11 @@ class _NavigationState extends State<Navigation> {
                 curr_index = index;
               });
             },
-            children: [
-              const Assignment(),
-              const Notes(),
-              const NewPost(),
-              const OverAllLeaderBoard(),
+            children: const [
+              Assignment(),
+              Notes(),
+              NewPost(),
+              OverAllLeaderBoard(),
               Performance()
             ],
           ),
