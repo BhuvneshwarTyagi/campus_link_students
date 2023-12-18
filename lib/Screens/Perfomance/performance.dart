@@ -206,9 +206,9 @@ class _pieChart extends State<Performance>{
                       return ListTile(
                         title: AutoSizeText("Sessional Performance",style: GoogleFonts.exo(fontSize: size.height*0.03,color: Colors.black,fontWeight: FontWeight.w500),),
                         subtitle: LinearPercentIndicator(
-                          width:size.width*0.7,
+                          width: size.width*0.7,
                           lineHeight: size.height*0.005,
-                          percent: 0.9,
+                          percent: sessionalOverallperformance,
                           progressColor: Colors.red,
                         ),
                       );
@@ -374,8 +374,8 @@ class _pieChart extends State<Performance>{
           });
 
         }
-        dataMapList.add({"Month" : monthName, "Percent" : attendance/totalLecture});
-        attendanceDataMapforOverAllPerformance[monthName]=attendance/totalLecture;
+        dataMapList.add({"Month" : monthName, "Percent" : attendance/(totalLecture ==0 ?1 : totalLecture)});
+        attendanceDataMapforOverAllPerformance[monthName]=attendance/(totalLecture ==0 ? 1 : totalLecture);
       }
 
     }
@@ -420,14 +420,14 @@ class _pieChart extends State<Performance>{
       score+=subobtain;
     }
     setState(() {
-      quizPercent=score/total;
+      quizPercent=score/(total==0 ? 1 : total);
       dataLoaded=true;
       BigdataMap={
 
         "Attendance": overallAttendancePercent,
-        "Sessional": 0.3,
+        "Sessional": sessionalOverallperformance,
         "Assignment": overallpercent,
-        "Quiz": 0.51,
+        "Quiz": quizPercent,
       };
     });
   }

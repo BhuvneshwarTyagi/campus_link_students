@@ -36,7 +36,7 @@ class _LikedPostState extends State<LikedPost> {
             itemBuilder: (context, index) {
               return PostTile(
                   email: snapshot.data?.docs[index].data()["Email"],
-                  postImageUrl: snapshot.data?.docs[index].data()["Image-URL"],
+                  postImageUrl: snapshot.data!.docs[index].data()["Image-URL"].toString(),
                   likes: snapshot.data?.docs[index].data()["Likes"],
                   name: snapshot.data?.docs[index].data()["Name"],
                   stamp: snapshot.data?.docs[index].data()["Time-Stamp"],
@@ -44,7 +44,7 @@ class _LikedPostState extends State<LikedPost> {
                   topicDescription: snapshot.data?.docs[index].data()["Topic-Description"],
                   postedBy: snapshot.data?.docs[index].data()["Post by"],
                   doc: snapshot.data?.docs[index].data()["doc"],
-                  userProfile: snapshot.data?.docs[index].data()["User_Profile"],
+                  userProfile: snapshot.data!.docs[index].data()["User_Profile"].toString(),
                   alreadyLiked: true
               );
             },)

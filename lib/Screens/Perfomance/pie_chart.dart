@@ -1,4 +1,5 @@
-import 'package:flutter/cupertino.dart';
+
+import 'package:flutter/material.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class piechart extends StatefulWidget {
@@ -22,6 +23,7 @@ class _piechartState extends State<piechart> {
     return widget.dataMap.isNotEmpty
     ?
     PieChart(
+      baseChartColor: Colors.transparent,
       dataMap: widget.dataMap,
       colorList: SmallPieChartcolorList,
       chartRadius: size.width/3,

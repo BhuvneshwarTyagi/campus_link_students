@@ -455,10 +455,12 @@ class _OverAllLeaderBoardState extends State<OverAllLeaderBoard> {
     //print("problem : ${email.data()["Email"]}");
     averagePerformance=allStudentsPerformancesum/allStudentsdata.docs.length;
     sortResult();
-    setState(() {
-      result;
-      load=true;
-    });
+    if(mounted){
+      setState(() {
+        result;
+        load=true;
+      });
+    }
   }
 
 

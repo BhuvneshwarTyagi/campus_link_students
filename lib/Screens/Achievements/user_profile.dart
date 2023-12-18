@@ -18,8 +18,6 @@ class _UserProfilePageState extends State<UserProfilePage>  with TickerProviderS
   List<Widget> tabs=[const MyPost(),const LikedPost()];
   late TabController _tabController;
   int currTab=0;
-  int myPostCount=0;
-  int likedPost=0;
 
 
   @override
@@ -90,17 +88,16 @@ class _UserProfilePageState extends State<UserProfilePage>  with TickerProviderS
                           .orderBy("Likes", descending: true)
                           .snapshots(),
                       builder: (context, snapshot) {
+                        int likedPost = 0;
+                        int myPostCount = 0;
                         if(snapshot.hasData) {
-                          likedPost = 0;
-                          myPostCount = 0;
+
                           for (int i = 0; i < snapshot.data!.docs.length; i++) {
-                            if (snapshot.data!.docs[1].data()["Email"]==usermodel["Email"]) {
+                            if (snapshot.data!.docs[i].data()["Email"]==usermodel["Email"]) {
                               myPostCount++;
                             }
-                            if (snapshot.data!.docs[1].data()["Liked by"]!=null &&
-                                snapshot.data!.docs[1].data()["Liked by"]
-                                    .contains(usermodel["Email"])){
-                              likedPost++;
+                            if (snapshot.data!.docs[i].data()["Liked by"]!=null){
+                              likedPost = likedPost + int.parse("${snapshot.data!.docs[i].data()["Liked by"].length}");
                             }
                           }
                         }
@@ -251,7 +248,6 @@ class _UserProfilePageState extends State<UserProfilePage>  with TickerProviderS
 
               ),
               Container(
-                height: size.height*1,
                 color: Colors.transparent,
                 child: tabs[currTab],
               )
